@@ -980,6 +980,204 @@
       display: inline-block;
     }
 
+    /* Inbox View Toggle */
+    .inbox-view-toggle {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+    .inbox-view-btn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .inbox-view-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    /* Kanban Pipeline */
+    .inbox-kanban {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      min-height: 400px;
+    }
+    .kanban-col {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 300px;
+    }
+    .kanban-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--border);
+    }
+    .kanban-col-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-family: 'Saira Extra Condensed', sans-serif;
+    }
+    .kanban-col-count {
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--bg-primary);
+      padding: 2px 8px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+    }
+    .kanban-col.needs-reply .kanban-col-header { border-bottom-color: #ff6b6b; }
+    .kanban-col.needs-reply .kanban-col-title { color: #ff6b6b; }
+    .kanban-col.waiting .kanban-col-header { border-bottom-color: #fdcb6e; }
+    .kanban-col.waiting .kanban-col-title { color: #fdcb6e; }
+    .kanban-col.active-conv .kanban-col-header { border-bottom-color: #00b894; }
+    .kanban-col.active-conv .kanban-col-title { color: #00b894; }
+    .kanban-col.meeting-set .kanban-col-header { border-bottom-color: #74b9ff; }
+    .kanban-col.meeting-set .kanban-col-title { color: #74b9ff; }
+
+    .kanban-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .kanban-card:hover {
+      border-color: var(--text-secondary);
+      transform: translateY(-1px);
+    }
+    .kanban-card-name {
+      font-weight: 600;
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+    .kanban-card-company {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .kanban-card-subject {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 6px;
+    }
+    .kanban-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .kanban-card-days {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .kanban-card-days.urgent { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+    .kanban-card-days.warn { background: rgba(253,203,110,0.15); color: #fdcb6e; }
+    .kanban-card-days.ok { background: rgba(0,184,148,0.15); color: #00b894; }
+    .kanban-card-days.info { background: rgba(116,185,255,0.15); color: #74b9ff; }
+    .kanban-card-note {
+      font-size: 10px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      line-height: 1.3;
+    }
+
+    /* Timeline Table */
+    .inbox-timeline {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .inbox-timeline th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      padding: 12px 16px;
+      border-bottom: 2px solid var(--border);
+      font-family: 'Saira Extra Condensed', sans-serif;
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+    }
+    .inbox-timeline td {
+      padding: 10px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .inbox-timeline tr {
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    .inbox-timeline tr:hover {
+      background: var(--bg-tertiary);
+    }
+    .timeline-status-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .timeline-status-pill.needs-reply { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+    .timeline-status-pill.waiting { background: rgba(253,203,110,0.15); color: #fdcb6e; }
+    .timeline-status-pill.active { background: rgba(0,184,148,0.15); color: #00b894; }
+    .timeline-status-pill.meeting { background: rgba(116,185,255,0.15); color: #74b9ff; }
+    .timeline-days-badge {
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .timeline-days-badge.urgent { color: #ff6b6b; }
+    .timeline-days-badge.warn { color: #fdcb6e; }
+    .timeline-days-badge.ok { color: #00b894; }
+    .timeline-note {
+      font-size: 11px;
+      color: var(--text-secondary);
+      max-width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    @media (max-width: 1100px) {
+      .inbox-kanban {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    @media (max-width: 600px) {
+      .inbox-kanban {
+        grid-template-columns: 1fr;
+      }
+    }
+
     /* Tasks View */
     .task-quick-add {
       display: grid;
@@ -2569,23 +2767,43 @@
 
     <!-- INBOX SECTION (top-level, separate from leads) -->
     <div id="inboxSection" style="display:none;">
-      <div class="inbox-header">
-        <div class="inbox-stats">
-          <div class="inbox-stat inbox-stat-danger">
-            <span class="inbox-stat-num" id="inboxOverdue">0</span>
-            <span class="inbox-stat-label">Needs Follow-Up</span>
-          </div>
-          <div class="inbox-stat inbox-stat-warning">
-            <span class="inbox-stat-num" id="inboxPending">0</span>
-            <span class="inbox-stat-label">Sent Recently</span>
-          </div>
-          <div class="inbox-stat inbox-stat-success">
-            <span class="inbox-stat-num" id="inboxReplied">0</span>
-            <span class="inbox-stat-label">Got Reply</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div class="inbox-header" style="margin-bottom:0;">
+          <div class="inbox-stats">
+            <div class="inbox-stat inbox-stat-danger">
+              <span class="inbox-stat-num" id="inboxOverdue">0</span>
+              <span class="inbox-stat-label">Needs Follow-Up</span>
+            </div>
+            <div class="inbox-stat inbox-stat-warning">
+              <span class="inbox-stat-num" id="inboxPending">0</span>
+              <span class="inbox-stat-label">Waiting</span>
+            </div>
+            <div class="inbox-stat inbox-stat-success">
+              <span class="inbox-stat-num" id="inboxReplied">0</span>
+              <span class="inbox-stat-label">Active</span>
+            </div>
+            <div class="inbox-stat" style="border-left:1px solid var(--border);padding-left:16px;">
+              <span class="inbox-stat-num" style="color:#74b9ff;" id="inboxMeetings">0</span>
+              <span class="inbox-stat-label">Meetings Set</span>
+            </div>
           </div>
         </div>
+        <div id="gmailConnectArea">
+          <button id="gmailConnectBtn" class="btn" style="background:#4285f4;color:#fff;font-weight:600;gap:8px;" onclick="connectGmail()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg>
+            Connect Gmail
+          </button>
+          <span id="gmailStatus" style="display:none;font-size:12px;color:#00b894;margin-left:8px;"></span>
+        </div>
       </div>
-      <div id="inboxList"></div>
+      <div class="inbox-view-toggle">
+        <button class="inbox-view-btn active" onclick="switchInboxView('kanban')">Pipeline</button>
+        <button class="inbox-view-btn" onclick="switchInboxView('timeline')">Timeline</button>
+        <button class="inbox-view-btn" onclick="switchInboxView('list')">List</button>
+      </div>
+      <div id="inboxKanban" class="inbox-kanban"></div>
+      <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
+      <div id="inboxList" style="display:none;"></div>
     </div><!-- /inboxSection -->
 
     <!-- MEETINGS SECTION -->
@@ -2617,19 +2835,34 @@
     <!-- TASKS SECTION -->
     <div id="tasksSection" style="display:none;">
       <!-- Quick Add Bar -->
-      <div class="task-quick-add">
-        <input type="text" id="taskTitle" placeholder="Add a new task...">
-        <input type="date" id="taskDueDate">
-        <select id="taskPriority">
-          <option value="medium">Priority</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <select id="taskLinkedLead">
-          <option value="">Link to Lead</option>
-        </select>
-        <button class="btn btn-primary" onclick="addTask()" style="width:100%;">Add Task</button>
+      <!-- Quick Add (inline) -->
+      <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+        <input type="text" id="taskQuickInput" placeholder="+ Add task... (e.g. &quot;Follow up with Jon Bishop Friday&quot;)" style="flex:1;padding:12px 16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')smartAddTask()">
+        <button class="btn btn-primary" onclick="smartAddTask()" style="white-space:nowrap;">Add</button>
+        <button class="btn btn-secondary" onclick="toggleTaskForm()" id="taskFormToggle" style="padding:8px 12px;font-size:16px;" title="Expand form">▾</button>
+      </div>
+      <!-- Expandable full form (hidden by default) -->
+      <div id="taskFullForm" style="display:none;margin-bottom:16px;">
+        <div class="task-quick-add">
+          <input type="text" id="taskTitle" placeholder="Task description...">
+          <input type="date" id="taskDueDate">
+          <select id="taskPriority">
+            <option value="medium">Priority</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select id="taskLinkedLead">
+            <option value="">Link to Lead</option>
+          </select>
+          <button class="btn btn-primary" onclick="addTask()" style="width:100%;">Add Task</button>
+        </div>
+      </div>
+      <!-- Auto-generated tasks banner -->
+      <div id="autoTasksBanner" style="display:none;background:rgba(226,245,0,0.08);border:1px solid rgba(226,245,0,0.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;align-items:center;gap:12px;">
+        <span style="font-size:16px;">⚡</span>
+        <span style="font-size:13px;color:var(--text-primary);" id="autoTasksText">Auto-tasks generated based on your activity</span>
+        <button class="btn btn-secondary" onclick="document.getElementById('autoTasksBanner').style.display='none'" style="margin-left:auto;padding:4px 8px;font-size:11px;">Dismiss</button>
       </div>
 
       <!-- Stats Bar -->
@@ -2769,6 +3002,7 @@
 
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     // Firebase Config
     const firebaseConfig = {
@@ -2782,6 +3016,294 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+
+    // ===== GMAIL OAUTH INTEGRATION =====
+    const GMAIL_CLIENT_ID = '1002377544484-5m7rr10scdn320uh9puq9gg6h4h3gip2.apps.googleusercontent.com';
+    const GMAIL_SCOPES = 'https://www.googleapis.com/auth/gmail.readonly';
+    let gmailAccessToken = null;
+    let gmailTokenClient = null;
+    let gmailSyncInterval = null;
+
+    function initGmailAuth() {
+      if (typeof google === 'undefined' || !google.accounts) {
+        setTimeout(initGmailAuth, 500);
+        return;
+      }
+      gmailTokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GMAIL_CLIENT_ID,
+        scope: GMAIL_SCOPES,
+        callback: (response) => {
+          if (response.access_token) {
+            gmailAccessToken = response.access_token;
+            document.getElementById('gmailConnectBtn').style.background = '#00b894';
+            document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
+            document.getElementById('gmailStatus').style.display = 'inline';
+            document.getElementById('gmailStatus').textContent = 'Syncing...';
+            // Save token to localStorage for persistence
+            localStorage.setItem('gmail_access_token', response.access_token);
+            localStorage.setItem('gmail_token_expiry', Date.now() + (response.expires_in * 1000));
+            fetchGmailEmails();
+            // Auto-refresh every 5 minutes
+            if (gmailSyncInterval) clearInterval(gmailSyncInterval);
+            gmailSyncInterval = setInterval(fetchGmailEmails, 5 * 60 * 1000);
+          }
+        },
+        error_callback: (err) => {
+          console.error('Gmail auth error:', err);
+          document.getElementById('gmailStatus').style.display = 'inline';
+          document.getElementById('gmailStatus').style.color = '#ff6b6b';
+          document.getElementById('gmailStatus').textContent = 'Auth failed';
+        }
+      });
+
+      // Check for saved token
+      const savedToken = localStorage.getItem('gmail_access_token');
+      const expiry = localStorage.getItem('gmail_token_expiry');
+      if (savedToken && expiry && Date.now() < parseInt(expiry)) {
+        gmailAccessToken = savedToken;
+        document.getElementById('gmailConnectBtn').style.background = '#00b894';
+        document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
+        fetchGmailEmails();
+        gmailSyncInterval = setInterval(fetchGmailEmails, 5 * 60 * 1000);
+      }
+    }
+
+    function connectGmail() {
+      if (gmailAccessToken) {
+        // Already connected, force refresh
+        fetchGmailEmails();
+        return;
+      }
+      if (gmailTokenClient) {
+        gmailTokenClient.requestAccessToken();
+      } else {
+        alert('Google sign-in is still loading. Try again in a second.');
+      }
+    }
+
+    async function fetchGmailEmails() {
+      if (!gmailAccessToken) return;
+      try {
+        document.getElementById('gmailStatus').style.display = 'inline';
+        document.getElementById('gmailStatus').style.color = '#fdcb6e';
+        document.getElementById('gmailStatus').textContent = 'Syncing...';
+
+        // Fetch sent emails (last 30 days)
+        const sentRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:sent newer_than:30d', {
+          headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
+        });
+        if (sentRes.status === 401) {
+          // Token expired, re-auth
+          gmailAccessToken = null;
+          localStorage.removeItem('gmail_access_token');
+          document.getElementById('gmailConnectBtn').style.background = '#4285f4';
+          document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg> Connect Gmail';
+          document.getElementById('gmailStatus').style.color = '#ff6b6b';
+          document.getElementById('gmailStatus').textContent = 'Token expired, reconnect';
+          return;
+        }
+        const sentData = await sentRes.json();
+
+        // Fetch inbox emails (last 30 days)
+        const inboxRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox newer_than:30d', {
+          headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
+        });
+        const inboxData = await inboxRes.json();
+
+        // Get details for each message
+        const allMsgIds = new Set();
+        const sentMsgIds = (sentData.messages || []).map(m => m.id);
+        const inboxMsgIds = (inboxData.messages || []).map(m => m.id);
+        sentMsgIds.forEach(id => allMsgIds.add(id));
+        inboxMsgIds.forEach(id => allMsgIds.add(id));
+
+        // Fetch message details in batches (max 20 at a time to avoid rate limits)
+        const msgIds = [...allMsgIds].slice(0, 80);
+        const batchSize = 10;
+        const allMessages = [];
+
+        for (let i = 0; i < msgIds.length; i += batchSize) {
+          const batch = msgIds.slice(i, i + batchSize);
+          const details = await Promise.all(batch.map(id =>
+            fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Subject&metadataHeaders=Date`, {
+              headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
+            }).then(r => r.json()).catch(() => null)
+          ));
+          allMessages.push(...details.filter(Boolean));
+        }
+
+        // Group by thread to find conversations
+        const threads = {};
+        allMessages.forEach(msg => {
+          const threadId = msg.threadId;
+          if (!threads[threadId]) threads[threadId] = { sent: [], received: [] };
+          const headers = {};
+          (msg.payload?.headers || []).forEach(h => { headers[h.name] = h.value; });
+          const isSent = (msg.labelIds || []).includes('SENT');
+          const entry = {
+            id: msg.id,
+            threadId,
+            date: headers['Date'] || '',
+            from: headers['From'] || '',
+            to: headers['To'] || '',
+            subject: headers['Subject'] || '',
+            timestamp: parseInt(msg.internalDate) || 0,
+            isSent,
+            snippet: msg.snippet || ''
+          };
+          if (isSent) threads[threadId].sent.push(entry);
+          else threads[threadId].received.push(entry);
+        });
+
+        // Build live inbox data
+        const liveEmails = [];
+        const myEmail = 'jordon@jaba.ai';
+
+        Object.values(threads).forEach(thread => {
+          const allMsgs = [...thread.sent, ...thread.received].sort((a, b) => b.timestamp - a.timestamp);
+          if (allMsgs.length === 0) return;
+
+          const latest = allMsgs[0];
+          const latestSent = thread.sent.sort((a, b) => b.timestamp - a.timestamp)[0];
+          const latestReceived = thread.received.sort((a, b) => b.timestamp - a.timestamp)[0];
+
+          // Determine the other party
+          let contact = '';
+          let email = '';
+          let company = '';
+
+          if (latestSent) {
+            const to = latestSent.to || '';
+            const match = to.match(/"?([^"<]+)"?\s*<([^>]+)>/);
+            if (match) {
+              contact = match[1].trim();
+              email = match[2].trim();
+            } else {
+              email = to.trim();
+              contact = email.split('@')[0];
+            }
+          } else if (latestReceived) {
+            const from = latestReceived.from || '';
+            const match = from.match(/"?([^"<]+)"?\s*<([^>]+)>/);
+            if (match) {
+              contact = match[1].trim();
+              email = match[2].trim();
+            } else {
+              email = from.trim();
+              contact = email.split('@')[0];
+            }
+          }
+
+          // Skip self-emails and automated/noreply
+          if (email.toLowerCase() === myEmail) return;
+          if (email.toLowerCase().includes('noreply') || email.toLowerCase().includes('no-reply')) return;
+          if (email.toLowerCase().includes('calendar-notification')) return;
+          if (email.toLowerCase().includes('notifications')) return;
+
+          // Determine status
+          const daysSince = Math.floor((Date.now() - latest.timestamp) / (1000 * 60 * 60 * 24));
+          let status = 'pending';
+          let note = '';
+
+          if (latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp)) {
+            // They replied last, ball in our court
+            status = daysSince >= 2 ? 'overdue' : 'overdue';
+            note = 'They replied. Ball in our court.';
+          } else if (latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp)) {
+            // We sent last, waiting on them
+            if (daysSince >= 4) {
+              status = 'overdue';
+              note = 'No reply in ' + daysSince + ' days.';
+            } else {
+              status = 'pending';
+              note = 'Sent, waiting for reply.';
+            }
+          }
+
+          if (latestReceived && latestSent && latestReceived.timestamp > latestSent.timestamp - 86400000 && latestSent.timestamp > latestReceived.timestamp - 86400000) {
+            status = 'replied';
+            note = 'Active conversation.';
+          }
+
+          // Extract company from email domain
+          const domain = email.split('@')[1] || '';
+          company = domain.split('.')[0];
+          company = company.charAt(0).toUpperCase() + company.slice(1);
+
+          // Try to match to existing INBOX_EMAILS by email
+          const existing = INBOX_EMAILS.find(e => e.email && e.email.toLowerCase() === email.toLowerCase());
+          if (existing) {
+            company = existing.company;
+            contact = existing.contact || contact;
+          }
+
+          const sentDateStr = new Date(latest.timestamp).toISOString().split('T')[0];
+
+          liveEmails.push({
+            company,
+            contact,
+            email,
+            subject: latest.subject || '(no subject)',
+            sentDate: sentDateStr,
+            status,
+            daysSince,
+            note,
+            live: true, // flag as from Gmail
+            threadId: latest.threadId
+          });
+        });
+
+        // Merge: live emails override existing INBOX_EMAILS by email match
+        const mergedMap = new Map();
+
+        // First add all static emails
+        INBOX_EMAILS.forEach(e => {
+          mergedMap.set(e.email?.toLowerCase(), e);
+        });
+
+        // Then overlay live emails (they have fresher data)
+        liveEmails.forEach(e => {
+          const key = e.email?.toLowerCase();
+          const existing = mergedMap.get(key);
+          if (existing) {
+            // Update with live data but keep any manual notes/categories
+            existing.sentDate = e.sentDate;
+            existing.daysSince = e.daysSince;
+            existing.subject = e.subject;
+            existing.status = e.status;
+            if (!existing.note || existing.live) existing.note = e.note;
+            existing.live = true;
+          } else {
+            mergedMap.set(key, e);
+          }
+        });
+
+        // Save to Firebase for team access
+        const liveData = liveEmails.map(e => ({
+          company: e.company, contact: e.contact, email: e.email,
+          subject: e.subject, sentDate: e.sentDate, status: e.status,
+          daysSince: e.daysSince, note: e.note
+        }));
+        db.ref('gmail_live').set({ lastSync: Date.now(), emails: liveData });
+
+        document.getElementById('gmailStatus').style.color = '#00b894';
+        document.getElementById('gmailStatus').textContent = 'Synced ' + liveEmails.length + ' threads • ' + new Date().toLocaleTimeString();
+
+        // Re-render inbox with merged data
+        renderInbox();
+
+      } catch (err) {
+        console.error('Gmail fetch error:', err);
+        document.getElementById('gmailStatus').style.display = 'inline';
+        document.getElementById('gmailStatus').style.color = '#ff6b6b';
+        document.getElementById('gmailStatus').textContent = 'Sync error: ' + err.message;
+      }
+    }
+
+    // Initialize Gmail auth when page loads
+    window.addEventListener('load', () => {
+      setTimeout(initGmailAuth, 1000);
+    });
 
     // Constants
     const STORAGE_KEY = 'bd_leads_v26';
@@ -3123,6 +3645,10 @@
         tasksBadge.style.display = 'none';
       }
 
+      // Generate auto-tasks from email + meeting activity
+      const autoCount = generateAutoTasks();
+      console.log('Auto-generated', autoCount, 'tasks');
+
       // Render the active section
       switchSection(currentSection);
       console.log('CRM v23 render complete');
@@ -3463,8 +3989,205 @@
     }
 
     function getTodayDate() {
-      const d = new Date(2026, 2, 15);
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function getFutureDate(daysFromNow) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysFromNow);
       return d.toISOString().split('T')[0];
+    }
+
+    // Toggle expand/collapse of full task form
+    window.toggleTaskForm = function() {
+      const form = document.getElementById('taskFullForm');
+      const btn = document.getElementById('taskFormToggle');
+      if (form.style.display === 'none') {
+        form.style.display = 'block';
+        btn.textContent = '▴';
+      } else {
+        form.style.display = 'none';
+        btn.textContent = '▾';
+      }
+    };
+
+    // Smart add: parse natural language task input
+    window.smartAddTask = function() {
+      const input = document.getElementById('taskQuickInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const newId = tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1;
+
+      // Try to detect a lead name
+      let linkedLeadId = null;
+      let matchedLead = null;
+      leads.forEach(lead => {
+        if (text.toLowerCase().includes(lead.company.toLowerCase())) {
+          linkedLeadId = lead.id;
+          matchedLead = lead;
+        }
+      });
+      // Also try matching contact names from INBOX_EMAILS
+      if (!linkedLeadId) {
+        INBOX_EMAILS.forEach(e => {
+          const names = e.contact.toLowerCase().split(' ');
+          if (names.some(n => n.length > 3 && text.toLowerCase().includes(n))) {
+            const lead = leads.find(l => l.company.toLowerCase().includes(e.company.toLowerCase()));
+            if (lead) { linkedLeadId = lead.id; matchedLead = lead; }
+          }
+        });
+      }
+
+      // Detect due date from text
+      let dueDate = getFutureDate(1); // default tomorrow
+      const lower = text.toLowerCase();
+      if (lower.includes('today')) dueDate = getTodayDate();
+      else if (lower.includes('tomorrow')) dueDate = getFutureDate(1);
+      else if (lower.includes('monday')) dueDate = getNextDay(1);
+      else if (lower.includes('tuesday')) dueDate = getNextDay(2);
+      else if (lower.includes('wednesday')) dueDate = getNextDay(3);
+      else if (lower.includes('thursday')) dueDate = getNextDay(4);
+      else if (lower.includes('friday')) dueDate = getNextDay(5);
+      else if (lower.includes('next week')) dueDate = getFutureDate(7);
+      else if (lower.includes('this week')) dueDate = getFutureDate(3);
+
+      // Detect priority
+      let priority = 'medium';
+      if (lower.includes('urgent') || lower.includes('asap') || lower.includes('important')) priority = 'high';
+
+      const task = {
+        id: newId,
+        title: text,
+        dueDate,
+        priority,
+        status: 'todo',
+        linkedLeadId,
+        notes: matchedLead ? ('Linked to ' + matchedLead.company) : '',
+        createdDate: getTodayDate()
+      };
+
+      tasks.push(task);
+      saveTasks();
+      renderTasks();
+      input.value = '';
+      input.focus();
+    };
+
+    function getNextDay(dayOfWeek) {
+      // 0=Sun, 1=Mon, etc
+      const today = new Date();
+      const todayDay = today.getDay();
+      let daysUntil = dayOfWeek - todayDay;
+      if (daysUntil <= 0) daysUntil += 7;
+      const target = new Date(today);
+      target.setDate(target.getDate() + daysUntil);
+      return target.toISOString().split('T')[0];
+    }
+
+    // ===== AUTO-TASK GENERATION =====
+    // Rules:
+    // 1. After a meeting date passes -> "Create report for [Company]"
+    // 2. When an email comes in (they replied) -> "Respond to [Contact]"
+    // 3. 4 days after we send an email with no reply -> "Follow up with [Contact]"
+
+    function generateAutoTasks() {
+      const today = getTodayDate();
+      const existingTitles = tasks.map(t => t.title.toLowerCase());
+      let newAutoTasks = [];
+      const newId = () => tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 + newAutoTasks.length : 1 + newAutoTasks.length;
+
+      // RULE 1: Past meetings -> Create report
+      // Check meetings that already happened (date <= today) and no "report" task exists
+      if (typeof meetings !== 'undefined') {
+        meetings.forEach(mtg => {
+          if (mtg.date <= today) {
+            const reportTitle = 'create report for ' + (mtg.company || mtg.title || '').toLowerCase();
+            const prepTitle = 'prep report for ' + (mtg.company || mtg.title || '').toLowerCase();
+            const hasReport = existingTitles.some(t =>
+              (t.includes('report') || t.includes('recap')) &&
+              t.includes((mtg.company || '').toLowerCase().split(' ')[0])
+            );
+            if (!hasReport && mtg.company) {
+              const lead = leads.find(l => l.company.toLowerCase().includes((mtg.company || '').toLowerCase()));
+              newAutoTasks.push({
+                id: newId(),
+                title: 'Create report for ' + mtg.company + ' (post-meeting)',
+                dueDate: getFutureDate(1),
+                priority: 'high',
+                status: 'todo',
+                linkedLeadId: lead ? lead.id : null,
+                notes: 'Auto-generated: Meeting with ' + (mtg.contact || mtg.company) + ' already happened. Build/send report.',
+                createdDate: today,
+                auto: true
+              });
+            }
+          }
+        });
+      }
+
+      // RULE 2: Emails where they replied (ball in our court) -> Respond
+      INBOX_EMAILS.forEach(e => {
+        if (e.status === 'overdue' && e.note && (e.note.includes('NEEDS REPLY') || e.note.includes('Ball in our court'))) {
+          const respondTitle = 'respond to ' + e.contact.toLowerCase();
+          const hasRespond = existingTitles.some(t =>
+            (t.includes('respond') || t.includes('reply') || t.includes('follow up')) &&
+            e.contact.toLowerCase().split(' ').some(n => n.length > 3 && t.includes(n))
+          );
+          if (!hasRespond) {
+            const lead = leads.find(l => l.company.toLowerCase().includes(e.company.toLowerCase().split(' ')[0]) || e.company.toLowerCase().includes(l.company.toLowerCase()));
+            newAutoTasks.push({
+              id: newId(),
+              title: 'Respond to ' + e.contact + ' (' + e.company + ')',
+              dueDate: today,
+              priority: 'high',
+              status: 'todo',
+              linkedLeadId: lead ? lead.id : null,
+              notes: 'Auto-generated: They replied. ' + (e.note || ''),
+              createdDate: today,
+              auto: true
+            });
+          }
+        }
+      });
+
+      // RULE 3: 4+ days no reply after we sent -> Follow up
+      INBOX_EMAILS.forEach(e => {
+        if (e.status === 'overdue' && e.daysSince >= 4 && e.note && e.note.includes('NEEDS FOLLOW UP')) {
+          const followTitle = 'follow up with ' + e.contact.toLowerCase();
+          const hasFollow = existingTitles.some(t =>
+            t.includes('follow up') &&
+            e.contact.toLowerCase().split(' ').some(n => n.length > 3 && t.includes(n))
+          );
+          if (!hasFollow) {
+            const lead = leads.find(l => l.company.toLowerCase().includes(e.company.toLowerCase().split(' ')[0]) || e.company.toLowerCase().includes(l.company.toLowerCase()));
+            newAutoTasks.push({
+              id: newId(),
+              title: 'Follow up with ' + e.contact + ' (' + e.company + ')',
+              dueDate: today,
+              priority: e.daysSince >= 7 ? 'high' : 'medium',
+              status: 'todo',
+              linkedLeadId: lead ? lead.id : null,
+              notes: 'Auto-generated: Sent ' + e.daysSince + ' days ago, no reply. ' + (e.note || ''),
+              createdDate: today,
+              auto: true
+            });
+          }
+        }
+      });
+
+      if (newAutoTasks.length > 0) {
+        tasks.push(...newAutoTasks);
+        saveTasks();
+        // Show banner
+        const banner = document.getElementById('autoTasksBanner');
+        if (banner) {
+          banner.style.display = 'flex';
+          document.getElementById('autoTasksText').textContent = newAutoTasks.length + ' auto-task' + (newAutoTasks.length > 1 ? 's' : '') + ' generated from your email activity and meetings';
+        }
+      }
+
+      return newAutoTasks.length;
     }
 
     function updateTaskBadge() {
@@ -3572,7 +4295,7 @@
       if (currentTaskFilter === 'today') {
         filtered = tasks.filter(t => t.dueDate === today);
       } else if (currentTaskFilter === 'week') {
-        const weekEnd = new Date(2026, 2, 22).toISOString().split('T')[0];
+        const we = new Date(); we.setDate(we.getDate() + (7 - we.getDay())); const weekEnd = we.toISOString().split('T')[0];
         filtered = tasks.filter(t => t.dueDate && t.dueDate >= today && t.dueDate <= weekEnd);
       } else if (currentTaskFilter === 'overdue') {
         filtered = tasks.filter(t => t.status !== 'done' && t.dueDate && t.dueDate < today);
@@ -3628,7 +4351,7 @@
               ${task.status === 'done' ? '✓' : ''}
             </div>
             <div class="task-content" style="flex:1;">
-              <div class="task-title">${task.title}</div>
+              <div class="task-title">${task.title}${task.auto ? ' <span style="font-size:10px;background:rgba(226,245,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:600;">AUTO</span>' : ''}</div>
               <div class="task-meta">
                 <span class="task-due-date ${dueDateClass}">${dueDateText}</span>
                 <span class="task-priority" style="background:${task.priority === 'high' ? '#ff6b6b' : task.priority === 'medium' ? '#fdcb6e' : '#00b894'};"></span>
@@ -3764,17 +4487,17 @@
     }
 
     function daysAgo(dateStr) {
-      const today = new Date(2026, 2, 15);
-      const date = new Date(dateStr);
-      const diff = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-      return diff;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const date = new Date(dateStr + 'T00:00:00');
+      return Math.floor((today - date) / (1000 * 60 * 60 * 24));
     }
 
     function daysUntil(dateStr) {
-      const today = new Date(2026, 2, 15);
-      const date = new Date(dateStr);
-      const diff = Math.floor((date - today) / (1000 * 60 * 60 * 24));
-      return diff;
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      const date = new Date(dateStr + 'T00:00:00');
+      return Math.floor((date - today) / (1000 * 60 * 60 * 24));
     }
 
     window.renderTasks = renderTasks;
@@ -5000,86 +5723,107 @@
 
     // ===== INBOX: Email Follow-Up Tracking =====
     const INBOX_EMAILS = [
-      // ===== NEEDS FOLLOW-UP (4+ days, no reply) =====
-      { company: 'Minnesota', contact: 'Jeremiah Carter', email: 'jeremiah@umn.edu', subject: 'JABA Contract', sentDate: '2026-02-27', status: 'overdue', daysSince: 14 },
-      { company: 'Arkansas', contact: 'Davonte Higginbottom', email: 'dhigg@uark.edu', subject: 'Arkansas NIL Report', sentDate: '2026-03-02', status: 'overdue', daysSince: 11 },
-      { company: 'Oklahoma', contact: 'Tariq Ahmad', email: 'tariqahmad01@gmail.com', subject: 'Re: JABA dashboard', sentDate: '2026-03-02', status: 'overdue', daysSince: 11 },
-      { company: 'Boise State', contact: 'Collin Stoecker', email: 'collinstoecker@boisestate.edu', subject: 'Boise State NIL Report', sentDate: '2026-03-02', status: 'overdue', daysSince: 11 },
-      { company: 'TSMGI', contact: 'Jordan Bressler', email: 'jordan.bressler@tsmgi.com', subject: 'Great meeting you', sentDate: '2026-03-04', status: 'overdue', daysSince: 9 },
-      { company: 'Old Dominion', contact: 'Ronald Moses', email: 'rmoses@odu.edu', subject: 'Re: New Year New Updates', sentDate: '2026-03-06', status: 'overdue', daysSince: 7 },
-      { company: 'State & Liberty', contact: 'Carl Faraon', email: 'carl@stateandliberty.com', subject: 'Re: Got a big one for you', sentDate: '2026-03-06', status: 'overdue', daysSince: 7 },
-      { company: 'Sun Angels (ASU)', contact: 'Brittani Willett', email: 'brittani.willett@sunangels.org', subject: 'Re: Announcement', sentDate: '2026-03-07', status: 'overdue', daysSince: 6 },
-      { company: 'Virginia Sports Properties', contact: 'Clay Walker', email: 'clay@virginiasp.com', subject: 'Re: UVA x JABA', sentDate: '2026-03-03', status: 'overdue', daysSince: 10 },
-      { company: 'Octagon', contact: 'Emily McKiernan', email: 'emily.mckiernan@octagon.com', subject: 'Octagon x JABA', sentDate: '2026-02-11', status: 'overdue', daysSince: 30 },
-      { company: 'Nicole Tepper', contact: 'Nicole Tepper', email: 'nicole.tepper@teppersportsentertainment.com', subject: 'Re: Jordon and Damar!!', sentDate: '2026-02-10', status: 'overdue', daysSince: 31 },
-      { company: 'Equity Sports', contact: 'Jason Ley', email: 'jason@equity-sports.com', subject: 'Equity Sports x JABA', sentDate: '2026-02-23', status: 'overdue', daysSince: 18 },
+      // ===== NEEDS FOLLOW-UP (4+ days, no reply from them OR ball in our court) =====
+      { company: 'Playfly', contact: 'Jon Bishop', email: 'jon.bishop@playfly.com', subject: 'Phone call', sentDate: '2026-03-06', status: 'overdue', daysSince: 11, note: 'Jon asked to do phone call instead on 3/6. Had call 3/7. No follow-up since. NEEDS FOLLOW UP on next steps.' },
+      { company: 'Virtual Mgr / X Events', contact: 'Anil Patel / Callum', email: 'anil.patel@virtualmgr.com', subject: 'Athlete Ecosystem Alignment', sentDate: '2026-03-04', status: 'overdue', daysSince: 13, note: 'Johan emailed 3/15 asking for updates, catching up with Anil next week. NEEDS REPLY to Johan + Anil.' },
+      { company: 'X Events (Aussie Fund)', contact: 'Johan Hasser', email: 'johan@xevents.com.au', subject: 'RE: Athlete Ecosystem Alignment', sentDate: '2026-03-15', status: 'overdue', daysSince: 2, note: 'Johan replied 3/15 asking for updates. Ball in our court. NEEDS REPLY.' },
+      { company: 'Playfly', contact: 'Cannon Gaines', email: 'cannon.gaines@playfly.com', subject: 'JABA Recap', sentDate: '2025-12-16', status: 'overdue', daysSince: 91, note: 'No reply since Dec. NEEDS FOLLOW UP.' },
+      { company: 'SkyPop', contact: 'Dave Cohen', email: 'dave@drinkskypop.com', subject: 'Good connecting', sentDate: '2026-03-03', status: 'overdue', daysSince: 14, note: 'Had meeting 3/3. No follow-up sent since. NEEDS FOLLOW UP.' },
+      { company: 'The Athlete Group', contact: 'Jake Rosenberg', email: 'jake@theathletegroup.com', subject: 'JABA Intro', sentDate: '2026-02-19', status: 'overdue', daysSince: 26, note: 'Had intro call 2/19. No follow-up since. NEEDS FOLLOW UP.' },
+      { company: 'TSMGI', contact: 'Jordan Bressler', email: 'jordan.bressler@tsmgi.com', subject: 'Great meeting you', sentDate: '2026-03-04', status: 'overdue', daysSince: 13, note: 'Sent intro email 3/4 after meeting. No reply. NEEDS FOLLOW UP.' },
+      { company: 'State & Liberty', contact: 'Carl Faraon', email: 'carl@stateandliberty.com', subject: 'Re: Got a big one for you', sentDate: '2026-03-06', status: 'overdue', daysSince: 11, note: 'Agreed to 4 suits + 6 shirts for Darian Mensah. Send report. NEEDS FOLLOW UP.' },
+      { company: 'WSU / Cougar Sports', contact: 'Nick Garner', email: 'nick.garner@cougarsportsproperties.com', subject: 'Re: WSU x JABA', sentDate: '2026-03-16', status: 'overdue', daysSince: 1, note: 'Nick sent updated roster 3/16. Forwarded to Alanys. NEEDS REPLY with next steps.' },
+      { company: 'Octagon', contact: 'Teddy Bloch', email: 'teddy.bloch@octagon.com', subject: 'JABA Overview', sentDate: '2026-03-12', status: 'overdue', daysSince: 5, note: 'Sent overview after meeting. No reply. NEEDS FOLLOW UP.' },
+      { company: 'Team IFA', contact: 'Dawson Weleski', email: 'dawson@teamifa.com', subject: 'Re: JABA Dashboard', sentDate: '2026-03-12', status: 'overdue', daysSince: 5, note: 'Had meeting 3/12. Sent mock dashboard follow-up. No reply. NEEDS FOLLOW UP.' },
+      { company: 'GSE Worldwide', contact: 'Mike Mussell', email: 'mmussell@gseworldwide.com', subject: 'Re: JABA Intro', sentDate: '2026-03-12', status: 'overdue', daysSince: 5, note: 'Mike replied 3/12, Jordon offered to meet in NYC Mon/Tue. No confirmation. NEEDS FOLLOW UP.' },
+      { company: 'Genesco Sports', contact: 'Frank Mahar', email: 'fmahar@genescosports.com', subject: 'Frank x Jordon', sentDate: '2026-02-18', status: 'overdue', daysSince: 27, note: 'Had meeting 2/18. No follow-up since. NEEDS FOLLOW UP.' },
+      { company: 'Minnesota', contact: 'Jeremiah Carter', email: 'jeremiah@umn.edu', subject: 'JABA Contract', sentDate: '2026-02-27', status: 'overdue', daysSince: 18 },
+      { company: 'Arkansas', contact: 'Davonte Higginbottom', email: 'dhigg@uark.edu', subject: 'Arkansas NIL Report', sentDate: '2026-03-02', status: 'overdue', daysSince: 15 },
+      { company: 'Oklahoma', contact: 'Tariq Ahmad', email: 'tariqahmad01@gmail.com', subject: 'Re: JABA dashboard', sentDate: '2026-03-02', status: 'overdue', daysSince: 15 },
+      { company: 'Boise State', contact: 'Collin Stoecker', email: 'collinstoecker@boisestate.edu', subject: 'Boise State NIL Report', sentDate: '2026-03-02', status: 'overdue', daysSince: 15 },
+      { company: 'Old Dominion', contact: 'Ronald Moses', email: 'rmoses@odu.edu', subject: 'Re: New Year New Updates', sentDate: '2026-03-06', status: 'overdue', daysSince: 11 },
+      { company: 'Sun Angels (ASU)', contact: 'Brittani Willett', email: 'brittani.willett@sunangels.org', subject: 'Re: Announcement', sentDate: '2026-03-07', status: 'overdue', daysSince: 10 },
+      { company: 'Virginia Sports Properties', contact: 'Clay Walker', email: 'clay@virginiasp.com', subject: 'Re: UVA x JABA', sentDate: '2026-03-03', status: 'overdue', daysSince: 14 },
+      { company: 'Octagon', contact: 'Emily McKiernan', email: 'emily.mckiernan@octagon.com', subject: 'Octagon x JABA', sentDate: '2026-02-11', status: 'overdue', daysSince: 34 },
+      { company: 'Nicole Tepper', contact: 'Nicole Tepper', email: 'nicole.tepper@teppersportsentertainment.com', subject: 'Re: Jordon and Damar!!', sentDate: '2026-02-10', status: 'overdue', daysSince: 35 },
+      { company: 'Equity Sports', contact: 'Jason Ley', email: 'jason@equity-sports.com', subject: 'Equity Sports x JABA', sentDate: '2026-02-23', status: 'overdue', daysSince: 22 },
 
-      // ===== SENT RECENTLY / WAITING (< 4 days or cold outreach) =====
-      { company: 'WSU / Cougar Sports', contact: 'Nick Garner', email: 'nick.garner@cougarsportsproperties.com', subject: 'WSU x JABA', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Octagon', contact: 'Teddy Bloch', email: 'teddy.bloch@octagon.com', subject: 'JABA Overview', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Integrity 9', contact: 'Karlina', email: 'karlina@integritynine.com', subject: 'JABA Overview', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'GSE Worldwide', contact: 'Mike Mussell', email: 'mmussell@gseworldwide.com', subject: 'JABA Intro', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Cricket Agency', contact: 'Callum Taylor', email: 'callumzinzan@hotmail.com', subject: 'Re: Cricket Agency', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Blitz Creative', contact: 'Sarah Sapola', email: 'sarah@blitzcreative.la', subject: 'Re: JABA intro', sentDate: '2026-03-13', status: 'pending', daysSince: 0 },
-      { company: 'Jack Bishop', contact: 'Jack Bishop', email: 'bishopjack8728@gmail.com', subject: 'Re: JABA Intro', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Spyre Labs', contact: 'Syed Husain', email: 'syed@spyrelabs.com', subject: 'Re: Syed x Jordon', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
+      // ===== NEEDS REPLY (they replied, ball is in our court) =====
+      { company: 'Jack Bishop', contact: 'Jack Bishop', email: 'bishopjack8728@gmail.com', subject: 'Re: JABA Intro', sentDate: '2026-03-17', status: 'overdue', daysSince: 0, note: 'Jack replied "Would same time tomorrow work?" after Jordon rescheduled due to flight. NEEDS REPLY.' },
+      { company: 'Demarco Thomas', contact: 'Demarco Thomas', email: 'demarco@demarcothomas.com', subject: 'Re: Venn-Tax X Jaba AI', sentDate: '2026-03-17', status: 'overdue', daysSince: 0, note: 'Demarco circling back on partnership opportunity. NEEDS REPLY.' },
+      { company: 'Maggie Giel (BBBS)', contact: 'Maggie Giel', email: 'mgiel@bbbspgh.org', subject: 'Combine', sentDate: '2026-03-17', status: 'overdue', daysSince: 0, note: 'Asking about combine info for Littles. NEEDS REPLY.' },
+
+      // ===== ACTIVE / MEETINGS SET (3/16-3/17) =====
+      { company: 'Playfly', contact: 'Robert Eckstein', email: 'robert.eckstein@playfly.com', subject: 'Re: Jordon <> Rob Coffee', sentDate: '2026-03-17', status: 'replied', daysSince: 0, note: 'Met for coffee in NYC Tue 3/17. Done.', category: 'active' },
+      { company: 'Ohio State', contact: 'Kendra Baumann', email: 'baumann.91@osu.edu', subject: 'Re: JABA License Agreement', sentDate: '2026-03-16', status: 'replied', daysSince: 1, note: 'Logan looped in Kendra for tech/security review. Meeting Fri 3/20 at 11am. Both accepted.', category: 'meeting' },
+      { company: 'The Team', contact: 'Jordan Tirico', email: 'jordan.tirico@the.team', subject: 'Re: JABA - Introduction', sentDate: '2026-03-17', status: 'replied', daysSince: 0, note: 'Rescheduled to Friday 3pm ET. Accepted invite.', category: 'meeting' },
+      { company: 'ZIYNX', contact: 'Joe Carney', email: 'jcarney@teamziynx.com', subject: 'Re: Joe x Jordon', sentDate: '2026-03-16', status: 'replied', daysSince: 1, note: 'Jordon in NYC, Joe said check tomorrow AM for possible meetup.', category: 'active' },
+      { company: 'Brandon Ghee', contact: 'Brandon Ghee', email: 'brandon@gheeprojects.com', subject: 'Darien Mensah NDA', sentDate: '2026-03-17', status: 'replied', daysSince: 0, note: 'NDA completed via Docusign.', category: 'active' },
+
+      // ===== SENT RECENTLY / WAITING (no reply yet, < 4 days) =====
+      { company: 'Integrity 9', contact: 'Karlina', email: 'karlina@integritynine.com', subject: 'JABA Overview', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Cricket Agency', contact: 'Callum Taylor', email: 'callumzinzan@hotmail.com', subject: 'Re: Cricket Agency', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Blitz Creative', contact: 'Sarah Sapola', email: 'sarah@blitzcreative.la', subject: 'Re: JABA intro', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'Sarah replied, scheduling call week of 3/23. Ashley Hong cc\'d.', category: 'meeting' },
+      { company: 'Spyre Labs', contact: 'Syed Husain', email: 'syed@spyrelabs.com', subject: 'Re: Syed x Jordon', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'UCF', contact: 'Robert Kohn', email: 'rfkohn@gmail.com', subject: 'JABA x UCF', sentDate: '2026-03-16', status: 'pending', daysSince: 1, note: 'Sent UCF pitch via Robert Kohn connection.' },
 
       // Cold Outreach - AI for NIL Depts (March 12)
-      { company: 'Wake Forest', contact: 'Tyler Block', email: 'blockt@wfu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Wake Forest', contact: 'Reigan Lines', email: 'linesr@wfu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Wake Forest', contact: 'Daren Koudele', email: 'koudeld@wfu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Washington', contact: 'Chris Hein', email: 'cmhein@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Washington', contact: 'Cody Scott', email: 'cwscott@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Washington', contact: 'Jack Murrey', email: 'jmurrey@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Washington', contact: 'Sandy', email: 'sandye@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Washington', contact: 'Joe Knight', email: 'knightjo@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'K-State', contact: 'Shae Ridder', email: 'sridder@kstatesports.com', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'K-State', contact: 'Chris Nasuti', email: 'cnasuti@kstatesports.com', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Tennessee', contact: 'Will Watkins', email: 'awatki42@utk.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Tennessee', contact: 'Shelby Keith', email: 'skeith9@utk.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Tennessee', contact: 'JB Bowlin', email: 'jbowlin3@utk.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Cal / Berkeley', contact: 'Thomas Wymore', email: 'twwymore@berkeley.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Cal / Berkeley', contact: 'Mika Costello', email: 'mcostello@berkeley.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Iowa', contact: 'Scott Brickman', email: 'scott-brickman@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Iowa', contact: 'Cynthia Leonard', email: 'cynthia-leonard@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Iowa', contact: 'Dave Aspelmeier', email: 'david-aspelmeier@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Iowa', contact: 'Lyla Clerry', email: 'lyla-clerry@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Utah', contact: 'Ethan Frisone', email: 'efrisone@huntsman.utah.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Iowa State', contact: 'Adam Soles', email: 'soles@iastate.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Iowa State', contact: 'Jennifer Black', email: 'jablack@iastate.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Colorado', contact: 'Abbey Shea', email: 'abbey.shea@colorado.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Ole Miss', contact: 'David Wells', email: 'dwells@olemiss.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Ole Miss', contact: 'Taylor Hall', email: 'tahall4@olemiss.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'BYU', contact: 'Chad Gwilliam', email: 'chad_gwilliam@byu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Indiana', contact: 'Eric Schwarem', email: 'schwarem@iu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Indiana', contact: 'Brooke Leins', email: 'bleins@iu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'SMU', contact: 'Stephen Walker', email: 'stephenwalker@smu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'SMU', contact: 'Ryan McCabe', email: 'rmccabe@smu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Oregon', contact: 'Bill Clever', email: 'jclever@uoregon.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Oregon', contact: 'Katie Harbert', email: 'kharbert@uoregon.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Georgia Tech', contact: 'Lance Markos', email: 'lmarkos@athletics.gatech.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Northwestern', contact: 'Spencer Dawson', email: 'spencer.dawson@northwestern.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Northwestern', contact: 'Aaron Hosmon', email: 'hosmon@northwestern.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Vanderbilt', contact: 'James Feeney', email: 'james.j.feeney@vanderbilt.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Stanford', contact: 'Alesha', email: 'abh7@stanford.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Stanford', contact: 'Tim Seilheimer', email: 'tseilhei@stanford.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'TCU', contact: 'Nick DiMento', email: 'j.n.dimento@tcu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'TCU', contact: 'Greg Featherston', email: 'g.featherston@tcu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Kansas', contact: 'Chad ONeill', email: 'coneill5@ku.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Texas Tech', contact: 'Cole Wakefield', email: 'cole.wakefield@ttu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
-      { company: 'Texas Tech', contact: 'Jennifer Brashear', email: 'jennifer.brashear@ttu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 1 },
+      { company: 'Wake Forest', contact: 'Tyler Block', email: 'blockt@wfu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Wake Forest', contact: 'Reigan Lines', email: 'linesr@wfu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Wake Forest', contact: 'Daren Koudele', email: 'koudeld@wfu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Washington', contact: 'Chris Hein', email: 'cmhein@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Washington', contact: 'Cody Scott', email: 'cwscott@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Washington', contact: 'Jack Murrey', email: 'jmurrey@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Washington', contact: 'Sandy', email: 'sandye@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Washington', contact: 'Joe Knight', email: 'knightjo@uw.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'K-State', contact: 'Shae Ridder', email: 'sridder@kstatesports.com', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'K-State', contact: 'Chris Nasuti', email: 'cnasuti@kstatesports.com', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Tennessee', contact: 'Will Watkins', email: 'awatki42@utk.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Tennessee', contact: 'Shelby Keith', email: 'skeith9@utk.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Tennessee', contact: 'JB Bowlin', email: 'jbowlin3@utk.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Cal / Berkeley', contact: 'Thomas Wymore', email: 'twwymore@berkeley.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Cal / Berkeley', contact: 'Mika Costello', email: 'mcostello@berkeley.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Iowa', contact: 'Scott Brickman', email: 'scott-brickman@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Iowa', contact: 'Cynthia Leonard', email: 'cynthia-leonard@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Iowa', contact: 'Dave Aspelmeier', email: 'david-aspelmeier@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Iowa', contact: 'Lyla Clerry', email: 'lyla-clerry@uiowa.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Utah', contact: 'Ethan Frisone', email: 'efrisone@huntsman.utah.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Iowa State', contact: 'Adam Soles', email: 'soles@iastate.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Iowa State', contact: 'Jennifer Black', email: 'jablack@iastate.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Colorado', contact: 'Abbey Shea', email: 'abbey.shea@colorado.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Ole Miss', contact: 'David Wells', email: 'dwells@olemiss.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Ole Miss', contact: 'Taylor Hall', email: 'tahall4@olemiss.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'BYU', contact: 'Chad Gwilliam', email: 'chad_gwilliam@byu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Indiana', contact: 'Eric Schwarem', email: 'schwarem@iu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Indiana', contact: 'Brooke Leins', email: 'bleins@iu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'SMU', contact: 'Stephen Walker', email: 'stephenwalker@smu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'SMU', contact: 'Ryan McCabe', email: 'rmccabe@smu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Oregon', contact: 'Bill Clever', email: 'jclever@uoregon.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Oregon', contact: 'Katie Harbert', email: 'kharbert@uoregon.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Georgia Tech', contact: 'Lance Markos', email: 'lmarkos@athletics.gatech.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Northwestern', contact: 'Spencer Dawson', email: 'spencer.dawson@northwestern.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Northwestern', contact: 'Aaron Hosmon', email: 'hosmon@northwestern.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Vanderbilt', contact: 'James Feeney', email: 'james.j.feeney@vanderbilt.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Stanford', contact: 'Alesha', email: 'abh7@stanford.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Stanford', contact: 'Tim Seilheimer', email: 'tseilhei@stanford.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'TCU', contact: 'Nick DiMento', email: 'j.n.dimento@tcu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'TCU', contact: 'Greg Featherston', email: 'g.featherston@tcu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Kansas', contact: 'Chad ONeill', email: 'coneill5@ku.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Texas Tech', contact: 'Cole Wakefield', email: 'cole.wakefield@ttu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
+      { company: 'Texas Tech', contact: 'Jennifer Brashear', email: 'jennifer.brashear@ttu.edu', subject: 'AI for NIL Depts - 15+ schools', sentDate: '2026-03-12', status: 'pending', daysSince: 5 },
 
       // ===== GOT REPLY / ACTIVE CONVERSATIONS =====
-      { company: 'Cal / Berkeley', contact: 'Justin DiTolla', email: 'jditolla@berkeley.edu', subject: 'Re: AI for NIL Depts - Meeting Thu 3/19', sentDate: '2026-03-13', status: 'replied', daysSince: 0 },
-      { company: 'Cincinnati', contact: 'Eddie Taylor', email: 'taylo2ed@ucmail.uc.edu', subject: 'Re: Meeting', sentDate: '2026-03-13', status: 'replied', daysSince: 0 },
-      { company: 'UCLA', contact: 'Teri Hanneke', email: 'thanneke@athletics.ucla.edu', subject: 'Re: UCLA Report!', sentDate: '2026-03-13', status: 'replied', daysSince: 0 },
-      { company: 'Purdue', contact: 'Tanner Ball', email: 'tannerball@purdue.edu', subject: 'Re: Next Steps + Dashboard Updates', sentDate: '2026-03-13', status: 'replied', daysSince: 0 },
-      { company: 'Saint Jude / ALSAC', contact: 'Amanda Cahow', email: 'amanda.cahow@alsac.stjude.org', subject: 'Re: Great connecting last Thursday', sentDate: '2026-03-13', status: 'replied', daysSince: 0 },
-      { company: 'Washington', contact: 'Derek Sullivan', email: 'dsully81@uw.edu', subject: 'Re: AI for NIL Depts - Meeting scheduled', sentDate: '2026-03-12', status: 'replied', daysSince: 1 },
-      { company: 'The Team', contact: 'Jordan Tirico', email: 'jordan.tirico@the.team', subject: 'Re: JABA - Introduction', sentDate: '2026-03-12', status: 'replied', daysSince: 1 },
-      { company: 'Religion of Sport', contact: 'Pietro Moro', email: 'pietro@religionofsports.com', subject: 'Re: JABA Investor Deck', sentDate: '2026-03-12', status: 'replied', daysSince: 1 },
-      { company: 'UCF', contact: 'Antwan Owens', email: 'aowens@athletics.ucf.edu', subject: 'Re: UCF x JABA', sentDate: '2026-03-12', status: 'replied', daysSince: 1 },
-      { company: 'NC State', contact: 'Matti Smith', email: 'mmsmith9@ncsu.edu', subject: 'Re: JABA Dashboard Login Details', sentDate: '2026-03-12', status: 'replied', daysSince: 1 },
+      { company: 'Cal / Berkeley', contact: 'Justin DiTolla', email: 'jditolla@berkeley.edu', subject: 'Re: AI for NIL Depts - Meeting Thu 3/19 6pm', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'Meeting confirmed Thu 3/19 at 6pm ET. Cal invite accepted. UCLA gave JABA good feedback to Cal.' },
+      { company: 'Cincinnati', contact: 'Eddie Taylor', email: 'taylo2ed@ucmail.uc.edu', subject: 'Re: Meeting', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'Active back-and-forth about dashboard. Football athletes not showing, EMV formula fix, media kit v2. Diego helping.' },
+      { company: 'UCLA', contact: 'Teri Hanneke', email: 'thanneke@athletics.ucla.edu', subject: 'Re: UCLA Report!', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'Cal mentioned UCLA gave good feedback on JABA. Teri said she\'d keep advocating internally.' },
+      { company: 'Purdue', contact: 'Tanner Ball', email: 'tannerball@purdue.edu', subject: 'Re: Next Steps + Dashboard Updates', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'Meeting confirmed Fri 3/20 at 11:30am. Daniel Picioski accepted. Diego + Alanys attending.' },
+      { company: 'Saint Jude / ALSAC', contact: 'Amanda Cahow', email: 'amanda.cahow@alsac.stjude.org', subject: 'Re: Great connecting last Thursday', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'St. Jude partnership opportunity. Amanda sent Dillon Thieneman ask. Alanys cc\'d.' },
+      { company: 'Washington', contact: 'Derek Sullivan', email: 'dsully81@uw.edu', subject: 'Re: AI for NIL Depts - Meeting MON 3/16', sentDate: '2026-03-12', status: 'replied', daysSince: 5, note: 'Meeting happened Mon 3/16. Derek + Cody Scott. Invite sent.' },
+      { company: 'Religion of Sport', contact: 'Pietro Moro', email: 'pietro@religionofsports.com', subject: 'Re: JABA Investor Deck', sentDate: '2026-03-12', status: 'replied', daysSince: 5, note: 'Investor deck follow-up. Jordon mentioned Ohio State + Octagon approvals. Momentum building.' },
+      { company: 'UCF', contact: 'Antwan Owens', email: 'aowens@athletics.ucf.edu', subject: 'Re: UCF x JABA', sentDate: '2026-03-12', status: 'replied', daysSince: 5 },
+      { company: 'NC State', contact: 'Matti Smith', email: 'mmsmith9@ncsu.edu', subject: 'Re: JABA Dashboard Login Details', sentDate: '2026-03-12', status: 'replied', daysSince: 5, note: 'Dashboard login sent. Matti said "looking forward to diving in." Jordon asked for feedback.' },
+      { company: 'NOCAP Sports', contact: 'Adam Gunn', email: 'adam.gunn@nocapsports.io', subject: 'Jaba x NOCAP', sentDate: '2026-03-13', status: 'replied', daysSince: 4, note: 'Meeting invite sent for Thu 3/19 3:30pm. Sarah Fuller, Stan, Nick Lord attending.' },
+      // Johan moved to overdue/needs-reply section above
       { company: 'Notre Dame', contact: 'Kayla Rogers', email: 'kayla.rogers@nd.edu', subject: 'Re: JABA Intro', sentDate: '2026-02-20', status: 'replied', daysSince: 21 },
       { company: 'Notre Dame', contact: 'Ian Lemersal', email: 'ilemersa@nd.edu', subject: 'Re: A few new features', sentDate: '2026-02-23', status: 'replied', daysSince: 18 },
       { company: 'Wisconsin', contact: 'Brian Mason', email: 'bm3@athletics.wisc.edu', subject: 'Re: Dashboard + 10 new features', sentDate: '2026-02-10', status: 'replied', daysSince: 31 },
@@ -5139,22 +5883,138 @@
       { company: 'Kayla Rogers (Notre Dame)', contact: 'Kayla Rogers', email: 'kayla.rogers@nd.edu', subject: 'JABA Intro', sentDate: '2026-01-05', status: 'replied', daysSince: 67 },
     ];
 
+    let currentInboxView = 'kanban';
+
+    function switchInboxView(view) {
+      currentInboxView = view;
+      document.querySelectorAll('.inbox-view-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('inboxKanban').style.display = view === 'kanban' ? 'grid' : 'none';
+      document.getElementById('inboxTimeline').style.display = view === 'timeline' ? 'block' : 'none';
+      document.getElementById('inboxList').style.display = view === 'list' ? 'block' : 'none';
+    }
+
+    function categorizeEmail(item) {
+      if (item.category === 'meeting') return 'meeting';
+      if (item.category === 'active') return 'active';
+      if (item.status === 'overdue') return 'needs_reply';
+      if (item.status === 'pending') return 'waiting';
+      if (item.status === 'replied' && item.note && (item.note.toLowerCase().includes('meeting') || item.note.toLowerCase().includes('call'))) return 'meeting';
+      if (item.status === 'replied') return 'active';
+      if (item.status === 'waiting') return 'waiting';
+      return 'waiting';
+    }
+
     function renderInbox() {
       const inboxList = document.getElementById('inboxList');
+
+      // Auto-compute daysSince from sentDate
+      const today = new Date();
+      INBOX_EMAILS.forEach(e => {
+        const sent = new Date(e.sentDate + 'T00:00:00');
+        e.daysSince = Math.floor((today - sent) / (1000*60*60*24));
+        // Auto-mark pending items 4+ days as overdue (needs follow-up)
+        if (e.status === 'pending' && e.daysSince >= 4) {
+          e.status = 'overdue';
+        }
+      });
 
       const overdue = INBOX_EMAILS.filter(e => e.status === 'overdue');
       const pending = INBOX_EMAILS.filter(e => e.status === 'pending');
       const replied = INBOX_EMAILS.filter(e => e.status === 'replied');
+      const meetings = INBOX_EMAILS.filter(e => categorizeEmail(e) === 'meeting');
 
       document.getElementById('inboxOverdue').textContent = overdue.length;
       document.getElementById('inboxPending').textContent = pending.length;
       document.getElementById('inboxReplied').textContent = replied.length;
+      document.getElementById('inboxMeetings').textContent = meetings.length;
 
       // Try to match email to CRM lead for logo
       function findLead(company) {
         return leads.find(l => l.company.toLowerCase().includes(company.toLowerCase()) || company.toLowerCase().includes(l.company.toLowerCase()));
       }
 
+      function daysText(d) { return d === 0 ? 'Today' : d === 1 ? '1d ago' : d + 'd ago'; }
+      function daysClass(d) { return d >= 7 ? 'urgent' : d >= 4 ? 'warn' : 'ok'; }
+      function statusLabel(item) {
+        const cat = categorizeEmail(item);
+        if (cat === 'needs_reply') return { text: 'Needs Reply', cls: 'needs-reply' };
+        if (cat === 'waiting') return { text: 'Waiting', cls: 'waiting' };
+        if (cat === 'meeting') return { text: 'Meeting Set', cls: 'meeting' };
+        return { text: 'Active', cls: 'active' };
+      }
+
+      // ===== KANBAN VIEW =====
+      const kanbanCols = {
+        needs_reply: { title: 'Needs Follow-Up', cls: 'needs-reply', items: [] },
+        waiting: { title: 'Waiting on Response', cls: 'waiting', items: [] },
+        active: { title: 'Active Conversations', cls: 'active-conv', items: [] },
+        meeting: { title: 'Meeting Scheduled', cls: 'meeting-set', items: [] }
+      };
+
+      // Only show recent/relevant items in kanban (last 60 days)
+      const recentEmails = INBOX_EMAILS.filter(e => e.daysSince <= 60);
+      recentEmails.forEach(e => {
+        const cat = categorizeEmail(e);
+        if (kanbanCols[cat]) kanbanCols[cat].items.push(e);
+      });
+
+      let kanbanHtml = '';
+      Object.entries(kanbanCols).forEach(([key, col]) => {
+        col.items.sort((a, b) => a.daysSince - b.daysSince);
+        kanbanHtml += `<div class="kanban-col ${col.cls}">
+          <div class="kanban-col-header">
+            <span class="kanban-col-title">${col.title}</span>
+            <span class="kanban-col-count">${col.items.length}</span>
+          </div>`;
+        col.items.forEach(item => {
+          const lead = findLead(item.company);
+          const dc = daysClass(item.daysSince);
+          kanbanHtml += `<div class="kanban-card" ${lead ? `onclick="editLead(${lead.id})"` : ''}>
+            <div class="kanban-card-name">${item.contact}</div>
+            <div class="kanban-card-company">${item.company}</div>
+            <div class="kanban-card-subject">${item.subject}</div>
+            <div class="kanban-card-footer">
+              <span class="kanban-card-days ${dc}">${daysText(item.daysSince)}</span>
+              <span style="font-size:10px;color:var(--text-secondary);">${new Date(item.sentDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
+            </div>
+            ${item.note ? `<div class="kanban-card-note">${item.note}</div>` : ''}
+          </div>`;
+        });
+        kanbanHtml += '</div>';
+      });
+      document.getElementById('inboxKanban').innerHTML = kanbanHtml;
+
+      // ===== TIMELINE VIEW =====
+      const timelineSorted = [...recentEmails].sort((a, b) => a.daysSince - b.daysSince);
+      let timelineHtml = `<table class="inbox-timeline">
+        <thead><tr>
+          <th>Contact</th>
+          <th>Company</th>
+          <th>Subject</th>
+          <th>Last Email</th>
+          <th>Days</th>
+          <th>Status</th>
+          <th>Notes</th>
+        </tr></thead><tbody>`;
+      timelineSorted.forEach(item => {
+        const lead = findLead(item.company);
+        const sl = statusLabel(item);
+        const dc = daysClass(item.daysSince);
+        timelineHtml += `<tr ${lead ? `onclick="editLead(${lead.id})"` : ''}>
+          <td style="font-weight:600;">${item.contact}</td>
+          <td>${item.company}</td>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.subject}</td>
+          <td>${new Date(item.sentDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</td>
+          <td><span class="timeline-days-badge ${dc}">${item.daysSince}d</span></td>
+          <td><span class="timeline-status-pill ${sl.cls}">${sl.text}</span></td>
+          <td><span class="timeline-note">${item.note || ''}</span></td>
+        </tr>`;
+      });
+      timelineHtml += '</tbody></table>';
+      document.getElementById('inboxTimeline').innerHTML = timelineHtml;
+
+      // ===== LIST VIEW (original) =====
       function renderEmailItem(item) {
         const lead = findLead(item.company);
         let logoHtml = '';
@@ -5166,9 +6026,8 @@
         }
 
         const stageLabel = lead ? (STAGE_LABELS[lead.stage] || '') : '';
-        const daysText = item.daysSince === 0 ? 'Today' : item.daysSince === 1 ? '1 day ago' : `${item.daysSince} days ago`;
-        const daysClass = item.status === 'overdue' ? 'overdue' : item.status === 'replied' ? 'replied' : 'pending';
-
+        const dt = daysText(item.daysSince);
+        const dCls = item.status === 'overdue' ? 'overdue' : item.status === 'replied' ? 'replied' : 'pending';
         const sentFormatted = new Date(item.sentDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
         return `
@@ -5183,7 +6042,7 @@
               ${stageLabel ? `<span class="inbox-item-stage">${stageLabel}</span>` : ''}
             </div>
             <div class="inbox-item-meta">
-              <div class="inbox-item-days ${daysClass}">${daysText}</div>
+              <div class="inbox-item-days ${dCls}">${dt}</div>
               <div class="inbox-item-date">Sent ${sentFormatted}</div>
             </div>
           </div>
@@ -5191,28 +6050,24 @@
       }
 
       let html = '';
-
       if (overdue.length > 0) {
         html += `<div class="inbox-section">
-          <div class="inbox-section-title danger">Needs Follow-Up (4+ days, no reply)</div>
-          ${overdue.map(renderEmailItem).join('')}
+          <div class="inbox-section-title danger">Needs Follow-Up (${overdue.length})</div>
+          ${overdue.sort((a,b)=>a.daysSince-b.daysSince).map(renderEmailItem).join('')}
         </div>`;
       }
-
       if (pending.length > 0) {
         html += `<div class="inbox-section">
-          <div class="inbox-section-title warning">Sent Recently (waiting for reply)</div>
+          <div class="inbox-section-title warning">Sent Recently / Waiting (${pending.length})</div>
           ${pending.map(renderEmailItem).join('')}
         </div>`;
       }
-
       if (replied.length > 0) {
         html += `<div class="inbox-section">
-          <div class="inbox-section-title success">Active Conversations (got reply)</div>
-          ${replied.map(renderEmailItem).join('')}
+          <div class="inbox-section-title success">Active Conversations (${replied.length})</div>
+          ${replied.sort((a,b)=>a.daysSince-b.daysSince).map(renderEmailItem).join('')}
         </div>`;
       }
-
       inboxList.innerHTML = html;
     }
 
