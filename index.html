@@ -2770,21 +2770,21 @@
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div class="inbox-header" style="margin-bottom:0;">
           <div class="inbox-stats">
-            <div class="inbox-stat inbox-stat-danger">
-              <span class="inbox-stat-num" id="inboxOverdue">0</span>
-              <span class="inbox-stat-label">Needs Follow-Up</span>
-            </div>
             <div class="inbox-stat inbox-stat-warning">
               <span class="inbox-stat-num" id="inboxPending">0</span>
               <span class="inbox-stat-label">Waiting</span>
             </div>
+            <div class="inbox-stat inbox-stat-danger">
+              <span class="inbox-stat-num" id="inboxOverdue">0</span>
+              <span class="inbox-stat-label">Needs Follow-Up</span>
+            </div>
             <div class="inbox-stat inbox-stat-success">
               <span class="inbox-stat-num" id="inboxReplied">0</span>
-              <span class="inbox-stat-label">Active</span>
+              <span class="inbox-stat-label">Needs Response</span>
             </div>
             <div class="inbox-stat" style="border-left:1px solid var(--border);padding-left:16px;">
               <span class="inbox-stat-num" style="color:#74b9ff;" id="inboxMeetings">0</span>
-              <span class="inbox-stat-label">Meetings Set</span>
+              <span class="inbox-stat-label">Meeting Set</span>
             </div>
           </div>
         </div>
@@ -5895,13 +5895,25 @@
     }
 
     function categorizeEmail(item) {
+      // 1. Meeting scheduled (explicit category or note mentions meeting)
       if (item.category === 'meeting') return 'meeting';
-      if (item.category === 'active') return 'active';
-      if (item.status === 'overdue') return 'needs_reply';
+      if (item.status === 'replied' && item.note && (item.note.toLowerCase().includes('meeting') || item.note.toLowerCase().includes('call week') || item.note.toLowerCase().includes('meeting confirmed') || item.note.toLowerCase().includes('scheduling call'))) return 'meeting';
+
+      // 2. Needs Response - they replied, ball in our court
+      if (item.note && (item.note.includes('NEEDS REPLY') || item.note.includes('Ball in our court'))) return 'needs_response';
+      if (item.status === 'replied' && item.daysSince <= 3) return 'needs_response';
+
+      // 3. Needs Follow-Up - we sent, 4+ days no reply
+      if (item.status === 'overdue' && item.daysSince >= 4) return 'needs_followup';
+      if (item.status === 'pending' && item.daysSince >= 4) return 'needs_followup';
+
+      // 4. Waiting on Response - we sent recently, < 4 days
       if (item.status === 'pending') return 'waiting';
-      if (item.status === 'replied' && item.note && (item.note.toLowerCase().includes('meeting') || item.note.toLowerCase().includes('call'))) return 'meeting';
-      if (item.status === 'replied') return 'active';
       if (item.status === 'waiting') return 'waiting';
+
+      // Fallback
+      if (item.status === 'overdue') return 'needs_followup';
+      if (item.status === 'replied') return 'needs_response';
       return 'waiting';
     }
 
@@ -5920,15 +5932,22 @@
         }
       });
 
-      const overdue = INBOX_EMAILS.filter(e => e.status === 'overdue');
-      const pending = INBOX_EMAILS.filter(e => e.status === 'pending');
-      const replied = INBOX_EMAILS.filter(e => e.status === 'replied');
-      const meetings = INBOX_EMAILS.filter(e => categorizeEmail(e) === 'meeting');
+      // Categorize all emails using the pipeline logic
+      const recentAll = INBOX_EMAILS.filter(e => e && e.daysSince <= 60);
+      const waitingEmails = recentAll.filter(e => categorizeEmail(e) === 'waiting');
+      const needsFollowup = recentAll.filter(e => categorizeEmail(e) === 'needs_followup');
+      const needsResponse = recentAll.filter(e => categorizeEmail(e) === 'needs_response');
+      const meetingEmails = recentAll.filter(e => categorizeEmail(e) === 'meeting');
 
-      document.getElementById('inboxOverdue').textContent = overdue.length;
-      document.getElementById('inboxPending').textContent = pending.length;
-      document.getElementById('inboxReplied').textContent = replied.length;
-      document.getElementById('inboxMeetings').textContent = meetings.length;
+      document.getElementById('inboxPending').textContent = waitingEmails.length;
+      document.getElementById('inboxOverdue').textContent = needsFollowup.length;
+      document.getElementById('inboxReplied').textContent = needsResponse.length;
+      document.getElementById('inboxMeetings').textContent = meetingEmails.length;
+
+      // Keep these for the list view
+      const overdue = INBOX_EMAILS.filter(e => e && e.status === 'overdue');
+      const pending = INBOX_EMAILS.filter(e => e && e.status === 'pending');
+      const replied = INBOX_EMAILS.filter(e => e && e.status === 'replied');
 
       // Try to match email to CRM lead for logo
       function findLead(company) {
@@ -5939,17 +5958,18 @@
       function daysClass(d) { return d >= 7 ? 'urgent' : d >= 4 ? 'warn' : 'ok'; }
       function statusLabel(item) {
         const cat = categorizeEmail(item);
-        if (cat === 'needs_reply') return { text: 'Needs Reply', cls: 'needs-reply' };
         if (cat === 'waiting') return { text: 'Waiting', cls: 'waiting' };
+        if (cat === 'needs_followup') return { text: 'Needs Follow-Up', cls: 'needs-reply' };
+        if (cat === 'needs_response') return { text: 'Needs Response', cls: 'active' };
         if (cat === 'meeting') return { text: 'Meeting Set', cls: 'meeting' };
-        return { text: 'Active', cls: 'active' };
+        return { text: 'Waiting', cls: 'waiting' };
       }
 
       // ===== KANBAN VIEW =====
       const kanbanCols = {
-        needs_reply: { title: 'Needs Follow-Up', cls: 'needs-reply', items: [] },
         waiting: { title: 'Waiting on Response', cls: 'waiting', items: [] },
-        active: { title: 'Active Conversations', cls: 'active-conv', items: [] },
+        needs_followup: { title: 'Needs Follow-Up', cls: 'needs-reply', items: [] },
+        needs_response: { title: 'Needs Response', cls: 'active-conv', items: [] },
         meeting: { title: 'Meeting Scheduled', cls: 'meeting-set', items: [] }
       };
 
