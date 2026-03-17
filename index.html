@@ -3257,8 +3257,8 @@
         const mergedMap = new Map();
 
         // First add all static emails
-        INBOX_EMAILS.forEach(e => {
-          mergedMap.set(e.email?.toLowerCase(), e);
+        INBOX_EMAILS.filter(e => e && e.email).forEach(e => {
+          mergedMap.set(e.email.toLowerCase(), e);
         });
 
         // Then overlay live emails (they have fresher data)
@@ -5847,8 +5847,8 @@
       { company: 'UCLA', contact: 'Teri Hanneke', email: 'thanneke@athletics.ucla.edu', subject: 'Re: Quick follow-up + JABA update', sentDate: '2026-02-12', status: 'replied', daysSince: 29 },
       { company: 'Virginia SP', contact: 'Clay Walker', email: 'clay@virginiasp.com', subject: 'Re: UVA x JABA', sentDate: '2026-02-13', status: 'replied', daysSince: 28 },
       { company: 'Demarco Thomas', contact: 'Demarco Thomas', email: 'demarco@demarcothomas.com', subject: 'Re: Connecting you both', sentDate: '2026-02-13', status: 'replied', daysSince: 28 },
-      { company: 'Altius SP', contact: 'Kim DeCarolis', email: 'kim.decarolis@altiussp.com', subject: 'Re: JABA catchup', sentDate: '2026-02-13', status: 'replied', daysSince: 28 },,
-// NEW EMAILS FROM NOV-JAN (GOT REPLY/ACTIVE)
+      { company: 'Altius SP', contact: 'Kim DeCarolis', email: 'kim.decarolis@altiussp.com', subject: 'Re: JABA catchup', sentDate: '2026-02-13', status: 'replied', daysSince: 28 },
+      // NEW EMAILS FROM NOV-JAN (GOT REPLY/ACTIVE)
       { company: 'Clay Walker', contact: 'Clay Walker', email: 'Clay@virginiasp.com', subject: 'JABA', sentDate: '2025-12-18', status: 'replied', daysSince: 86 },
       { company: 'Chris King', contact: 'Chris King', email: 'kingc@rmu.edu', subject: 'Thank you / Strategy Roadmap', sentDate: '2025-12-18', status: 'replied', daysSince: 86 },
       { company: 'Brett Sible', contact: 'Brett Sible', email: 'BSIBLE@depaul.edu', subject: 'DePaul Proposed Edits', sentDate: '2025-12-16', status: 'replied', daysSince: 88 },
@@ -5911,6 +5911,7 @@
       // Auto-compute daysSince from sentDate
       const today = new Date();
       INBOX_EMAILS.forEach(e => {
+        if (!e || !e.sentDate) return;
         const sent = new Date(e.sentDate + 'T00:00:00');
         e.daysSince = Math.floor((today - sent) / (1000*60*60*24));
         // Auto-mark pending items 4+ days as overdue (needs follow-up)
