@@ -2800,6 +2800,12 @@
         <button class="inbox-view-btn" onclick="switchInboxView('timeline')">Timeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('list')">List</button>
       </div>
+      <div id="gmailSubTabs" style="display:flex;gap:2px;margin-bottom:12px;">
+        <button class="gmail-sub-tab active" onclick="switchGmailTab('all')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--accent);color:#000;font-family:'DM Sans',sans-serif;">All</button>
+        <button class="gmail-sub-tab" onclick="switchGmailTab('received')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Received</button>
+        <button class="gmail-sub-tab" onclick="switchGmailTab('sent')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Sent</button>
+        <button class="gmail-sub-tab" onclick="switchGmailTab('needsreply')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Needs Reply</button>
+      </div>
       <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
       <div id="inboxSent" style="display:none;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
       <div id="inboxKanban" class="inbox-kanban" style="display:none;"></div>
@@ -6019,6 +6025,7 @@
       document.querySelectorAll('.inbox-view-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('inboxGmail').style.display = view === 'gmail' ? 'flex' : 'none';
+      document.getElementById('gmailSubTabs').style.display = view === 'gmail' ? 'flex' : 'none';
       document.getElementById('inboxKanban').style.display = view === 'kanban' ? 'grid' : 'none';
       document.getElementById('inboxTimeline').style.display = view === 'timeline' ? 'block' : 'none';
       document.getElementById('inboxList').style.display = view === 'list' ? 'block' : 'none';
@@ -6081,45 +6088,64 @@
       return lead || null;
     }
 
+    let currentGmailTab = 'all';
+
+    window.switchGmailTab = function(tab) {
+      currentGmailTab = tab;
+      document.querySelectorAll('.gmail-sub-tab').forEach(b => {
+        b.style.background = 'var(--bg-tertiary)';
+        b.style.color = 'var(--text-secondary)';
+      });
+      event.target.style.background = 'var(--accent)';
+      event.target.style.color = '#000';
+      renderGmailInbox();
+    };
+
+    function getCleanThreads() {
+      const raw = Object.values(gmailThreadCache);
+      // Filter out nulls, empty threads, and noise
+      return raw
+        .filter(t => t && t.email && t.messages && Array.isArray(t.messages) && t.messages.length > 0)
+        .filter(t => {
+          const e = t.email.toLowerCase();
+          return !e.includes('noreply') && !e.includes('no-reply') && !e.includes('calendar-notification')
+            && !e.includes('notifications@') && !e.includes('mailer-daemon') && !e.includes('postmaster')
+            && !e.includes('donotreply') && !e.includes('notify') && !e.includes('updates@');
+        })
+        .map(t => {
+          const msgs = [...t.messages].filter(m => m && m.timestamp).sort((a, b) => b.timestamp - a.timestamp);
+          return { ...t, messages: msgs, latest: msgs[0] || null };
+        })
+        .filter(t => t.latest)
+        .sort((a, b) => b.latest.timestamp - a.latest.timestamp);
+    }
+
     function renderGmailInbox() {
       const container = document.getElementById('inboxGmail');
-      const threads = Object.values(gmailThreadCache);
-      if (threads.length === 0) {
+      const all = getCleanThreads();
+
+      if (all.length === 0) {
         container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No Gmail data yet. Waiting for Apps Script sync...</div>';
         return;
       }
 
-      // Sort threads by most recent message
-      const sorted = threads.filter(t => t.email && t.messages && t.messages.length > 0 && !t.email.includes('noreply') && !t.email.includes('no-reply') && !t.email.includes('calendar-notification') && !t.email.includes('notifications@') && !t.email.includes('mailer-daemon'))
-        .map(t => {
-          const msgs = (t.messages || []).sort((a, b) => b.timestamp - a.timestamp);
-          return { ...t, messages: msgs, latest: msgs[0] };
-        })
-        .filter(t => t.latest && t.latest.timestamp)
-        .sort((a, b) => (b.latest.timestamp || 0) - (a.latest.timestamp || 0));
-
-      renderThreadList(sorted, container, 'received');
-    }
-
-    function renderGmailSent() {
-      const container = document.getElementById('inboxSent');
-      const threads = Object.values(gmailThreadCache);
-      if (threads.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No Gmail data yet. Waiting for Apps Script sync...</div>';
-        return;
+      let filtered = all;
+      if (currentGmailTab === 'received') {
+        filtered = all.filter(t => !t.latest.isSent);
+      } else if (currentGmailTab === 'sent') {
+        filtered = all.filter(t => t.latest.isSent);
+      } else if (currentGmailTab === 'needsreply') {
+        filtered = all.filter(t => {
+          const latestReceived = t.messages.find(m => !m.isSent);
+          const latestSent = t.messages.find(m => m.isSent);
+          return latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp);
+        });
       }
-      // Filter to threads where the latest message is sent by us
-      const sorted = threads.filter(t => t.email && t.messages && t.messages.length > 0 && !t.email.includes('noreply') && !t.email.includes('no-reply') && !t.email.includes('calendar-notification') && !t.email.includes('notifications@') && !t.email.includes('mailer-daemon'))
-        .map(t => {
-          const msgs = (t.messages || []).sort((a, b) => b.timestamp - a.timestamp);
-          return { ...t, messages: msgs, latest: msgs[0] };
-        })
-        .filter(t => t.latest && t.latest.timestamp && t.latest.isSent)
-        .sort((a, b) => (b.latest.timestamp || 0) - (a.latest.timestamp || 0));
-      renderThreadList(sorted, container, 'sent');
+
+      renderThreadList(filtered, container);
     }
 
-    function renderThreadList(sorted, container, mode) {
+    function renderThreadList(sorted, container) {
       let html = '';
       sorted.forEach(thread => {
         const latest = thread.latest;
