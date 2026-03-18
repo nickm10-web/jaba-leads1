@@ -2796,11 +2796,13 @@
       </div>
       <div class="inbox-view-toggle">
         <button class="inbox-view-btn active" onclick="switchInboxView('gmail')">Inbox</button>
+        <button class="inbox-view-btn" onclick="switchInboxView('sent')">Sent</button>
         <button class="inbox-view-btn" onclick="switchInboxView('kanban')">Pipeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('timeline')">Timeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('list')">List</button>
       </div>
       <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
+      <div id="inboxSent" style="display:none;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
       <div id="inboxKanban" class="inbox-kanban" style="display:none;"></div>
       <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
       <div id="inboxList" style="display:none;"></div>
@@ -3145,9 +3147,11 @@
     let gmailThreadCache = {}; // threadId -> { messages: [...], contact, email, company, subject }
 
     function parseContact(headerStr) {
-      const match = headerStr.match(/"?([^"<]+)"?\s*<([^>]+)>/);
+      // Handle multiple recipients - take the first one
+      const firstRecipient = headerStr.split(',')[0].trim();
+      const match = firstRecipient.match(/"?([^"<]+)"?\s*<([^>]+)>/);
       if (match) return { name: match[1].trim(), email: match[2].trim() };
-      const em = headerStr.trim();
+      const em = firstRecipient.trim();
       return { name: em.split('@')[0], email: em };
     }
 
@@ -6016,10 +6020,12 @@
       document.querySelectorAll('.inbox-view-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('inboxGmail').style.display = view === 'gmail' ? 'flex' : 'none';
+      document.getElementById('inboxSent').style.display = view === 'sent' ? 'flex' : 'none';
       document.getElementById('inboxKanban').style.display = view === 'kanban' ? 'grid' : 'none';
       document.getElementById('inboxTimeline').style.display = view === 'timeline' ? 'block' : 'none';
       document.getElementById('inboxList').style.display = view === 'list' ? 'block' : 'none';
       if (view === 'gmail') renderGmailInbox();
+      if (view === 'sent') renderGmailSent();
     }
 
     // Clean up contact name
@@ -6029,24 +6035,53 @@
         const match = INBOX_EMAILS.find(e => e && e.email && e.email.toLowerCase() === email.toLowerCase());
         if (match && match.contact) return match.contact;
       }
-      // 2. Check if rawName is actually a proper name (has space, no @, no digits)
+      // 2. Check CRM leads contacts list for email match
+      if (email) {
+        const lead = leads.find(l => l.contacts && l.contacts.some(c => c.toLowerCase().includes(email.toLowerCase())));
+        if (lead) {
+          const contactStr = lead.contacts.find(c => c.toLowerCase().includes(email.toLowerCase()));
+          const nameMatch = contactStr ? contactStr.match(/^([^(]+)/) : null;
+          if (nameMatch) return nameMatch[1].trim();
+        }
+      }
+      // 3. If rawName has commas, take just the first name
+      if (rawName && rawName.includes(',')) {
+        rawName = rawName.split(',')[0].trim();
+      }
+      // 4. Check if rawName is actually a proper name (has space, no @, no digits)
       if (rawName && rawName.includes(' ') && !rawName.includes('@') && !/\d/.test(rawName)) {
         return rawName;
       }
-      // 3. If rawName looks like an email handle, try to make it readable
+      // 5. If rawName looks like an email handle, try to make it readable
       if (rawName && !rawName.includes(' ')) {
-        // Strip numbers and special chars, capitalize
         const cleaned = rawName.replace(/@.*$/, '').replace(/[0-9._]/g, ' ').trim();
         if (cleaned.length > 1) {
           return cleaned.split(' ').filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
       }
-      // 4. Fall back to email prefix
+      // 6. Fall back to email prefix
       if (email) {
         const prefix = email.split('@')[0].replace(/[._]/g, ' ');
         return prefix.split(' ').filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       }
       return rawName || '?';
+    }
+
+    // Find CRM lead matching a thread by email domain
+    function findLeadForThread(email) {
+      if (!email) return null;
+      const domain = email.split('@')[1];
+      if (!domain) return null;
+      // Direct email match in CRM contacts
+      let lead = leads.find(l => l.contacts && l.contacts.some(c => c.toLowerCase().includes(email.toLowerCase())));
+      if (lead) return lead;
+      // Domain match (e.g. uw.edu -> Washington)
+      lead = leads.find(l => l.contacts && l.contacts.some(c => {
+        const m = c.match(/<([^>]+)>|\(([^)]+@[^)]+)\)/);
+        const contactEmail = m ? (m[1] || m[2]) : '';
+        return contactEmail && contactEmail.split('@')[1] === domain;
+      }));
+      return lead || null;
     }
 
     function renderGmailInbox() {
@@ -6065,12 +6100,38 @@
         })
         .sort((a, b) => (b.latest.timestamp || 0) - (a.latest.timestamp || 0));
 
+      renderThreadList(sorted, container, 'received');
+    }
+
+    function renderGmailSent() {
+      const container = document.getElementById('inboxSent');
+      const threads = Object.values(gmailThreadCache);
+      if (threads.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No Gmail data yet. Waiting for Apps Script sync...</div>';
+        return;
+      }
+      // Filter to threads where the latest message is sent by us
+      const sorted = threads.filter(t => t.email && !t.email.includes('noreply') && !t.email.includes('no-reply') && !t.email.includes('calendar-notification') && !t.email.includes('notifications@') && !t.email.includes('mailer-daemon'))
+        .map(t => {
+          const msgs = (t.messages || []).sort((a, b) => b.timestamp - a.timestamp);
+          return { ...t, messages: msgs, latest: msgs[0] || {} };
+        })
+        .filter(t => t.latest.isSent)
+        .sort((a, b) => (b.latest.timestamp || 0) - (a.latest.timestamp || 0));
+      renderThreadList(sorted, container, 'sent');
+    }
+
+    function renderThreadList(sorted, container, mode) {
       let html = '';
       sorted.forEach(thread => {
         const latest = thread.latest;
         const msgCount = thread.messages.length;
         const displayName = cleanContactName(thread.contact, thread.email);
         const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2) || '?';
+
+        // Find CRM lead for logo
+        const crmLead = findLeadForThread(thread.email);
+        const logoUrl = crmLead ? crmLead.domain : null;
 
         const date = new Date(latest.timestamp);
         const now = new Date();
@@ -6093,18 +6154,32 @@
         const avatarBg = ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--bg-tertiary)';
         const avatarColor = (ballInOurCourt || needsFollowUp) ? '#fff' : 'var(--text-secondary)';
 
+        // Avatar: show logo if available, otherwise initials
+        let avatarHtml;
+        if (logoUrl) {
+          avatarHtml = `<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid ${ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--border)'};background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;">
+            <img src="${logoUrl}" style="width:28px;height:28px;object-fit:contain;" onerror="this.parentElement.innerHTML='<span style=\\'font-size:12px;font-weight:700;color:${avatarColor}\\'>${initials}</span>'">
+          </div>`;
+        } else {
+          avatarHtml = `<div style="width:36px;height:36px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${avatarColor};flex-shrink:0;">${initials}</div>`;
+        }
+
+        // Company display name from CRM or thread
+        const companyName = crmLead ? crmLead.company : (thread.company || '');
+
         const safeThreadId = (thread.threadId || '').replace(/'/g, "\\'");
+        const sentIndicator = mode === 'sent' ? '<span style="font-size:10px;color:var(--text-secondary);margin-right:4px;">To:</span>' : '';
         html += `<div onclick="openThreadView('${safeThreadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
-          <div style="width:36px;height:36px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${avatarColor};flex-shrink:0;">${initials}</div>
+          ${avatarHtml}
           <div style="flex:1;min-width:0;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
-              <div style="display:flex;align-items:center;gap:4px;">
-                ${statusDot}
-                <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${displayName}</span>
-                ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);margin-left:2px;">(' + msgCount + ')</span>' : ''}
-                ${thread.company ? '<span style="font-size:11px;color:var(--text-secondary);margin-left:6px;">' + thread.company + '</span>' : ''}
+              <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;">
+                ${statusDot}${sentIndicator}
+                <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayName}</span>
+                ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">(' + msgCount + ')</span>' : ''}
+                ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">• ' + companyName + '</span>' : ''}
               </div>
-              <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">${dateStr}</span>
+              <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;margin-left:8px;">${dateStr}</span>
             </div>
             <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${latest.subject || '(no subject)'}</div>
             <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${latest.snippet || ''}</div>
@@ -6112,7 +6187,7 @@
         </div>`;
       });
 
-      container.innerHTML = html;
+      container.innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No threads found.</div>';
     }
 
     function categorizeEmail(item) {
