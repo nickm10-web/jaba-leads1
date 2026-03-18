@@ -2800,7 +2800,7 @@
         <button class="inbox-view-btn" onclick="switchInboxView('timeline')">Timeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('list')">List</button>
       </div>
-      <div id="inboxGmail"></div>
+      <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
       <div id="inboxKanban" class="inbox-kanban" style="display:none;"></div>
       <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
       <div id="inboxList" style="display:none;"></div>
@@ -6015,25 +6015,38 @@
       currentInboxView = view;
       document.querySelectorAll('.inbox-view-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
+      document.getElementById('inboxGmail').style.display = view === 'gmail' ? 'flex' : 'none';
       document.getElementById('inboxKanban').style.display = view === 'kanban' ? 'grid' : 'none';
-      document.getElementById('inboxGmail').style.display = view === 'gmail' ? 'block' : 'none';
       document.getElementById('inboxTimeline').style.display = view === 'timeline' ? 'block' : 'none';
       document.getElementById('inboxList').style.display = view === 'list' ? 'block' : 'none';
       if (view === 'gmail') renderGmailInbox();
     }
 
-    // Clean up contact name: turn "dsully81" into proper name if we have it in INBOX_EMAILS
+    // Clean up contact name
     function cleanContactName(rawName, email) {
-      // Check INBOX_EMAILS for a match
-      const match = INBOX_EMAILS.find(e => e && e.email && email && e.email.toLowerCase() === email.toLowerCase());
-      if (match && match.contact) return match.contact;
-      // If the name looks like an email handle (no spaces, has numbers), try to humanize
-      if (rawName && !rawName.includes(' ') && /\d/.test(rawName)) {
-        // Try to extract from email prefix: dsully81 -> D Sullivan? No, just capitalize
-        return rawName.replace(/[0-9]/g, '').replace(/^\w/, c => c.toUpperCase());
+      // 1. Check INBOX_EMAILS for a match by email
+      if (email) {
+        const match = INBOX_EMAILS.find(e => e && e.email && e.email.toLowerCase() === email.toLowerCase());
+        if (match && match.contact) return match.contact;
       }
-      if (rawName && rawName.includes('@')) return rawName.split('@')[0].replace(/^\w/, c => c.toUpperCase());
-      return rawName || email || '?';
+      // 2. Check if rawName is actually a proper name (has space, no @, no digits)
+      if (rawName && rawName.includes(' ') && !rawName.includes('@') && !/\d/.test(rawName)) {
+        return rawName;
+      }
+      // 3. If rawName looks like an email handle, try to make it readable
+      if (rawName && !rawName.includes(' ')) {
+        // Strip numbers and special chars, capitalize
+        const cleaned = rawName.replace(/@.*$/, '').replace(/[0-9._]/g, ' ').trim();
+        if (cleaned.length > 1) {
+          return cleaned.split(' ').filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+      }
+      // 4. Fall back to email prefix
+      if (email) {
+        const prefix = email.split('@')[0].replace(/[._]/g, ' ');
+        return prefix.split(' ').filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+      return rawName || '?';
     }
 
     function renderGmailInbox() {
@@ -6080,7 +6093,8 @@
         const avatarBg = ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--bg-tertiary)';
         const avatarColor = (ballInOurCourt || needsFollowUp) ? '#fff' : 'var(--text-secondary)';
 
-        html += `<div onclick="openThreadView('${thread.threadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
+        const safeThreadId = (thread.threadId || '').replace(/'/g, "\\'");
+        html += `<div onclick="openThreadView('${safeThreadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
           <div style="width:36px;height:36px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${avatarColor};flex-shrink:0;">${initials}</div>
           <div style="flex:1;min-width:0;">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
