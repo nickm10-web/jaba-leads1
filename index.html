@@ -3024,6 +3024,55 @@
     let gmailTokenClient = null;
     let gmailSyncInterval = null;
 
+    let gmailRefreshTimer = null;
+
+    function setGmailConnectedUI() {
+      document.getElementById('gmailConnectBtn').style.background = '#00b894';
+      document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
+    }
+
+    function setGmailDisconnectedUI() {
+      document.getElementById('gmailConnectBtn').style.background = '#4285f4';
+      document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg> Connect Gmail';
+    }
+
+    function onGmailToken(response) {
+      if (response.access_token) {
+        gmailAccessToken = response.access_token;
+        const expiresIn = (response.expires_in || 3600) * 1000;
+        setGmailConnectedUI();
+        document.getElementById('gmailStatus').style.display = 'inline';
+        document.getElementById('gmailStatus').style.color = '#fdcb6e';
+        document.getElementById('gmailStatus').textContent = 'Syncing...';
+
+        // Save token
+        localStorage.setItem('gmail_access_token', response.access_token);
+        localStorage.setItem('gmail_token_expiry', Date.now() + expiresIn);
+
+        // Schedule silent refresh 5 minutes before expiry
+        if (gmailRefreshTimer) clearTimeout(gmailRefreshTimer);
+        const refreshIn = Math.max(expiresIn - (5 * 60 * 1000), 60000); // at least 1 min
+        gmailRefreshTimer = setTimeout(silentRefreshGmail, refreshIn);
+        console.log('Gmail token expires in', Math.round(expiresIn/60000), 'min. Refresh scheduled in', Math.round(refreshIn/60000), 'min.');
+
+        fetchGmailEmails();
+        // Sync emails every 5 minutes
+        if (gmailSyncInterval) clearInterval(gmailSyncInterval);
+        gmailSyncInterval = setInterval(fetchGmailEmails, 5 * 60 * 1000);
+      }
+    }
+
+    function silentRefreshGmail() {
+      console.log('Silently refreshing Gmail token...');
+      document.getElementById('gmailStatus').style.display = 'inline';
+      document.getElementById('gmailStatus').style.color = '#fdcb6e';
+      document.getElementById('gmailStatus').textContent = 'Refreshing...';
+      if (gmailTokenClient) {
+        // prompt: '' means no popup if user already granted consent
+        gmailTokenClient.requestAccessToken({ prompt: '' });
+      }
+    }
+
     function initGmailAuth() {
       if (typeof google === 'undefined' || !google.accounts) {
         setTimeout(initGmailAuth, 500);
@@ -3032,39 +3081,48 @@
       gmailTokenClient = google.accounts.oauth2.initTokenClient({
         client_id: GMAIL_CLIENT_ID,
         scope: GMAIL_SCOPES,
-        callback: (response) => {
-          if (response.access_token) {
-            gmailAccessToken = response.access_token;
-            document.getElementById('gmailConnectBtn').style.background = '#00b894';
-            document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
-            document.getElementById('gmailStatus').style.display = 'inline';
-            document.getElementById('gmailStatus').textContent = 'Syncing...';
-            // Save token to localStorage for persistence
-            localStorage.setItem('gmail_access_token', response.access_token);
-            localStorage.setItem('gmail_token_expiry', Date.now() + (response.expires_in * 1000));
-            fetchGmailEmails();
-            // Auto-refresh every 5 minutes
-            if (gmailSyncInterval) clearInterval(gmailSyncInterval);
-            gmailSyncInterval = setInterval(fetchGmailEmails, 5 * 60 * 1000);
-          }
-        },
+        callback: onGmailToken,
         error_callback: (err) => {
           console.error('Gmail auth error:', err);
-          document.getElementById('gmailStatus').style.display = 'inline';
-          document.getElementById('gmailStatus').style.color = '#ff6b6b';
-          document.getElementById('gmailStatus').textContent = 'Auth failed';
+          // If silent refresh fails, show reconnect
+          if (gmailAccessToken) {
+            // Had a token before, try to keep using it
+            document.getElementById('gmailStatus').style.display = 'inline';
+            document.getElementById('gmailStatus').style.color = '#fdcb6e';
+            document.getElementById('gmailStatus').textContent = 'Refresh pending...';
+            // Retry in 2 minutes
+            if (gmailRefreshTimer) clearTimeout(gmailRefreshTimer);
+            gmailRefreshTimer = setTimeout(silentRefreshGmail, 2 * 60 * 1000);
+          } else {
+            document.getElementById('gmailStatus').style.display = 'inline';
+            document.getElementById('gmailStatus').style.color = '#ff6b6b';
+            document.getElementById('gmailStatus').textContent = 'Auth failed';
+          }
         }
       });
 
       // Check for saved token
       const savedToken = localStorage.getItem('gmail_access_token');
       const expiry = localStorage.getItem('gmail_token_expiry');
-      if (savedToken && expiry && Date.now() < parseInt(expiry)) {
-        gmailAccessToken = savedToken;
-        document.getElementById('gmailConnectBtn').style.background = '#00b894';
-        document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
-        fetchGmailEmails();
-        gmailSyncInterval = setInterval(fetchGmailEmails, 5 * 60 * 1000);
+      if (savedToken && expiry) {
+        const timeLeft = parseInt(expiry) - Date.now();
+        if (timeLeft > 60000) {
+          // Token still valid (more than 1 min left)
+          gmailAccessToken = savedToken;
+          setGmailConnectedUI();
+          fetchGmailEmails();
+          if (gmailSyncInterval) clearInterval(gmailSyncInterval);
+          gmailSyncInterval = setInterval(fetchGmailEmails, 5 * 60 * 1000);
+          // Schedule refresh before expiry
+          const refreshIn = Math.max(timeLeft - (5 * 60 * 1000), 30000);
+          gmailRefreshTimer = setTimeout(silentRefreshGmail, refreshIn);
+          console.log('Gmail token restored. Refresh in', Math.round(refreshIn/60000), 'min.');
+        } else {
+          // Token expired or about to, try silent refresh
+          console.log('Saved Gmail token expired, attempting silent refresh...');
+          setGmailConnectedUI();
+          setTimeout(silentRefreshGmail, 1000);
+        }
       }
     }
 
@@ -3075,7 +3133,7 @@
         return;
       }
       if (gmailTokenClient) {
-        gmailTokenClient.requestAccessToken();
+        gmailTokenClient.requestAccessToken({ prompt: 'consent' });
       } else {
         alert('Google sign-in is still loading. Try again in a second.');
       }
@@ -3093,13 +3151,13 @@
           headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
         });
         if (sentRes.status === 401) {
-          // Token expired, re-auth
+          // Token expired, try silent refresh
+          console.log('Gmail 401 - token expired, attempting silent refresh...');
           gmailAccessToken = null;
           localStorage.removeItem('gmail_access_token');
-          document.getElementById('gmailConnectBtn').style.background = '#4285f4';
-          document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg> Connect Gmail';
-          document.getElementById('gmailStatus').style.color = '#ff6b6b';
-          document.getElementById('gmailStatus').textContent = 'Token expired, reconnect';
+          document.getElementById('gmailStatus').style.color = '#fdcb6e';
+          document.getElementById('gmailStatus').textContent = 'Refreshing token...';
+          silentRefreshGmail();
           return;
         }
         const sentData = await sentRes.json();
