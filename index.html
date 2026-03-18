@@ -2795,13 +2795,13 @@
         </div>
       </div>
       <div class="inbox-view-toggle">
-        <button class="inbox-view-btn active" onclick="switchInboxView('kanban')">Pipeline</button>
-        <button class="inbox-view-btn" onclick="switchInboxView('gmail')">Inbox</button>
+        <button class="inbox-view-btn active" onclick="switchInboxView('gmail')">Inbox</button>
+        <button class="inbox-view-btn" onclick="switchInboxView('kanban')">Pipeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('timeline')">Timeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('list')">List</button>
       </div>
-      <div id="inboxKanban" class="inbox-kanban"></div>
-      <div id="inboxGmail" style="display:none;"></div>
+      <div id="inboxGmail"></div>
+      <div id="inboxKanban" class="inbox-kanban" style="display:none;"></div>
       <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
       <div id="inboxList" style="display:none;"></div>
       <!-- Thread Detail Panel (slides in from right) -->
@@ -5330,6 +5330,7 @@
         renderDashboard();
       } else if (section === 'inbox') {
         renderInbox();
+        if (currentInboxView === 'gmail') renderGmailInbox();
       } else if (section === 'meetings') {
         renderMeetings();
       } else if (section === 'tasks') {
@@ -6008,7 +6009,7 @@
       { company: 'Kayla Rogers (Notre Dame)', contact: 'Kayla Rogers', email: 'kayla.rogers@nd.edu', subject: 'JABA Intro', sentDate: '2026-01-05', status: 'replied', daysSince: 67 },
     ];
 
-    let currentInboxView = 'kanban';
+    let currentInboxView = 'gmail';
 
     function switchInboxView(view) {
       currentInboxView = view;
@@ -6021,16 +6022,30 @@
       if (view === 'gmail') renderGmailInbox();
     }
 
+    // Clean up contact name: turn "dsully81" into proper name if we have it in INBOX_EMAILS
+    function cleanContactName(rawName, email) {
+      // Check INBOX_EMAILS for a match
+      const match = INBOX_EMAILS.find(e => e && e.email && email && e.email.toLowerCase() === email.toLowerCase());
+      if (match && match.contact) return match.contact;
+      // If the name looks like an email handle (no spaces, has numbers), try to humanize
+      if (rawName && !rawName.includes(' ') && /\d/.test(rawName)) {
+        // Try to extract from email prefix: dsully81 -> D Sullivan? No, just capitalize
+        return rawName.replace(/[0-9]/g, '').replace(/^\w/, c => c.toUpperCase());
+      }
+      if (rawName && rawName.includes('@')) return rawName.split('@')[0].replace(/^\w/, c => c.toUpperCase());
+      return rawName || email || '?';
+    }
+
     function renderGmailInbox() {
       const container = document.getElementById('inboxGmail');
       const threads = Object.values(gmailThreadCache);
       if (threads.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No Gmail data yet. Connect Gmail to see your inbox here.</div>';
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No Gmail data yet. Waiting for Apps Script sync...</div>';
         return;
       }
 
       // Sort threads by most recent message
-      const sorted = threads.filter(t => t.email && !t.email.includes('noreply') && !t.email.includes('calendar-notification') && !t.email.includes('notifications'))
+      const sorted = threads.filter(t => t.email && !t.email.includes('noreply') && !t.email.includes('no-reply') && !t.email.includes('calendar-notification') && !t.email.includes('notifications@') && !t.email.includes('mailer-daemon'))
         .map(t => {
           const msgs = (t.messages || []).sort((a, b) => b.timestamp - a.timestamp);
           return { ...t, messages: msgs, latest: msgs[0] || {} };
@@ -6041,6 +6056,9 @@
       sorted.forEach(thread => {
         const latest = thread.latest;
         const msgCount = thread.messages.length;
+        const displayName = cleanContactName(thread.contact, thread.email);
+        const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2) || '?';
+
         const date = new Date(latest.timestamp);
         const now = new Date();
         const diffDays = Math.floor((now - date) / (1000*60*60*24));
@@ -6050,27 +6068,31 @@
         else if (diffDays < 7) dateStr = date.toLocaleDateString('en-US', { weekday: 'short' });
         else dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-        const isUnread = !latest.isSent;
         const latestReceived = thread.messages.find(m => !m.isSent);
         const latestSent = thread.messages.find(m => m.isSent);
         const ballInOurCourt = latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp);
+        const needsFollowUp = !ballInOurCourt && diffDays >= 4 && latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp);
 
         let statusDot = '';
-        if (ballInOurCourt) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#00b894;display:inline-block;margin-right:8px;" title="Needs response"></span>';
-        else if (diffDays >= 4 && latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp)) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block;margin-right:8px;" title="Needs follow-up"></span>';
+        if (ballInOurCourt) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#00b894;display:inline-block;margin-right:6px;" title="Needs response"></span>';
+        else if (needsFollowUp) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block;margin-right:6px;" title="Needs follow-up"></span>';
 
-        html += `<div onclick="openThreadView('${thread.threadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;${isUnread ? 'background:rgba(226,245,0,0.03);' : ''}" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='${isUnread ? 'rgba(226,245,0,0.03)' : 'transparent'}'">
-          <div style="width:36px;height:36px;border-radius:50%;background:${ballInOurCourt ? '#00b894' : 'var(--bg-tertiary)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${ballInOurCourt ? '#fff' : 'var(--text-secondary)'};flex-shrink:0;">${(thread.contact || '?')[0].toUpperCase()}</div>
+        const avatarBg = ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--bg-tertiary)';
+        const avatarColor = (ballInOurCourt || needsFollowUp) ? '#fff' : 'var(--text-secondary)';
+
+        html += `<div onclick="openThreadView('${thread.threadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
+          <div style="width:36px;height:36px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${avatarColor};flex-shrink:0;">${initials}</div>
           <div style="flex:1;min-width:0;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
               <div style="display:flex;align-items:center;gap:4px;">
                 ${statusDot}
-                <span style="font-weight:${isUnread ? '700' : '500'};font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${thread.contact || thread.email}</span>
-                ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);">(' + msgCount + ')</span>' : ''}
+                <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">${displayName}</span>
+                ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);margin-left:2px;">(' + msgCount + ')</span>' : ''}
+                ${thread.company ? '<span style="font-size:11px;color:var(--text-secondary);margin-left:6px;">' + thread.company + '</span>' : ''}
               </div>
               <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">${dateStr}</span>
             </div>
-            <div style="font-size:13px;${isUnread ? 'color:var(--text-primary);font-weight:500;' : 'color:var(--text-secondary);'}white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${latest.subject || '(no subject)'}</div>
+            <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${latest.subject || '(no subject)'}</div>
             <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${latest.snippet || ''}</div>
           </div>
         </div>`;
