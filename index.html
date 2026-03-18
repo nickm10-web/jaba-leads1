@@ -2788,22 +2788,24 @@
             </div>
           </div>
         </div>
-        <div id="gmailConnectArea">
-          <button id="gmailConnectBtn" class="btn" style="background:#4285f4;color:#fff;font-weight:600;gap:8px;" onclick="connectGmail()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg>
-            Connect Gmail
-          </button>
-          <span id="gmailStatus" style="display:none;font-size:12px;color:#00b894;margin-left:8px;"></span>
+        <div id="gmailConnectArea" style="display:flex;align-items:center;gap:8px;">
+          <div id="gmailSyncDot" style="width:8px;height:8px;border-radius:50%;background:var(--text-secondary);"></div>
+          <span id="gmailStatus" style="font-size:12px;color:var(--text-secondary);">Loading Gmail...</span>
+          <button class="btn btn-secondary" onclick="forceGmailRefresh()" style="padding:4px 10px;font-size:11px;">Refresh</button>
         </div>
       </div>
       <div class="inbox-view-toggle">
         <button class="inbox-view-btn active" onclick="switchInboxView('kanban')">Pipeline</button>
+        <button class="inbox-view-btn" onclick="switchInboxView('gmail')">Inbox</button>
         <button class="inbox-view-btn" onclick="switchInboxView('timeline')">Timeline</button>
         <button class="inbox-view-btn" onclick="switchInboxView('list')">List</button>
       </div>
       <div id="inboxKanban" class="inbox-kanban"></div>
+      <div id="inboxGmail" style="display:none;"></div>
       <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
       <div id="inboxList" style="display:none;"></div>
+      <!-- Thread Detail Panel (slides in from right) -->
+      <div id="threadPanel" style="display:none;position:fixed;top:0;right:0;width:560px;max-width:90vw;height:100vh;background:var(--bg-primary);border-left:1px solid var(--border);z-index:1000;padding:24px;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.3);"></div>
     </div><!-- /inboxSection -->
 
     <!-- MEETINGS SECTION -->
@@ -3139,6 +3141,119 @@
       }
     }
 
+    // Gmail thread cache (persisted to Firebase)
+    let gmailThreadCache = {}; // threadId -> { messages: [...], contact, email, company, subject }
+
+    function parseContact(headerStr) {
+      const match = headerStr.match(/"?([^"<]+)"?\s*<([^>]+)>/);
+      if (match) return { name: match[1].trim(), email: match[2].trim() };
+      const em = headerStr.trim();
+      return { name: em.split('@')[0], email: em };
+    }
+
+    // Load cached Gmail data from Firebase on startup
+    // Real-time listener: auto-updates when Apps Script pushes new data
+    function loadGmailCache() {
+      db.ref('gmail_threads').on('value', snap => {
+        const data = snap.val();
+        if (data) {
+          gmailThreadCache = data.threads || {};
+          mergeCachedGmailIntoInbox();
+          renderInbox();
+          if (currentInboxView === 'gmail') renderGmailInbox();
+
+          const threadCount = Object.keys(gmailThreadCache).length;
+          const lastSync = data.lastSync ? new Date(data.lastSync) : null;
+          const statusEl = document.getElementById('gmailStatus');
+          const dotEl = document.getElementById('gmailSyncDot');
+
+          if (statusEl && lastSync) {
+            const minAgo = Math.floor((Date.now() - lastSync.getTime()) / 60000);
+            let timeStr;
+            if (minAgo < 1) timeStr = 'just now';
+            else if (minAgo < 60) timeStr = minAgo + 'm ago';
+            else timeStr = lastSync.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+            statusEl.style.color = '#00b894';
+            statusEl.textContent = threadCount + ' threads synced ' + timeStr;
+            if (dotEl) dotEl.style.background = '#00b894';
+          }
+          console.log('Gmail data updated:', threadCount, 'threads from Firebase');
+        } else {
+          const statusEl = document.getElementById('gmailStatus');
+          if (statusEl) {
+            statusEl.style.color = '#fdcb6e';
+            statusEl.textContent = 'No Gmail data. Set up Apps Script sync.';
+          }
+        }
+      });
+    }
+
+    window.forceGmailRefresh = function() {
+      const statusEl = document.getElementById('gmailStatus');
+      statusEl.style.color = '#fdcb6e';
+      statusEl.textContent = 'Refreshing...';
+      db.ref('gmail_threads').once('value', snap => {
+        const data = snap.val();
+        if (data) {
+          gmailThreadCache = data.threads || {};
+          mergeCachedGmailIntoInbox();
+          renderInbox();
+          if (currentInboxView === 'gmail') renderGmailInbox();
+          statusEl.style.color = '#00b894';
+          statusEl.textContent = Object.keys(gmailThreadCache).length + ' threads refreshed';
+        }
+      });
+    };
+
+    function mergeCachedGmailIntoInbox() {
+      const myEmail = 'jordon@jaba.ai';
+      Object.values(gmailThreadCache).forEach(thread => {
+        if (!thread.email || thread.email.toLowerCase() === myEmail) return;
+        if (thread.email.includes('noreply') || thread.email.includes('no-reply') || thread.email.includes('calendar-notification')) return;
+
+        const existingIdx = INBOX_EMAILS.findIndex(e => e && e.email && e.email.toLowerCase() === thread.email.toLowerCase());
+        const msgs = (thread.messages || []).sort((a, b) => b.timestamp - a.timestamp);
+        if (msgs.length === 0) return;
+        const latest = msgs[0];
+        const daysSince = Math.floor((Date.now() - latest.timestamp) / (1000 * 60 * 60 * 24));
+        const latestSent = msgs.find(m => m.isSent);
+        const latestReceived = msgs.find(m => !m.isSent);
+
+        let status = 'pending';
+        let note = '';
+        if (latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp)) {
+          status = 'overdue';
+          note = 'They replied. Ball in our court.';
+        } else if (latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp)) {
+          status = daysSince >= 4 ? 'overdue' : 'pending';
+          note = daysSince >= 4 ? ('No reply in ' + daysSince + ' days.') : 'Sent, waiting for reply.';
+        }
+
+        const entry = {
+          company: thread.company || thread.email.split('@')[1]?.split('.')[0] || '',
+          contact: thread.contact || '',
+          email: thread.email,
+          subject: latest.subject || '(no subject)',
+          sentDate: new Date(latest.timestamp).toISOString().split('T')[0],
+          status, daysSince, note,
+          live: true,
+          threadId: thread.threadId,
+          msgCount: msgs.length
+        };
+
+        if (existingIdx >= 0) {
+          // Preserve manual notes/categories but update dates
+          const existing = INBOX_EMAILS[existingIdx];
+          if (existing.category) entry.category = existing.category;
+          if (existing.note && !existing.live) entry.note = existing.note;
+          INBOX_EMAILS[existingIdx] = { ...existing, ...entry, note: existing.note && !existing.live ? existing.note : entry.note };
+        } else {
+          INBOX_EMAILS.push(entry);
+        }
+      });
+    }
+
     async function fetchGmailEmails() {
       if (!gmailAccessToken) return;
       try {
@@ -3146,13 +3261,18 @@
         document.getElementById('gmailStatus').style.color = '#fdcb6e';
         document.getElementById('gmailStatus').textContent = 'Syncing...';
 
-        // Fetch sent emails (last 30 days)
-        const sentRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:sent newer_than:30d', {
-          headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
-        });
-        if (sentRes.status === 401) {
-          // Token expired, try silent refresh
-          console.log('Gmail 401 - token expired, attempting silent refresh...');
+        // Fetch sent + inbox messages (last 30 days)
+        const [sentRes, inboxRes] = await Promise.all([
+          fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:sent newer_than:30d', {
+            headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
+          }),
+          fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox newer_than:30d', {
+            headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
+          })
+        ]);
+
+        if (sentRes.status === 401 || inboxRes.status === 401) {
+          console.log('Gmail 401 - attempting silent refresh...');
           gmailAccessToken = null;
           localStorage.removeItem('gmail_access_token');
           document.getElementById('gmailStatus').style.color = '#fdcb6e';
@@ -3160,28 +3280,17 @@
           silentRefreshGmail();
           return;
         }
-        const sentData = await sentRes.json();
 
-        // Fetch inbox emails (last 30 days)
-        const inboxRes = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox newer_than:30d', {
-          headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
-        });
-        const inboxData = await inboxRes.json();
-
-        // Get details for each message
+        const [sentData, inboxData] = await Promise.all([sentRes.json(), inboxRes.json()]);
         const allMsgIds = new Set();
-        const sentMsgIds = (sentData.messages || []).map(m => m.id);
-        const inboxMsgIds = (inboxData.messages || []).map(m => m.id);
-        sentMsgIds.forEach(id => allMsgIds.add(id));
-        inboxMsgIds.forEach(id => allMsgIds.add(id));
+        (sentData.messages || []).forEach(m => allMsgIds.add(m.id));
+        (inboxData.messages || []).forEach(m => allMsgIds.add(m.id));
 
-        // Fetch message details in batches (max 20 at a time to avoid rate limits)
-        const msgIds = [...allMsgIds].slice(0, 80);
-        const batchSize = 10;
+        // Fetch full message details (with snippet for thread view)
+        const msgIds = [...allMsgIds].slice(0, 100);
         const allMessages = [];
-
-        for (let i = 0; i < msgIds.length; i += batchSize) {
-          const batch = msgIds.slice(i, i + batchSize);
+        for (let i = 0; i < msgIds.length; i += 10) {
+          const batch = msgIds.slice(i, i + 10);
           const details = await Promise.all(batch.map(id =>
             fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}?format=metadata&metadataHeaders=From&metadataHeaders=To&metadataHeaders=Subject&metadataHeaders=Date`, {
               headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
@@ -3190,164 +3299,81 @@
           allMessages.push(...details.filter(Boolean));
         }
 
-        // Group by thread to find conversations
+        // Group into threads with full message data
         const threads = {};
+        const myEmail = 'jordon@jaba.ai';
         allMessages.forEach(msg => {
-          const threadId = msg.threadId;
-          if (!threads[threadId]) threads[threadId] = { sent: [], received: [] };
+          const tid = msg.threadId;
+          if (!threads[tid]) threads[tid] = { threadId: tid, messages: [], contact: '', email: '', company: '' };
           const headers = {};
           (msg.payload?.headers || []).forEach(h => { headers[h.name] = h.value; });
           const isSent = (msg.labelIds || []).includes('SENT');
-          const entry = {
+          threads[tid].messages.push({
             id: msg.id,
-            threadId,
-            date: headers['Date'] || '',
             from: headers['From'] || '',
             to: headers['To'] || '',
             subject: headers['Subject'] || '',
             timestamp: parseInt(msg.internalDate) || 0,
             isSent,
-            snippet: msg.snippet || ''
-          };
-          if (isSent) threads[threadId].sent.push(entry);
-          else threads[threadId].received.push(entry);
-        });
-
-        // Build live inbox data
-        const liveEmails = [];
-        const myEmail = 'jordon@jaba.ai';
-
-        Object.values(threads).forEach(thread => {
-          const allMsgs = [...thread.sent, ...thread.received].sort((a, b) => b.timestamp - a.timestamp);
-          if (allMsgs.length === 0) return;
-
-          const latest = allMsgs[0];
-          const latestSent = thread.sent.sort((a, b) => b.timestamp - a.timestamp)[0];
-          const latestReceived = thread.received.sort((a, b) => b.timestamp - a.timestamp)[0];
-
-          // Determine the other party
-          let contact = '';
-          let email = '';
-          let company = '';
-
-          if (latestSent) {
-            const to = latestSent.to || '';
-            const match = to.match(/"?([^"<]+)"?\s*<([^>]+)>/);
-            if (match) {
-              contact = match[1].trim();
-              email = match[2].trim();
-            } else {
-              email = to.trim();
-              contact = email.split('@')[0];
-            }
-          } else if (latestReceived) {
-            const from = latestReceived.from || '';
-            const match = from.match(/"?([^"<]+)"?\s*<([^>]+)>/);
-            if (match) {
-              contact = match[1].trim();
-              email = match[2].trim();
-            } else {
-              email = from.trim();
-              contact = email.split('@')[0];
-            }
-          }
-
-          // Skip self-emails and automated/noreply
-          if (email.toLowerCase() === myEmail) return;
-          if (email.toLowerCase().includes('noreply') || email.toLowerCase().includes('no-reply')) return;
-          if (email.toLowerCase().includes('calendar-notification')) return;
-          if (email.toLowerCase().includes('notifications')) return;
-
-          // Determine status
-          const daysSince = Math.floor((Date.now() - latest.timestamp) / (1000 * 60 * 60 * 24));
-          let status = 'pending';
-          let note = '';
-
-          if (latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp)) {
-            // They replied last, ball in our court
-            status = daysSince >= 2 ? 'overdue' : 'overdue';
-            note = 'They replied. Ball in our court.';
-          } else if (latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp)) {
-            // We sent last, waiting on them
-            if (daysSince >= 4) {
-              status = 'overdue';
-              note = 'No reply in ' + daysSince + ' days.';
-            } else {
-              status = 'pending';
-              note = 'Sent, waiting for reply.';
-            }
-          }
-
-          if (latestReceived && latestSent && latestReceived.timestamp > latestSent.timestamp - 86400000 && latestSent.timestamp > latestReceived.timestamp - 86400000) {
-            status = 'replied';
-            note = 'Active conversation.';
-          }
-
-          // Extract company from email domain
-          const domain = email.split('@')[1] || '';
-          company = domain.split('.')[0];
-          company = company.charAt(0).toUpperCase() + company.slice(1);
-
-          // Try to match to existing INBOX_EMAILS by email
-          const existing = INBOX_EMAILS.find(e => e.email && e.email.toLowerCase() === email.toLowerCase());
-          if (existing) {
-            company = existing.company;
-            contact = existing.contact || contact;
-          }
-
-          const sentDateStr = new Date(latest.timestamp).toISOString().split('T')[0];
-
-          liveEmails.push({
-            company,
-            contact,
-            email,
-            subject: latest.subject || '(no subject)',
-            sentDate: sentDateStr,
-            status,
-            daysSince,
-            note,
-            live: true, // flag as from Gmail
-            threadId: latest.threadId
+            snippet: msg.snippet || '',
+            labels: msg.labelIds || []
           });
         });
 
-        // Merge: live emails override existing INBOX_EMAILS by email match
-        const mergedMap = new Map();
-
-        // First add all static emails
-        INBOX_EMAILS.filter(e => e && e.email).forEach(e => {
-          mergedMap.set(e.email.toLowerCase(), e);
-        });
-
-        // Then overlay live emails (they have fresher data)
-        liveEmails.forEach(e => {
-          const key = e.email?.toLowerCase();
-          const existing = mergedMap.get(key);
+        // Set contact/company for each thread
+        Object.values(threads).forEach(thread => {
+          const msgs = thread.messages.sort((a, b) => b.timestamp - a.timestamp);
+          // Find the other party
+          const sent = msgs.find(m => m.isSent);
+          const received = msgs.find(m => !m.isSent);
+          let parsed;
+          if (sent) { parsed = parseContact(sent.to || ''); }
+          else if (received) { parsed = parseContact(received.from || ''); }
+          if (parsed && parsed.email.toLowerCase() !== myEmail) {
+            thread.contact = parsed.name;
+            thread.email = parsed.email;
+          } else if (received) {
+            parsed = parseContact(received.from || '');
+            thread.contact = parsed.name;
+            thread.email = parsed.email;
+          }
+          // Company from domain or existing INBOX_EMAILS match
+          const existing = INBOX_EMAILS.find(e => e && e.email && thread.email && e.email.toLowerCase() === thread.email.toLowerCase());
           if (existing) {
-            // Update with live data but keep any manual notes/categories
-            existing.sentDate = e.sentDate;
-            existing.daysSince = e.daysSince;
-            existing.subject = e.subject;
-            existing.status = e.status;
-            if (!existing.note || existing.live) existing.note = e.note;
-            existing.live = true;
+            thread.company = existing.company;
+            thread.contact = existing.contact || thread.contact;
           } else {
-            mergedMap.set(key, e);
+            const dom = (thread.email || '').split('@')[1] || '';
+            thread.company = dom.split('.')[0];
+            thread.company = thread.company.charAt(0).toUpperCase() + thread.company.slice(1);
           }
         });
 
-        // Save to Firebase for team access
-        const liveData = liveEmails.map(e => ({
-          company: e.company, contact: e.contact, email: e.email,
-          subject: e.subject, sentDate: e.sentDate, status: e.status,
-          daysSince: e.daysSince, note: e.note
-        }));
-        db.ref('gmail_live').set({ lastSync: Date.now(), emails: liveData });
+        // Update cache and merge into INBOX_EMAILS
+        gmailThreadCache = threads;
+        mergeCachedGmailIntoInbox();
+
+        // Save threads to Firebase (persist across sessions and token drops)
+        const cacheForFirebase = {};
+        Object.entries(threads).forEach(([tid, thread]) => {
+          if (!thread.email || thread.email.toLowerCase() === myEmail) return;
+          if (thread.email.includes('noreply') || thread.email.includes('no-reply') || thread.email.includes('calendar-notification') || thread.email.includes('notifications')) return;
+          cacheForFirebase[tid] = {
+            threadId: tid,
+            contact: thread.contact,
+            email: thread.email,
+            company: thread.company,
+            messages: thread.messages.map(m => ({
+              id: m.id, from: m.from, to: m.to, subject: m.subject,
+              timestamp: m.timestamp, isSent: m.isSent, snippet: m.snippet
+            }))
+          };
+        });
+        db.ref('gmail_threads').set({ lastSync: Date.now(), threads: cacheForFirebase });
 
         document.getElementById('gmailStatus').style.color = '#00b894';
-        document.getElementById('gmailStatus').textContent = 'Synced ' + liveEmails.length + ' threads • ' + new Date().toLocaleTimeString();
+        document.getElementById('gmailStatus').textContent = 'Synced ' + Object.keys(cacheForFirebase).length + ' threads • ' + new Date().toLocaleTimeString();
 
-        // Re-render inbox with merged data
         renderInbox();
 
       } catch (err) {
@@ -3358,9 +3384,50 @@
       }
     }
 
-    // Initialize Gmail auth when page loads
+    // Open thread detail view
+    window.openThreadView = function(threadId) {
+      const thread = gmailThreadCache[threadId];
+      if (!thread || !thread.messages) return;
+      const msgs = [...thread.messages].sort((a, b) => a.timestamp - b.timestamp);
+      const panel = document.getElementById('threadPanel');
+      const subject = msgs[0]?.subject || '(no subject)';
+
+      let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+          <div style="font-size:18px;font-weight:700;">${thread.contact}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${thread.email} • ${thread.company}</div>
+          <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">${subject}</div>
+        </div>
+        <button onclick="closeThreadView()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:8px;">✕</button>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:16px;">`;
+
+      msgs.forEach(msg => {
+        const sender = parseContact(msg.from || '');
+        const date = new Date(msg.timestamp);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' at ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const isMine = msg.isSent;
+        html += `<div style="margin-bottom:16px;padding:14px;border-radius:10px;border:1px solid ${isMine ? 'rgba(226,245,0,0.2)' : 'var(--border)'};background:${isMine ? 'rgba(226,245,0,0.04)' : 'var(--bg-secondary)'};">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-weight:600;font-size:13px;color:${isMine ? 'var(--accent)' : 'var(--text-primary)'};">${isMine ? 'Jordon Rooney' : sender.name}</span>
+            <span style="font-size:11px;color:var(--text-secondary);">${dateStr}</span>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">${msg.snippet || '(no preview available)'}</div>
+        </div>`;
+      });
+      html += '</div>';
+
+      panel.innerHTML = html;
+      panel.style.display = 'block';
+    };
+
+    window.closeThreadView = function() {
+      document.getElementById('threadPanel').style.display = 'none';
+    };
+
+    // Load Gmail data from Firebase on page load (Apps Script handles the actual Gmail sync)
     window.addEventListener('load', () => {
-      setTimeout(initGmailAuth, 1000);
+      setTimeout(loadGmailCache, 500);
     });
 
     // Constants
@@ -5948,8 +6015,68 @@
       document.querySelectorAll('.inbox-view-btn').forEach(b => b.classList.remove('active'));
       event.target.classList.add('active');
       document.getElementById('inboxKanban').style.display = view === 'kanban' ? 'grid' : 'none';
+      document.getElementById('inboxGmail').style.display = view === 'gmail' ? 'block' : 'none';
       document.getElementById('inboxTimeline').style.display = view === 'timeline' ? 'block' : 'none';
       document.getElementById('inboxList').style.display = view === 'list' ? 'block' : 'none';
+      if (view === 'gmail') renderGmailInbox();
+    }
+
+    function renderGmailInbox() {
+      const container = document.getElementById('inboxGmail');
+      const threads = Object.values(gmailThreadCache);
+      if (threads.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No Gmail data yet. Connect Gmail to see your inbox here.</div>';
+        return;
+      }
+
+      // Sort threads by most recent message
+      const sorted = threads.filter(t => t.email && !t.email.includes('noreply') && !t.email.includes('calendar-notification') && !t.email.includes('notifications'))
+        .map(t => {
+          const msgs = (t.messages || []).sort((a, b) => b.timestamp - a.timestamp);
+          return { ...t, messages: msgs, latest: msgs[0] || {} };
+        })
+        .sort((a, b) => (b.latest.timestamp || 0) - (a.latest.timestamp || 0));
+
+      let html = '';
+      sorted.forEach(thread => {
+        const latest = thread.latest;
+        const msgCount = thread.messages.length;
+        const date = new Date(latest.timestamp);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000*60*60*24));
+        let dateStr;
+        if (diffDays === 0) dateStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        else if (diffDays === 1) dateStr = 'Yesterday';
+        else if (diffDays < 7) dateStr = date.toLocaleDateString('en-US', { weekday: 'short' });
+        else dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+        const isUnread = !latest.isSent;
+        const latestReceived = thread.messages.find(m => !m.isSent);
+        const latestSent = thread.messages.find(m => m.isSent);
+        const ballInOurCourt = latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp);
+
+        let statusDot = '';
+        if (ballInOurCourt) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#00b894;display:inline-block;margin-right:8px;" title="Needs response"></span>';
+        else if (diffDays >= 4 && latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp)) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block;margin-right:8px;" title="Needs follow-up"></span>';
+
+        html += `<div onclick="openThreadView('${thread.threadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;${isUnread ? 'background:rgba(226,245,0,0.03);' : ''}" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='${isUnread ? 'rgba(226,245,0,0.03)' : 'transparent'}'">
+          <div style="width:36px;height:36px;border-radius:50%;background:${ballInOurCourt ? '#00b894' : 'var(--bg-tertiary)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${ballInOurCourt ? '#fff' : 'var(--text-secondary)'};flex-shrink:0;">${(thread.contact || '?')[0].toUpperCase()}</div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div style="display:flex;align-items:center;gap:4px;">
+                ${statusDot}
+                <span style="font-weight:${isUnread ? '700' : '500'};font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">${thread.contact || thread.email}</span>
+                ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);">(' + msgCount + ')</span>' : ''}
+              </div>
+              <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">${dateStr}</span>
+            </div>
+            <div style="font-size:13px;${isUnread ? 'color:var(--text-primary);font-weight:500;' : 'color:var(--text-secondary);'}white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${latest.subject || '(no subject)'}</div>
+            <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${latest.snippet || ''}</div>
+          </div>
+        </div>`;
+      });
+
+      container.innerHTML = html;
     }
 
     function categorizeEmail(item) {
