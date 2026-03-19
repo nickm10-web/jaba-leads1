@@ -2569,6 +2569,379 @@
       background: #2a2d37;
     }
 
+    /* Schools Board */
+    .schools-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .schools-header h2 {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-size: 30px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .schools-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .schools-stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .schools-stat-card {
+      background: linear-gradient(180deg, rgba(35, 39, 51, 0.95), rgba(20, 22, 29, 0.95));
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .schools-stat-value {
+      font-family: 'Anton', sans-serif;
+      font-size: 28px;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .schools-stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .schools-control-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .schools-filters,
+    .schools-view-toggle {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .schools-filter-chip,
+    .schools-view-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .schools-filter-chip.active,
+    .schools-view-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .schools-search {
+      min-width: 240px;
+      flex: 1;
+      max-width: 320px;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+
+    .schools-search:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(226, 245, 0, 0.08);
+    }
+
+    .schools-group {
+      margin-bottom: 28px;
+    }
+
+    .schools-group-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .schools-group-title {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-size: 24px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .schools-group-meta {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .conference-section {
+      margin-bottom: 24px;
+      padding: 18px;
+      background: rgba(15, 17, 23, 0.7);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+    }
+
+    .conference-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .conference-title-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .conference-name {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-size: 22px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .conference-badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(226, 245, 0, 0.12);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .conference-metrics {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .conference-metric {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 11px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .schools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 12px;
+    }
+
+    .school-card {
+      border-radius: 16px;
+      padding: 14px;
+      min-height: 165px;
+      background: linear-gradient(180deg, rgba(30, 34, 45, 0.95), rgba(20, 22, 29, 0.95));
+      border: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .school-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(226, 245, 0, 0.35);
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.24);
+    }
+
+    .school-card.unworked {
+      opacity: 0.82;
+      background: linear-gradient(180deg, rgba(26, 29, 39, 0.9), rgba(17, 19, 26, 0.9));
+    }
+
+    .school-card.client {
+      border-color: rgba(226, 245, 0, 0.45);
+      box-shadow: inset 0 0 0 1px rgba(226, 245, 0, 0.18);
+    }
+
+    .school-card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .school-logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .school-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .school-conference-pill {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--text-secondary);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px;
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.03);
+      white-space: nowrap;
+    }
+
+    .school-name {
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+      color: var(--text-primary);
+      min-height: 36px;
+    }
+
+    .school-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      background: rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+    }
+
+    .school-status.unworked {
+      background: rgba(139, 148, 158, 0.14);
+      color: var(--text-secondary);
+    }
+
+    .school-heat {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      padding: 5px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+    }
+
+    .school-heat.green {
+      background: rgba(0, 184, 148, 0.16);
+      color: #7ef0cc;
+    }
+
+    .school-heat.yellow {
+      background: rgba(253, 203, 110, 0.16);
+      color: #ffe08f;
+    }
+
+    .school-heat.red {
+      background: rgba(255, 107, 107, 0.16);
+      color: #ff9d9d;
+    }
+
+    .school-heat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .school-context {
+      color: var(--text-secondary);
+      font-size: 12px;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      min-height: 54px;
+    }
+
+    .school-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: auto;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .schools-empty {
+      padding: 24px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px dashed rgba(255,255,255,0.08);
+      color: var(--text-secondary);
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .school-panel-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 1200px) {
+      .schools-stats {
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+      }
+    }
+
     @media (max-width: 1024px) {
       .detail-panel {
         width: 100%;
@@ -2576,6 +2949,17 @@
 
       .global-search-wrapper {
         max-width: 250px;
+      }
+
+      .schools-header,
+      .schools-control-bar,
+      .conference-section-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .schools-stats {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
       }
     }
   </style>
@@ -2610,6 +2994,7 @@
       <button class="top-tab" data-section="inbox" onclick="switchSection('inbox')">Inbox <span class="tab-badge" id="inboxBadge">0</span></button>
       <button class="top-tab" data-section="meetings" onclick="switchSection('meetings')">Meetings <span class="tab-badge" id="meetingsBadge">0</span></button>
       <button class="top-tab" data-section="tasks" onclick="switchSection('tasks')">Tasks <span class="tab-badge" id="tasksBadge">0</span></button>
+      <button class="top-tab" data-section="schools" onclick="switchSection('schools')">Schools</button>
       <button class="top-tab" data-section="playbooks" onclick="switchSection('playbooks')">Playbooks</button>
     </div>
 
@@ -2913,6 +3298,35 @@
       </div>
     </div><!-- /tasksSection -->
 
+    <!-- SCHOOLS SECTION -->
+    <div id="schoolsSection" style="display:none;">
+      <div class="schools-header">
+        <div>
+          <h2>Division I Schools</h2>
+          <div class="schools-subtitle">Conference board for live pipeline reviews</div>
+        </div>
+      </div>
+
+      <div class="schools-stats" id="schoolsStats"></div>
+
+      <div class="schools-control-bar">
+        <div class="schools-filters" id="schoolsFilterChips"></div>
+        <input
+          type="text"
+          id="schoolsSearch"
+          class="schools-search"
+          placeholder="Search schools or conferences..."
+          oninput="handleSchoolsSearch(this.value)"
+        >
+        <div class="schools-view-toggle">
+          <button class="schools-view-btn active" data-mode="call" onclick="setSchoolsView('call')">Call View</button>
+          <button class="schools-view-btn" data-mode="crm" onclick="setSchoolsView('crm')">CRM View</button>
+        </div>
+      </div>
+
+      <div id="schoolsBoard"></div>
+    </div><!-- /schoolsSection -->
+
     <!-- PLAYBOOKS SECTION -->
     <div id="playbooksSection" style="display:none;">
       <div style="margin-bottom:32px;">
@@ -3009,6 +3423,7 @@
     </div>
   </div>
 
+  <script src="./schools-data.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -3036,13 +3451,17 @@
     let gmailRefreshTimer = null;
 
     function setGmailConnectedUI() {
-      document.getElementById('gmailConnectBtn').style.background = '#00b894';
-      document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
+      const btn = document.getElementById('gmailConnectBtn');
+      if (!btn) return;
+      btn.style.background = '#00b894';
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Gmail Connected';
     }
 
     function setGmailDisconnectedUI() {
-      document.getElementById('gmailConnectBtn').style.background = '#4285f4';
-      document.getElementById('gmailConnectBtn').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg> Connect Gmail';
+      const btn = document.getElementById('gmailConnectBtn');
+      if (!btn) return;
+      btn.style.background = '#4285f4';
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M20 18h-2V9.25L12 13 6 9.25V18H4V6h1.2l6.8 4.25L18.8 6H20m0-2H4c-1.11 0-2 .89-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2z"/></svg> Connect Gmail';
     }
 
     function onGmailToken(response) {
@@ -3270,17 +3689,40 @@
         document.getElementById('gmailStatus').style.color = '#fdcb6e';
         document.getElementById('gmailStatus').textContent = 'Syncing...';
 
-        // Fetch sent + inbox messages (last 30 days)
-        const [sentRes, inboxRes] = await Promise.all([
-          fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:sent newer_than:30d', {
-            headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
-          }),
-          fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=50&q=in:inbox newer_than:30d', {
-            headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
-          })
+        async function fetchMessageIds(query, pageLimit = 4) {
+          const ids = new Set();
+          let pageToken = '';
+
+          for (let page = 0; page < pageLimit; page++) {
+            const url = new URL('https://gmail.googleapis.com/gmail/v1/users/me/messages');
+            url.searchParams.set('maxResults', '100');
+            url.searchParams.set('q', query);
+            if (pageToken) url.searchParams.set('pageToken', pageToken);
+
+            const res = await fetch(url.toString(), {
+              headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
+            });
+
+            if (res.status === 401) {
+              return { unauthorized: true };
+            }
+
+            const data = await res.json();
+            (data.messages || []).forEach(m => ids.add(m.id));
+            if (!data.nextPageToken) break;
+            pageToken = data.nextPageToken;
+          }
+
+          return { ids: [...ids] };
+        }
+
+        // Include archived threads and a wider time window so the inbox is not limited to a tiny recent slice.
+        const [allMailResult, sentResult] = await Promise.all([
+          fetchMessageIds('newer_than:120d -in:trash -in:spam -category:promotions -category:social'),
+          fetchMessageIds('in:sent newer_than:120d')
         ]);
 
-        if (sentRes.status === 401 || inboxRes.status === 401) {
+        if (allMailResult.unauthorized || sentResult.unauthorized) {
           console.log('Gmail 401 - attempting silent refresh...');
           gmailAccessToken = null;
           localStorage.removeItem('gmail_access_token');
@@ -3290,13 +3732,12 @@
           return;
         }
 
-        const [sentData, inboxData] = await Promise.all([sentRes.json(), inboxRes.json()]);
         const allMsgIds = new Set();
-        (sentData.messages || []).forEach(m => allMsgIds.add(m.id));
-        (inboxData.messages || []).forEach(m => allMsgIds.add(m.id));
+        (allMailResult.ids || []).forEach(id => allMsgIds.add(id));
+        (sentResult.ids || []).forEach(id => allMsgIds.add(id));
 
         // Fetch full message details (with snippet for thread view)
-        const msgIds = [...allMsgIds].slice(0, 100);
+        const msgIds = [...allMsgIds].slice(0, 250);
         const allMessages = [];
         for (let i = 0; i < msgIds.length; i += 10) {
           const batch = msgIds.slice(i, i + 10);
@@ -3399,12 +3840,15 @@
       if (!thread || !thread.messages) return;
       const msgs = [...thread.messages].sort((a, b) => a.timestamp - b.timestamp);
       const panel = document.getElementById('threadPanel');
-      const subject = msgs[0]?.subject || '(no subject)';
+      const subject = escapeHtml(msgs[0]?.subject || '(no subject)');
+      const safeContact = escapeHtml(thread.contact || '');
+      const safeEmail = escapeHtml(thread.email || '');
+      const safeCompany = escapeHtml(thread.company || '');
 
       let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
         <div>
-          <div style="font-size:18px;font-weight:700;">${thread.contact}</div>
-          <div style="font-size:12px;color:var(--text-secondary);">${thread.email} • ${thread.company}</div>
+          <div style="font-size:18px;font-weight:700;">${safeContact}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${safeEmail} • ${safeCompany}</div>
           <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">${subject}</div>
         </div>
         <button onclick="closeThreadView()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:8px;">✕</button>
@@ -3416,12 +3860,15 @@
         const date = new Date(msg.timestamp);
         const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' at ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const isMine = msg.isSent;
+        const safeSender = escapeHtml(isMine ? 'Jordon Rooney' : sender.name);
+        const safeDate = escapeHtml(dateStr);
+        const safePreview = escapeHtml(msg.snippet || '(no preview available)');
         html += `<div style="margin-bottom:16px;padding:14px;border-radius:10px;border:1px solid ${isMine ? 'rgba(226,245,0,0.2)' : 'var(--border)'};background:${isMine ? 'rgba(226,245,0,0.04)' : 'var(--bg-secondary)'};">
           <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="font-weight:600;font-size:13px;color:${isMine ? 'var(--accent)' : 'var(--text-primary)'};">${isMine ? 'Jordon Rooney' : sender.name}</span>
-            <span style="font-size:11px;color:var(--text-secondary);">${dateStr}</span>
+            <span style="font-weight:600;font-size:13px;color:${isMine ? 'var(--accent)' : 'var(--text-primary)'};">${safeSender}</span>
+            <span style="font-size:11px;color:var(--text-secondary);">${safeDate}</span>
           </div>
-          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">${msg.snippet || '(no preview available)'}</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">${safePreview}</div>
         </div>`;
       });
       html += '</div>';
@@ -3727,6 +4174,8 @@
       console.log('Loaded', meetings.length, 'meetings');
       loadTasks();
       console.log('Loaded', tasks.length, 'tasks');
+      loadGmailCache();
+      initGmailAuth();
       setupEventListeners();
       setupGlobalSearch();
       populateLeadLinker();
@@ -5293,8 +5742,11 @@
     }
 
     // Section & view management
-    let currentSection = 'dashboard'; // 'dashboard', 'leads' or 'inbox'
+    let currentSection = 'dashboard'; // 'dashboard', 'leads', 'inbox', 'meetings', 'tasks', 'schools', 'playbooks'
     let currentViewMode = 'table'; // 'table' or 'pipeline' (within leads)
+    let currentSchoolFilter = 'All';
+    let currentSchoolView = 'call';
+    let currentSchoolQuery = '';
 
     // Load preferences from localStorage
     function loadViewPreference() {
@@ -5303,8 +5755,9 @@
         currentViewMode = 'pipeline';
       }
       const savedSection = localStorage.getItem('bd_leads_section');
-      if (savedSection === 'inbox') {
-        currentSection = 'inbox';
+      const validSections = ['dashboard', 'leads', 'inbox', 'meetings', 'tasks', 'schools', 'playbooks'];
+      if (savedSection && validSections.includes(savedSection)) {
+        currentSection = savedSection;
       }
     }
 
@@ -5330,6 +5783,7 @@
       document.getElementById('inboxSection').style.display = section === 'inbox' ? 'block' : 'none';
       document.getElementById('meetingsSection').style.display = section === 'meetings' ? 'block' : 'none';
       document.getElementById('tasksSection').style.display = section === 'tasks' ? 'block' : 'none';
+      document.getElementById('schoolsSection').style.display = section === 'schools' ? 'block' : 'none';
       document.getElementById('playbooksSection').style.display = section === 'playbooks' ? 'block' : 'none';
 
       // Show/hide header actions (only relevant for Leads)
@@ -5344,6 +5798,8 @@
         renderMeetings();
       } else if (section === 'tasks') {
         renderTasks();
+      } else if (section === 'schools') {
+        renderSchools();
       } else if (section === 'playbooks') {
         renderPlaybooks();
       } else {
@@ -6120,6 +6576,539 @@
         .sort((a, b) => b.latest.timestamp - a.latest.timestamp);
     }
 
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    const SCHOOL_ALIASES = {
+      'asu': 'Arizona State',
+      'cal': 'California',
+      'cal berkeley': 'California',
+      'berkeley': 'California',
+      'university of oklahoma': 'Oklahoma',
+      'university of san diego': 'San Diego',
+      'usd': 'San Diego',
+      'rmu': 'Robert Morris',
+      'ucf': 'Central Florida',
+      'smu': 'Southern Methodist',
+      'tcu': 'Texas Christian',
+      'usc': 'Southern California',
+      'unc': 'North Carolina',
+      'ole miss': 'Mississippi',
+      'lsu': 'Louisiana State',
+      'utsa': 'Texas at San Antonio',
+      'utep': 'Texas at El Paso',
+      'unlv': 'Nevada, Las Vegas',
+      'umbc': 'Maryland, Baltimore County',
+      'vcu': 'Virginia Commonwealth',
+      'byu': 'Brigham Young',
+      'uc san diego': 'UC San Diego',
+      'siue': 'SIU Edwardsville',
+      'pitt': 'Pittsburgh',
+      'miami': 'Miami',
+      'depaul': 'DePaul',
+      'mizzou': 'Missouri',
+      'msu': 'Michigan State',
+      'odu': 'Old Dominion'
+    };
+
+    const CONFERENCE_GROUP_ORDER = ['Power 4', 'Group of 5', 'Other D1'];
+    const CONFERENCE_ORDER = {
+      'Power 4': ['ACC', 'Big Ten', 'Big 12', 'SEC'],
+      'Group of 5': ['American', 'C-USA', 'MAC', 'Mountain West', 'Sun Belt']
+    };
+
+    function defaultSchools() {
+      return (window.D1_SCHOOLS_DATA || []).map(school => ({ ...school }));
+    }
+
+    function normalizeSchoolName(name) {
+      let normalized = String(name || '')
+        .toLowerCase()
+        .replace(/&/g, ' and ')
+        .replace(/\//g, ' ')
+        .replace(/[().,'’-]/g, ' ')
+        .replace(/\bthe\b/g, ' ')
+        .replace(/\buniversity of\b/g, ' ')
+        .replace(/\buniversity\b/g, ' ')
+        .replace(/\bcollege of\b/g, ' ')
+        .replace(/\bsaint\b/g, 'st')
+        .replace(/\bst\.\b/g, 'st')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      return SCHOOL_ALIASES[normalized]
+        ? SCHOOL_ALIASES[normalized].toLowerCase()
+        : normalized;
+    }
+
+    function getSchoolConferenceList(grouped) {
+      const ordered = [];
+      const seen = new Set();
+      (CONFERENCE_ORDER[grouped[0]?.subdivisionGroup] || []).forEach(conf => {
+        if (grouped.some(item => item.conference === conf)) {
+          ordered.push(conf);
+          seen.add(conf);
+        }
+      });
+      grouped
+        .map(item => item.conference)
+        .filter((conf, index, arr) => conf && arr.indexOf(conf) === index && !seen.has(conf))
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(conf => ordered.push(conf));
+      return ordered;
+    }
+
+    function getSchoolLogo(record) {
+      if (record.logo) return record.logo;
+      if (record.lead?.domain) return record.lead.domain;
+      return '';
+    }
+
+    function getSchoolInitials(name) {
+      return String(name || '')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(word => word[0])
+        .join('')
+        .toUpperCase() || '?';
+    }
+
+    function getSchoolStatusClass(stage, isUnworked) {
+      if (isUnworked) return 'unworked';
+      if (stage === 'client') return 'client';
+      return '';
+    }
+
+    function getSchoolHeat(record) {
+      if (record.stage === 'client') {
+        return { key: 'green', label: 'Green', reason: 'Client' };
+      }
+
+      if (['meeting_scheduled', 'meeting_complete', 'contract_sent', 'ready', 'report_sent', 'building', 'auditing', 'announcement_working', 'announcement_sent', 'announcement_approved'].includes(record.stage)) {
+        return { key: 'green', label: 'Green', reason: 'Hot' };
+      }
+
+      if (record.followUp || record.emailItems.length > 0 || record.meetings.length > 0 || record.tasks.some(task => task.status !== 'done') || ['contacted', 'lead', 'scrape'].includes(record.stage)) {
+        return { key: 'yellow', label: 'Yellow', reason: 'Waiting' };
+      }
+
+      return { key: 'red', label: 'Red', reason: 'Cold' };
+    }
+
+    function getStageStyle(stage, isUnworked) {
+      if (isUnworked) return 'background:rgba(139,148,158,0.14);color:var(--text-secondary);';
+      const stageColors = {
+        lead: '#a29bfe',
+        contacted: '#74b9ff',
+        meeting_scheduled: '#81ecec',
+        scrape: '#ffeaa7',
+        building: '#fab1a0',
+        auditing: '#d6c5ff',
+        ready: '#55efc4',
+        meeting_complete: '#00b894',
+        report_sent: '#74b9ff',
+        contract_sent: '#fd79a8',
+        client: '#E2F500',
+        onhold: '#8b949e'
+      };
+      const bg = stageColors[stage] || '#30363d';
+      const fg = stage === 'client' || stage === 'scrape' ? '#000' : '#fff';
+      return `background:${bg};color:${fg};`;
+    }
+
+    function getBestSchoolLeadMatch(school) {
+      const aliases = [school.schoolName, ...(school.aliases || [])].map(normalizeSchoolName);
+      const schoolNames = new Set(aliases);
+      const schoolLeads = leads.filter(lead => lead.bucket === 'schools');
+      return schoolLeads.find(lead => schoolNames.has(normalizeSchoolName(lead.company))) || null;
+    }
+
+    function getSchoolEmails(school, lead) {
+      const aliases = [school.schoolName, ...(school.aliases || []), lead?.company].filter(Boolean).map(normalizeSchoolName);
+      const seen = new Set();
+      return INBOX_EMAILS.filter(item => {
+        const normalizedCompany = normalizeSchoolName(item.company || '');
+        return aliases.some(alias => normalizedCompany === alias);
+      }).filter(item => {
+        const key = `${item.email}-${item.subject}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function getSchoolThreads(emailItems) {
+      const threadIds = new Set(emailItems.map(item => item.threadId).filter(Boolean));
+      return Object.values(gmailThreadCache || {}).filter(thread => threadIds.has(thread.threadId));
+    }
+
+    function getSchoolMeetings(school, lead) {
+      const aliases = [school.schoolName, ...(school.aliases || []), lead?.company].filter(Boolean).map(normalizeSchoolName);
+      return meetings.filter(meeting => {
+        if (lead && meeting.linkedLeadId === lead.id) return true;
+        const company = normalizeSchoolName(meeting.company || '');
+        return aliases.some(alias => company === alias);
+      });
+    }
+
+    function getSchoolTasks(lead) {
+      if (!lead) return [];
+      return tasks.filter(task => task.linkedLeadId === lead.id);
+    }
+
+    function getSchoolContextPreview(record, mode) {
+      const upcomingMeeting = record.meetings
+        .filter(meeting => meeting.date)
+        .sort((a, b) => a.date.localeCompare(b.date))[0];
+      const openTask = record.tasks.find(task => task.status !== 'done');
+
+      if (mode === 'crm') {
+        if (record.followUp) return `Follow-up ${record.followUp}`;
+        if (record.contacts.length) return `${record.contacts.length} contact${record.contacts.length === 1 ? '' : 's'} linked`;
+        if (openTask) return openTask.title;
+        return record.isUnworked ? 'No CRM activity yet' : 'CRM record active';
+      }
+
+      if (upcomingMeeting) return `Meeting ${upcomingMeeting.date}${upcomingMeeting.time ? ' • ' + upcomingMeeting.time : ''}`;
+      if (record.lead?.context) return record.lead.context.split('|')[0].trim().slice(0, 90);
+      if (record.emailItems.length) return `${record.emailItems.length} related email${record.emailItems.length === 1 ? '' : 's'} tracked`;
+      return record.isUnworked ? 'No activity yet' : 'Open school record';
+    }
+
+    function buildSchoolBoardData() {
+      return defaultSchools().map(school => {
+        const lead = getBestSchoolLeadMatch(school);
+        const emailItems = getSchoolEmails(school, lead);
+        const relatedMeetings = getSchoolMeetings(school, lead);
+        const relatedTasks = getSchoolTasks(lead);
+        const relatedThreads = getSchoolThreads(emailItems);
+        const isUnworked = !lead;
+        const stage = lead?.stage || 'unworked';
+        return {
+          schoolId: school.id,
+          schoolName: school.schoolName,
+          conference: school.conference,
+          conferenceFull: school.conferenceFull,
+          subdivisionGroup: school.subdivisionGroup,
+          logo: school.logo,
+          lead,
+          stage,
+          displayStatus: isUnworked ? 'Unworked' : (STAGE_LABELS[stage] || 'Active'),
+          followUp: lead?.followUp || '',
+          contacts: lead?.contacts || [],
+          tasks: relatedTasks,
+          meetings: relatedMeetings,
+          inboxThreads: relatedThreads,
+          emailItems,
+          isUnworked,
+          heat: null,
+          contextPreview: '',
+          aliases: school.aliases || []
+        };
+      }).map(record => ({
+        ...record,
+        heat: getSchoolHeat(record),
+        contextPreview: getSchoolContextPreview(record, currentSchoolView)
+      }));
+    }
+
+    function renderSchoolsFilterChips() {
+      const chips = ['All', 'Power 4', 'Group of 5', 'Other D1'];
+      const container = document.getElementById('schoolsFilterChips');
+      container.innerHTML = chips.map(chip => `
+        <button class="schools-filter-chip ${currentSchoolFilter === chip ? 'active' : ''}" onclick="setSchoolsFilter('${chip}')">${chip}</button>
+      `).join('');
+    }
+
+    function renderConferenceSection(conferenceName, schoolRecords) {
+      const activeCount = schoolRecords.filter(record => !record.isUnworked).length;
+      const clientCount = schoolRecords.filter(record => record.stage === 'client').length;
+      return `
+        <div class="conference-section">
+          <div class="conference-section-header">
+            <div class="conference-title-block">
+              <div class="conference-name">${escapeHtml(conferenceName)}</div>
+              <span class="conference-badge">${schoolRecords.length} schools</span>
+            </div>
+            <div class="conference-metrics">
+              <span class="conference-metric">${activeCount} active</span>
+              <span class="conference-metric">${clientCount} clients</span>
+            </div>
+          </div>
+          <div class="schools-grid">
+            ${schoolRecords.map(record => {
+              const logo = getSchoolLogo(record);
+              const statusClass = getSchoolStatusClass(record.stage, record.isUnworked);
+              const cardClass = `${record.isUnworked ? 'unworked' : ''} ${record.stage === 'client' ? 'client' : ''}`.trim();
+              return `
+                <div class="school-card ${cardClass}" onclick="openSchoolPanel('${record.schoolId}')">
+                  <div class="school-card-header">
+                    <div class="school-logo">
+                      ${logo
+                        ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(record.schoolName)} logo" onerror="this.parentElement.innerHTML='${getSchoolInitials(record.schoolName)}'">`
+                        : getSchoolInitials(record.schoolName)}
+                    </div>
+                    <span class="school-conference-pill">${escapeHtml(record.conference)}</span>
+                  </div>
+                  <div class="school-name">${escapeHtml(record.schoolName)}</div>
+                  <span class="school-heat ${record.heat.key}">
+                    <span class="school-heat-dot" style="background:${record.heat.key === 'green' ? '#00b894' : record.heat.key === 'yellow' ? '#fdcb6e' : '#ff6b6b'}"></span>
+                    ${escapeHtml(record.heat.label)}
+                  </span>
+                  <span class="school-status ${statusClass}" style="${getStageStyle(record.stage, record.isUnworked)}">${escapeHtml(record.displayStatus)}</span>
+                  <div class="school-context">${escapeHtml(record.contextPreview)}</div>
+                  <div class="school-card-footer">
+                    <span>${record.followUp ? `FU ${escapeHtml(record.followUp)}` : 'No follow-up'}</span>
+                    <span>${record.contacts.length} contacts</span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    window.setSchoolsFilter = function(filter) {
+      currentSchoolFilter = filter;
+      renderSchools();
+    };
+
+    window.setSchoolsView = function(mode) {
+      currentSchoolView = mode;
+      document.querySelectorAll('.schools-view-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      renderSchools();
+    };
+
+    window.handleSchoolsSearch = function(value) {
+      currentSchoolQuery = value.toLowerCase().trim();
+      renderSchools();
+    };
+
+    function renderSchools() {
+      renderSchoolsFilterChips();
+      const records = buildSchoolBoardData();
+      const filtered = records.filter(record => {
+        const matchesFilter = currentSchoolFilter === 'All' || record.subdivisionGroup === currentSchoolFilter;
+        const haystack = `${record.schoolName} ${record.conference} ${record.conferenceFull} ${(record.aliases || []).join(' ')}`.toLowerCase();
+        const matchesSearch = !currentSchoolQuery || haystack.includes(currentSchoolQuery);
+        return matchesFilter && matchesSearch;
+      });
+
+      const stats = {
+        total: records.length,
+        active: records.filter(record => !record.isUnworked).length,
+        meetings: records.filter(record => record.meetings.length > 0).length,
+        clients: records.filter(record => record.stage === 'client').length,
+        untouched: records.filter(record => record.isUnworked).length
+      };
+
+      document.getElementById('schoolsStats').innerHTML = [
+        ['Total D1 Schools', stats.total],
+        ['Active CRM Records', stats.active],
+        ['Schools with Meetings', stats.meetings],
+        ['Clients', stats.clients],
+        ['Untouched Schools', stats.untouched]
+      ].map(([label, value]) => `
+        <div class="schools-stat-card">
+          <div class="schools-stat-value">${value}</div>
+          <div class="schools-stat-label">${label}</div>
+        </div>
+      `).join('');
+
+      const board = document.getElementById('schoolsBoard');
+      if (filtered.length === 0) {
+        board.innerHTML = '<div class="schools-empty">No schools match the current filters.</div>';
+        return;
+      }
+
+      const groupHtml = CONFERENCE_GROUP_ORDER.map(group => {
+        const grouped = filtered.filter(record => record.subdivisionGroup === group);
+        if (grouped.length === 0) return '';
+        const conferenceList = getSchoolConferenceList(grouped);
+        const groupStats = {
+          active: grouped.filter(record => !record.isUnworked).length,
+          clients: grouped.filter(record => record.stage === 'client').length
+        };
+        return `
+          <div class="schools-group">
+            <div class="schools-group-header">
+              <div class="schools-group-title">${group}</div>
+              <div class="schools-group-meta">${grouped.length} schools • ${groupStats.active} active • ${groupStats.clients} clients</div>
+            </div>
+            ${conferenceList.map(conference => renderConferenceSection(conference, grouped.filter(record => record.conference === conference))).join('')}
+          </div>
+        `;
+      }).join('');
+
+      board.innerHTML = groupHtml;
+    }
+
+    window.openSchoolPanel = function(schoolId) {
+      const record = buildSchoolBoardData().find(item => item.schoolId === schoolId);
+      if (!record) return;
+
+      const logo = getSchoolLogo(record);
+      const relatedEmails = record.emailItems.slice(0, 5);
+      const relatedMeetings = record.meetings.slice(0, 5);
+      const relatedTasks = record.tasks.slice(0, 5);
+      const lead = record.lead;
+
+      const contactsHtml = record.contacts.length
+        ? record.contacts.map(contact => `<div class="detail-contact-item"><div class="detail-contact-name">${escapeHtml(contact.split('(')[0].trim())}</div><div class="detail-contact-email">${escapeHtml(contact.includes('(') ? contact.split('(')[1].replace(')', '').trim() : '')}</div></div>`).join('')
+        : '<div style="color:var(--text-secondary);font-size:13px;">No contacts yet</div>';
+
+      const emailsHtml = relatedEmails.length
+        ? relatedEmails.map(email => `<div class="related-email-item" onclick="switchSection('inbox')"><div class="related-email-contact">${escapeHtml(email.contact || email.company)}</div><div class="related-email-subject">${escapeHtml(email.subject || '')}</div><div class="related-email-date">${escapeHtml(email.sentDate || '')}</div></div>`).join('')
+        : '<div style="color:var(--text-secondary);font-size:13px;">No related inbox activity</div>';
+
+      const meetingsHtml = relatedMeetings.length
+        ? relatedMeetings.map(meeting => `<div style="padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;"><div style="font-weight:600;color:var(--text-primary);">${escapeHtml(meeting.company)}</div><div style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(meeting.date || '')}${meeting.time ? ' • ' + escapeHtml(meeting.time) : ''}</div></div>`).join('')
+        : '<div style="color:var(--text-secondary);font-size:13px;">No meetings scheduled</div>';
+
+      const tasksHtml = relatedTasks.length
+        ? relatedTasks.map(task => `<div style="padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;"><div style="font-weight:600;color:var(--text-primary);">${escapeHtml(task.title)}</div><div style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(task.dueDate || 'No due date')}</div></div>`).join('')
+        : '<div style="color:var(--text-secondary);font-size:13px;">No linked tasks</div>';
+
+      const primaryActions = lead
+        ? `
+          <button class="btn btn-secondary" onclick="openDetailPanel(${lead.id})">Open Lead</button>
+          <button class="btn btn-primary" onclick="openEditModal(${lead.id})">Edit Lead</button>
+          <button class="btn btn-secondary" onclick="addMeetingForSchool('${record.schoolId}')">Add Meeting</button>
+          <button class="btn btn-secondary" onclick="addTaskForSchool('${record.schoolId}')">Add Task</button>
+        `
+        : `
+          <button class="btn btn-primary" onclick="createLeadFromSchool('${record.schoolId}', true)">Create Lead</button>
+          <button class="btn btn-secondary" onclick="addNoteForSchool('${record.schoolId}')">Add Note</button>
+        `;
+
+      const html = `
+        <div class="detail-logo-large">
+          ${logo
+            ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(record.schoolName)} logo" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:28px;font-weight:700;\\'>${getSchoolInitials(record.schoolName)}</div>'">`
+            : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px;font-weight:700;">${getSchoolInitials(record.schoolName)}</div>`}
+        </div>
+        <div class="detail-company-name">${escapeHtml(record.schoolName)}</div>
+        <div class="detail-pills">
+          <span class="bucket-pill bucket-schools">Schools</span>
+          <span class="school-heat ${record.heat.key}">
+            <span class="school-heat-dot" style="background:${record.heat.key === 'green' ? '#00b894' : record.heat.key === 'yellow' ? '#fdcb6e' : '#ff6b6b'}"></span>
+            ${escapeHtml(record.heat.label)} • ${escapeHtml(record.heat.reason)}
+          </span>
+          <span class="stage-pill ${record.isUnworked ? '' : `stage-${record.stage}`}" style="${getStageStyle(record.stage, record.isUnworked)}">${escapeHtml(record.displayStatus)}</span>
+          <span class="bucket-pill" style="background:rgba(226,245,0,0.12);color:var(--accent);">${escapeHtml(record.conference)}</span>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Follow-Up</div>
+          <div class="detail-notes">${record.followUp ? escapeHtml(record.followUp) : 'No follow-up set'}</div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Contacts</div>
+          <div class="detail-contacts-list">${contactsHtml}</div>
+        </div>
+
+        <div class="detail-section">
+          <div class="detail-section-title">Context / Notes</div>
+          <div class="detail-notes">${lead?.context ? escapeHtml(lead.context) : 'No notes yet'}</div>
+        </div>
+
+        <div class="related-emails-section">
+          <div class="detail-section-title">Related Inbox Activity</div>
+          ${emailsHtml}
+        </div>
+
+        <div class="related-emails-section">
+          <div class="detail-section-title">Related Meetings</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">${meetingsHtml}</div>
+        </div>
+
+        <div class="related-emails-section">
+          <div class="detail-section-title">Related Tasks</div>
+          <div style="display:flex;flex-direction:column;gap:8px;">${tasksHtml}</div>
+        </div>
+
+        <div class="school-panel-actions">
+          ${primaryActions}
+        </div>
+      `;
+
+      document.getElementById('detailPanelContent').innerHTML = html;
+      document.getElementById('detailPanel').classList.add('active');
+    };
+
+    window.createLeadFromSchool = function(schoolId, openEditor = false) {
+      const school = defaultSchools().find(item => item.id === schoolId);
+      if (!school) return null;
+      const existingLead = getBestSchoolLeadMatch(school);
+      if (existingLead) {
+        if (openEditor) openEditModal(existingLead.id);
+        return existingLead;
+      }
+      const newLeadId = Math.max(...leads.map(lead => lead.id || 0), 0) + 1;
+      const lead = {
+        id: newLeadId,
+        company: school.schoolName,
+        bucket: 'schools',
+        stage: 'lead',
+        followUp: '',
+        contacts: [],
+        context: '',
+        domain: school.logo || ''
+      };
+      leads.push(lead);
+      saveleads();
+      populateLeadLinker();
+      renderSchools();
+      if (openEditor) {
+        closeDetailPanel();
+        openEditModal(lead.id);
+      } else {
+        openSchoolPanel(schoolId);
+      }
+      return lead;
+    };
+
+    window.addNoteForSchool = function(schoolId) {
+      createLeadFromSchool(schoolId, true);
+    };
+
+    window.addTaskForSchool = function(schoolId) {
+      const lead = createLeadFromSchool(schoolId, false);
+      switchSection('tasks');
+      const form = document.getElementById('taskFullForm');
+      if (form.style.display === 'none') {
+        toggleTaskForm();
+      }
+      document.getElementById('taskLinkedLead').value = lead.id;
+      document.getElementById('taskTitle').value = `Follow up with ${lead.company}`;
+      document.getElementById('taskTitle').focus();
+      closeDetailPanel();
+    };
+
+    window.addMeetingForSchool = function(schoolId) {
+      const lead = createLeadFromSchool(schoolId, false);
+      switchSection('meetings');
+      showQuickAddForm(getTodayDate());
+      setTimeout(() => {
+        if (document.getElementById('qCompany')) {
+          document.getElementById('qCompany').value = lead.company;
+          document.getElementById('qType').focus();
+        }
+      }, 0);
+      closeDetailPanel();
+    };
+
     function renderGmailInbox() {
       const container = document.getElementById('inboxGmail');
       const all = getCleanThreads();
@@ -6153,6 +7142,7 @@
         if (!thread.email && !thread.contact) return; // Skip threads with no contact info
         const msgCount = thread.messages.length;
         const displayName = cleanContactName(thread.contact, thread.email);
+        const safeDisplayName = escapeHtml(displayName);
         const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2) || '?';
 
         // Find CRM lead for logo
@@ -6192,6 +7182,9 @@
 
         // Company display name from CRM or thread
         const companyName = crmLead ? crmLead.company : (thread.company || '');
+        const safeCompanyName = escapeHtml(companyName);
+        const safeSubject = escapeHtml(latest.subject || '(no subject)');
+        const safeSnippet = escapeHtml(latest.snippet || '');
 
         const safeThreadId = (thread.threadId || '').replace(/'/g, "\\'");
         const lastWasSent = latest.isSent;
@@ -6202,14 +7195,14 @@
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
               <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;">
                 ${statusDot}${sentIndicator}
-                <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayName}</span>
+                <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeDisplayName}</span>
                 ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">(' + msgCount + ')</span>' : ''}
-                ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">• ' + companyName + '</span>' : ''}
+                ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">• ' + safeCompanyName + '</span>' : ''}
               </div>
               <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;margin-left:8px;">${dateStr}</span>
             </div>
-            <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${latest.subject || '(no subject)'}</div>
-            <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${latest.snippet || ''}</div>
+            <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeSubject}</div>
+            <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${safeSnippet}</div>
           </div>
         </div>`;
       });
