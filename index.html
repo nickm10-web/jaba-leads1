@@ -4942,10 +4942,12 @@
         const meetingsList = document.createElement('div');
         meetingsList.className = 'meetings-list';
         meetingsList.innerHTML = dayMeetings.map(m => {
-          const checkedCount = m.prepChecklist.filter(c => c.done).length;
-          const totalCount = m.prepChecklist.length;
-          const statusDot = m.prepStatus === 'ready' ? '✓' : m.prepStatus === 'in_progress' ? '◐' : '◯';
-          const statusClass = m.prepStatus.replace('_', '-');
+          const checklist = m.prepChecklist || m.prep || [];
+          const checkedCount = checklist.filter(c => c.done).length;
+          const totalCount = checklist.length;
+          const prepStatus = m.prepStatus || (totalCount === 0 ? 'ready' : 'not_started');
+          const statusDot = prepStatus === 'ready' ? '✓' : prepStatus === 'in_progress' ? '◐' : '◯';
+          const statusClass = prepStatus.replace('_', '-');
 
           return `
             <div class="meeting-card" onclick="openMeetingDetail(${m.id})">
