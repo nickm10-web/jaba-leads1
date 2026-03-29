@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Built Different — Control Center</title>
+  <title>Built Different â Control Center</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Saira+Extra+Condensed:wght@400;500;600;700&display=swap');
 
@@ -448,18 +448,18 @@
     }
 
     th.sortable::after {
-      content: ' ⇅';
+      content: ' â';
       font-size: 10px;
       opacity: 0.5;
     }
 
     th.sort-asc::after {
-      content: ' ↑';
+      content: ' â';
       opacity: 1;
     }
 
     th.sort-desc::after {
-      content: ' ↓';
+      content: ' â';
       opacity: 1;
     }
 
@@ -2972,12 +2972,12 @@
         <div style="background:var(--accent);color:#000;font-family:'Anton',sans-serif;font-size:20px;padding:6px 14px;border-radius:8px;letter-spacing:1px;">JABA</div>
         <div>
           <h1 style="font-family:'Saira Extra Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Control Center</h1>
-          <div style="font-size:12px;color:var(--text-secondary);">Built Different — Business Development</div>
+          <div style="font-size:12px;color:var(--text-secondary);">Built Different â Business Development</div>
         </div>
       </div>
       <!-- Global Search Bar -->
       <div class="global-search-wrapper">
-        <span class="global-search-icon">🔍</span>
+        <span class="global-search-icon">ð</span>
         <input type="text" class="global-search-input" id="globalSearch" placeholder="Search leads & emails...">
         <div class="global-search-dropdown" id="globalSearchDropdown"></div>
       </div>
@@ -3136,7 +3136,7 @@
         <tbody id="tableBody">
           <tr>
             <td colspan="7" class="empty-state">
-              <div class="empty-state-icon">📋</div>
+              <div class="empty-state-icon">ð</div>
               <p>No leads found. Click "+ Add Lead" to get started.</p>
             </td>
           </tr>
@@ -3238,8 +3238,8 @@
       <!-- Week View Header -->
       <div class="week-header">
         <div class="week-nav">
-          <button class="week-nav-btn" onclick="prevWeek()">← Previous</button>
-          <button class="week-nav-btn" onclick="nextWeek()">Next →</button>
+          <button class="week-nav-btn" onclick="prevWeek()">â Previous</button>
+          <button class="week-nav-btn" onclick="nextWeek()">Next â</button>
         </div>
         <div class="week-range" id="weekRange"></div>
       </div>
@@ -3263,7 +3263,7 @@
       <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
         <input type="text" id="taskQuickInput" placeholder="+ Add task... (e.g. &quot;Follow up with Jon Bishop Friday&quot;)" style="flex:1;padding:12px 16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')smartAddTask()">
         <button class="btn btn-primary" onclick="smartAddTask()" style="white-space:nowrap;">Add</button>
-        <button class="btn btn-secondary" onclick="toggleTaskForm()" id="taskFormToggle" style="padding:8px 12px;font-size:16px;" title="Expand form">▾</button>
+        <button class="btn btn-secondary" onclick="toggleTaskForm()" id="taskFormToggle" style="padding:8px 12px;font-size:16px;" title="Expand form">â¾</button>
       </div>
       <!-- Expandable full form (hidden by default) -->
       <div id="taskFullForm" style="display:none;margin-bottom:16px;">
@@ -3284,7 +3284,7 @@
       </div>
       <!-- Auto-generated tasks banner -->
       <div id="autoTasksBanner" style="display:none;background:rgba(226,245,0,0.08);border:1px solid rgba(226,245,0,0.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;align-items:center;gap:12px;">
-        <span style="font-size:16px;">⚡</span>
+        <span style="font-size:16px;">â¡</span>
         <span style="font-size:13px;color:var(--text-primary);" id="autoTasksText">Auto-tasks generated based on your activity</span>
         <button class="btn btn-secondary" onclick="document.getElementById('autoTasksBanner').style.display='none'" style="margin-left:auto;padding:4px 8px;font-size:11px;">Dismiss</button>
       </div>
@@ -3323,7 +3323,7 @@
 
       <!-- Empty State -->
       <div id="taskEmptyState" class="task-empty-state">
-        <div class="task-empty-state-icon">✓</div>
+        <div class="task-empty-state-icon">â</div>
         <p>No tasks yet. Add one to get started.</p>
       </div>
     </div><!-- /tasksSection -->
@@ -3797,7 +3797,7 @@
         db.ref('gmail_threads').set({ lastSync: Date.now(), threads: cacheForFirebase });
 
         document.getElementById('gmailStatus').style.color = '#00b894';
-        document.getElementById('gmailStatus').textContent = 'Synced ' + Object.keys(cacheForFirebase).length + ' threads • ' + new Date().toLocaleTimeString();
+        document.getElementById('gmailStatus').textContent = 'Synced ' + Object.keys(cacheForFirebase).length + ' threads â¢ ' + new Date().toLocaleTimeString();
 
         renderInbox();
 
@@ -3858,10 +3858,10 @@
       let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
         <div>
           <div style="font-size:18px;font-weight:700;">${displayName}</div>
-          <div style="font-size:12px;color:var(--text-secondary);">${thread.email} • ${thread.company}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${thread.email} â¢ ${thread.company}</div>
           <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">${subject}</div>
         </div>
-        <button onclick="closeThreadView()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:8px;">✕</button>
+        <button onclick="closeThreadView()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:8px;">â</button>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">`;
 
@@ -4119,7 +4119,7 @@
         { id: 25, company: 'Arkansas', bucket: 'schools', stage: 'lead', followUp: '', contacts: ['Davante Higginbottom (dhigg@uark.edu)'], context: 'Biz dev.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/8.png' },
         { id: 26, company: 'Virginia', bucket: 'schools', stage: 'lead', followUp: '2026-03-17', contacts: ['Clay Walker (Clay@virginiasp.com)'], context: 'Biz dev. Follow up.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/258.png' },
         { id: 27, company: 'Penn State', bucket: 'schools', stage: 'report_sent', followUp: '2026-02-25', contacts: ['Dann Kabala (djk441@psu.edu)'], context: 'Biz dev. Report sent. Contract sent.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/213.png' },
-        { id: 28, company: 'Playfly', bucket: 'agencies', stage: 'meeting_scheduled', followUp: '2026-03-17', contacts: ['Craig Sloan (craig.sloan@playfly.com)'], context: 'IN PERSON coffee TUESDAY 3/17 8:30 AM at Devoción, NYC. Robert Eckstein. Tucker Ballbach, Jon Bishop also active.', domain: 'https://www.google.com/s2/favicons?domain=playfly.com&sz=128' },
+        { id: 28, company: 'Playfly', bucket: 'agencies', stage: 'meeting_scheduled', followUp: '2026-03-17', contacts: ['Craig Sloan (craig.sloan@playfly.com)'], context: 'IN PERSON coffee TUESDAY 3/17 8:30 AM at DevociÃ³n, NYC. Robert Eckstein. Tucker Ballbach, Jon Bishop also active.', domain: 'https://www.google.com/s2/favicons?domain=playfly.com&sz=128' },
         { id: 29, company: 'UNC', bucket: 'schools', stage: 'report_sent', followUp: '2026-03-09', contacts: ['Kara Cannizzaro (cannizza@email.unc.edu)'], context: 'Biz dev. Report sending. Contract sent.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/153.png' },
         { id: 30, company: 'USC', bucket: 'schools', stage: 'contacted', followUp: '2026-03-10', contacts: ['Lyndsey Lopes (lyndsey.lopes@altiussp.com)'], context: 'Biz dev. Send real dashboard. Contract and campaign sent.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/30.png' },
         { id: 31, company: 'Texas', bucket: 'schools', stage: 'contacted', followUp: '2026-03-16', contacts: ['Sarah Baumgartner (sarah.baumgartner@athletics.utexas.edu)', 'Brett Bell (Brett.Bell@athletics.utexas.edu)'], context: 'Biz dev. Report sent. Waiting for CEO approval. Emailed Dec 9 - Gregg Hamburger connection.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/251.png' },
@@ -4129,7 +4129,7 @@
         { id: 35, company: 'Iowa', bucket: 'schools', stage: 'contacted', followUp: '2026-03-19', contacts: ['Scott Brickman (scott-brickman@uiowa.edu)', 'Cynthia Leonard (cynthia-leonard@uiowa.edu)', 'Dave Aspelmeier (david-aspelmeier@uiowa.edu)', 'Lyla Clerry (lyla-clerry@uiowa.edu)'], context: 'Cold outreach sent 3/12. AI for NIL Depts campaign.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png' },
         { id: 36, company: 'MSU', bucket: 'schools', stage: 'contacted', followUp: '2026-03-09', contacts: ['Darien Harris (darien@ath.msu.edu)'], context: 'Biz dev. Report sending.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/127.png' },
         { id: 37, company: 'Arizona', bucket: 'schools', stage: 'contacted', followUp: '2026-03-09', contacts: ['Brian Rooney (brianrooney@arizona.edu)', 'Bud Sasser (bsasser@arizona.edu)', 'Matthew Herrera (matthewherrera@arizona.edu)'], context: 'Biz dev. Report sending.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/12.png' },
-        { id: 38, company: 'Boise State', bucket: 'schools', stage: 'contacted', followUp: '', contacts: ['Collin Stoecker (collinstoecker@boisestate.edu)'], context: 'Biz dev. Report sent. | 3/15 meeting: Colin wrestler — reach out early next week.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/68.png' },
+        { id: 38, company: 'Boise State', bucket: 'schools', stage: 'contacted', followUp: '', contacts: ['Collin Stoecker (collinstoecker@boisestate.edu)'], context: 'Biz dev. Report sent. | 3/15 meeting: Colin wrestler â reach out early next week.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/68.png' },
         { id: 39, company: 'Creighton', bucket: 'schools', stage: 'onhold', followUp: '', contacts: ['Eric Lewis (ericlewis@creighton.edu)'], context: 'On hold.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/156.png' },
         { id: 40, company: 'Texas Tech', bucket: 'schools', stage: 'contacted', followUp: '', contacts: ['Jennifer Brashear (jennifer.brashear@ttu.edu)', 'Ryan Frenzel (Ryan.Frenzel@ttu.edu)'], context: 'Emailed Dec 16. New role at Texas Tech.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png' },
         { id: 41, company: 'Nebraska', bucket: 'schools', stage: 'onhold', followUp: '', contacts: ['Patricia Peterson (ppeterson@huskers.com)'], context: 'On hold.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/158.png' },
@@ -4258,7 +4258,7 @@
         { id: 151, company: 'A&P Sports Agency', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Transfer portal agency. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=aandsportsagency.com&sz=128' },
         { id: 152, company: '247 Sports Transfer Portal', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Transfer portal services. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=247sports.com&sz=128' },
         { id: 153, company: 'Roc Nation Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Jay-Z founded agency. Major athlete representation. In HubSpot.', domain: 'https://www.google.com/s2/favicons?domain=rocnation.com&sz=128' },
-        { id: 154, company: 'Steinberg Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Leigh Steinberg — legendary sports agent. NFL-heavy.', domain: 'https://www.google.com/s2/favicons?domain=steinbergsports.com&sz=128' },
+        { id: 154, company: 'Steinberg Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Leigh Steinberg â legendary sports agent. NFL-heavy.', domain: 'https://www.google.com/s2/favicons?domain=steinbergsports.com&sz=128' },
         { id: 155, company: 'ISE (Independent Sports)', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Independent Sports & Entertainment. Major NFL/NBA agency.', domain: 'https://www.google.com/s2/favicons?domain=iseworldwide.com&sz=128' },
         { id: 156, company: 'Blueprint Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Full-service athlete agency. Football and basketball.', domain: 'https://www.google.com/s2/favicons?domain=blueprintsports.com&sz=128' },
         { id: 157, company: 'Paradigm Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Major athlete management agency. MMA, boxing, NFL, NBA.', domain: 'https://www.google.com/s2/favicons?domain=paradigmsports.com&sz=128' },
@@ -4271,7 +4271,7 @@
         { id: 164, company: 'Student Athlete NIL', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'NIL services for student athletes. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=studentathletenil.com&sz=128' },
         { id: 165, company: 'Athletes for Hope', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Athlete engagement platform. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=athletesforhope.org&sz=128' },
 
-        // NEW — Meeting week 3/16
+        // NEW â Meeting week 3/16
         { id: 166, company: 'Multiplier', bucket: 'brands', stage: 'meeting_scheduled', followUp: '2026-03-19', contacts: [], context: 'Meeting THURSDAY 3/19 1:30 PM. Caryn Swibel.', domain: 'https://www.google.com/s2/favicons?domain=multiplier.com&sz=128' },
       ];
     }
@@ -4438,7 +4438,7 @@
       { text: 'Prepare updates since last conversation', done: false },
       { text: 'Draft partnership proposal', done: false }
     ],
-    notes: 'IN PERSON — Coffee at Devoción (1134 Broadway, NYC). Robert Eckstein from Playfly. Tucker Ballbach and Jon Bishop also active contacts.',
+    notes: 'IN PERSON â Coffee at DevociÃ³n (1134 Broadway, NYC). Robert Eckstein from Playfly. Tucker Ballbach and Jon Bishop also active contacts.',
     meetingNotes: '',
     outcome: '',
     createdDate: '2026-03-15'
@@ -4527,7 +4527,7 @@
       { text: 'Prepare JABA overview deck', done: true },
       { text: 'Reference UCLA positive feedback as social proof', done: false }
     ],
-    notes: 'Cal x JABA. First meeting. Justin DiTolla replied to cold outreach. Thomas Wymore and Mika Costello also contacted. UCLA gave positive feedback — use as reference.',
+    notes: 'Cal x JABA. First meeting. Justin DiTolla replied to cold outreach. Thomas Wymore and Mika Costello also contacted. UCLA gave positive feedback â use as reference.',
     meetingNotes: '',
     outcome: '',
     createdDate: '2026-03-15'
@@ -4694,21 +4694,21 @@
 
     function loadDefaultTasks() {
         tasks = [
-          { id: 1, title: 'Follow up with Minnesota — Jeremiah Carter re: JABA Contract', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Email sent 2/27, no reply. Contract discussion.', createdDate: '2026-03-15' },
+          { id: 1, title: 'Follow up with Minnesota â Jeremiah Carter re: JABA Contract', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Email sent 2/27, no reply. Contract discussion.', createdDate: '2026-03-15' },
           { id: 2, title: 'Prep for Cal/Berkeley meeting Thu 3/19', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Justin DiTolla replied, meeting scheduled for Thursday.', createdDate: '2026-03-15' },
-          { id: 3, title: 'Send Boise State NIL Report follow-up', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Collin Stoecker — report sent 3/2, needs follow-up.', createdDate: '2026-03-15' },
-          { id: 4, title: 'Schedule Washington meeting — Derek Sullivan', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Derek replied to AI for NIL Depts email. Confirm time.', createdDate: '2026-03-15' },
-          { id: 5, title: 'Follow up with Octagon — Emily McKiernan', dueDate: '2026-03-16', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Sent 2/11, 30+ days no reply. Try different contact or channel.', createdDate: '2026-03-15' },
+          { id: 3, title: 'Send Boise State NIL Report follow-up', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Collin Stoecker â report sent 3/2, needs follow-up.', createdDate: '2026-03-15' },
+          { id: 4, title: 'Schedule Washington meeting â Derek Sullivan', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Derek replied to AI for NIL Depts email. Confirm time.', createdDate: '2026-03-15' },
+          { id: 5, title: 'Follow up with Octagon â Emily McKiernan', dueDate: '2026-03-16', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Sent 2/11, 30+ days no reply. Try different contact or channel.', createdDate: '2026-03-15' },
           { id: 6, title: 'Review Religion of Sport investor deck feedback', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Pietro Moro replied to investor deck. Review and respond.', createdDate: '2026-03-15' },
           { id: 7, title: 'Send Arkansas NIL Report to Davonte', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 25, notes: 'Report sent 3/2, overdue follow-up. 11 days.', createdDate: '2026-03-15' },
-          { id: 8, title: 'Cincinnati meeting prep — Eddie Taylor', dueDate: '2026-03-18', priority: 'medium', status: 'todo', linkedLeadId: 2, notes: 'Eddie replied. Prep dashboard and talking points.', createdDate: '2026-03-15' },
-          { id: 9, title: 'Reconnect with Nicole Tepper — Damar connection', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Last email 2/10. Warm intro through Damar. 31 days.', createdDate: '2026-03-15' },
+          { id: 8, title: 'Cincinnati meeting prep â Eddie Taylor', dueDate: '2026-03-18', priority: 'medium', status: 'todo', linkedLeadId: 2, notes: 'Eddie replied. Prep dashboard and talking points.', createdDate: '2026-03-15' },
+          { id: 9, title: 'Reconnect with Nicole Tepper â Damar connection', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Last email 2/10. Warm intro through Damar. 31 days.', createdDate: '2026-03-15' },
           { id: 10, title: 'UCLA report update for Teri Hanneke', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: 16, notes: 'Active conversation. Update report with latest data.', createdDate: '2026-03-15' },
-          { id: 11, title: 'Cold outreach follow-ups — check replies from 15+ schools', dueDate: '2026-03-19', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Mass outreach sent 3/12. Check for new replies beyond Cal, Washington.', createdDate: '2026-03-15' },
-          { id: 12, title: 'Update Purdue dashboard — Tanner Ball', dueDate: '2026-03-18', priority: 'medium', status: 'in_progress', linkedLeadId: 3, notes: 'Tanner replied re: next steps + dashboard updates.', createdDate: '2026-03-15' },
-          { id: 13, title: 'Follow up with Jeremiah Carter (Minnesota) — texted last week', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Boss meeting: Jeremiah texted last week, waiting. JABA Contract discussion.', createdDate: '2026-03-15' },
-          { id: 14, title: 'Reach out to Colin Stoecker (Boise State) — wrestler', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 38, notes: 'Boss meeting: Reach out early next week. Wrestler.', createdDate: '2026-03-15' },
-          { id: 15, title: 'Reach out to John Bishop (Playfly) — Tuesday', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Didn\'t get back to Jordon. Follow up Tuesday.', createdDate: '2026-03-15' },
+          { id: 11, title: 'Cold outreach follow-ups â check replies from 15+ schools', dueDate: '2026-03-19', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Mass outreach sent 3/12. Check for new replies beyond Cal, Washington.', createdDate: '2026-03-15' },
+          { id: 12, title: 'Update Purdue dashboard â Tanner Ball', dueDate: '2026-03-18', priority: 'medium', status: 'in_progress', linkedLeadId: 3, notes: 'Tanner replied re: next steps + dashboard updates.', createdDate: '2026-03-15' },
+          { id: 13, title: 'Follow up with Jeremiah Carter (Minnesota) â texted last week', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Boss meeting: Jeremiah texted last week, waiting. JABA Contract discussion.', createdDate: '2026-03-15' },
+          { id: 14, title: 'Reach out to Colin Stoecker (Boise State) â wrestler', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 38, notes: 'Boss meeting: Reach out early next week. Wrestler.', createdDate: '2026-03-15' },
+          { id: 15, title: 'Reach out to John Bishop (Playfly) â Tuesday', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Didn\'t get back to Jordon. Follow up Tuesday.', createdDate: '2026-03-15' },
           { id: 16, title: 'Nick connect with Diego on agent scraping', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Scrape every athlete\'s agent from email addresses and bios. Build agency database.', createdDate: '2026-03-15' },
           { id: 17, title: 'Get Chris King (RMU) quote for mid-major pitch', dueDate: '2026-03-21', priority: 'medium', status: 'todo', linkedLeadId: 5, notes: 'Boss meeting: Need testimonial from Chris King for mid-major school outreach. Critical for pitch deck.', createdDate: '2026-03-15' },
           { id: 18, title: 'Research Sponsor United LinkedIn followers', dueDate: '2026-03-21', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Use AI to analyze every Sponsor United LinkedIn follower. Find companies using them just for contacts. Go after them with JABA.', createdDate: '2026-03-15' },
@@ -4717,15 +4717,15 @@
           { id: 21, title: 'Made Hoops / American Cornhole League follow-up', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Made Hoops guy says $20M opportunity. Director of partnerships was COO at American Cornhole League. Heavily connected in sports industry.', createdDate: '2026-03-15' },
 
           // MEETING WEEK 3/16-3/19
-          { id: 22, title: 'Washington meeting — MON 3/16 5:00 PM', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 79, notes: 'Derek Sullivan replied to cold outreach. Prep dashboard with Washington athlete data. Multiple contacts: Cody Scott, Chris Hein, Jack Murrey, Sandy, Joe Knight.', createdDate: '2026-03-15' },
-          { id: 23, title: 'The Team meeting — WED 3/18 12:30 PM', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: 96, notes: 'Jordan Tirico intro call. Prep JABA overview and agency pitch.', createdDate: '2026-03-15' },
-          { id: 24, title: 'Playfly coffee — TUE 3/17 8:30 AM at Devoción', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 28, notes: 'In-person meeting. Bring IP report. Tucker Ballbach, Jon Bishop, Robert Eckstein all active contacts.', createdDate: '2026-03-15' },
-          { id: 25, title: 'Notre Dame meeting — THU 3/19 12:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 9, notes: 'Client meeting. Kayla Rogers. Discuss announcement and next steps.', createdDate: '2026-03-15' },
-          { id: 26, title: 'Cal/Berkeley meeting — THU 3/19 6:00 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 81, notes: 'Justin DiTolla replied to cold outreach. First meeting. Prep Berkeley athlete data and JABA demo.', createdDate: '2026-03-15' },
-          { id: 27, title: 'Multiplier meeting — THU 3/19 1:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 166, notes: 'Meeting scheduled Thursday.', createdDate: '2026-03-15' },
-          { id: 28, title: 'NOCAP Sports meeting — THU 3/19 3:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 129, notes: 'NIL compliance/data company. Meeting Thursday.', createdDate: '2026-03-15' },
-          { id: 29, title: 'Jack Bishop meeting — TUE 3/17 2:00 PM', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Jack x Jordon. Nick Mudd also attending.', createdDate: '2026-03-15' },
-          { id: 30, title: 'Purdue meeting — FRI 3/20 11:30 AM', dueDate: '2026-03-20', priority: 'high', status: 'todo', linkedLeadId: 3, notes: 'JABA x Purdue. Tanner Ball + Daniel Picioski. Diego and Alanys attending.', createdDate: '2026-03-15' }
+          { id: 22, title: 'Washington meeting â MON 3/16 5:00 PM', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 79, notes: 'Derek Sullivan replied to cold outreach. Prep dashboard with Washington athlete data. Multiple contacts: Cody Scott, Chris Hein, Jack Murrey, Sandy, Joe Knight.', createdDate: '2026-03-15' },
+          { id: 23, title: 'The Team meeting â WED 3/18 12:30 PM', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: 96, notes: 'Jordan Tirico intro call. Prep JABA overview and agency pitch.', createdDate: '2026-03-15' },
+          { id: 24, title: 'Playfly coffee â TUE 3/17 8:30 AM at DevociÃ³n', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 28, notes: 'In-person meeting. Bring IP report. Tucker Ballbach, Jon Bishop, Robert Eckstein all active contacts.', createdDate: '2026-03-15' },
+          { id: 25, title: 'Notre Dame meeting â THU 3/19 12:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 9, notes: 'Client meeting. Kayla Rogers. Discuss announcement and next steps.', createdDate: '2026-03-15' },
+          { id: 26, title: 'Cal/Berkeley meeting â THU 3/19 6:00 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 81, notes: 'Justin DiTolla replied to cold outreach. First meeting. Prep Berkeley athlete data and JABA demo.', createdDate: '2026-03-15' },
+          { id: 27, title: 'Multiplier meeting â THU 3/19 1:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 166, notes: 'Meeting scheduled Thursday.', createdDate: '2026-03-15' },
+          { id: 28, title: 'NOCAP Sports meeting â THU 3/19 3:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 129, notes: 'NIL compliance/data company. Meeting Thursday.', createdDate: '2026-03-15' },
+          { id: 29, title: 'Jack Bishop meeting â TUE 3/17 2:00 PM', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Jack x Jordon. Nick Mudd also attending.', createdDate: '2026-03-15' },
+          { id: 30, title: 'Purdue meeting â FRI 3/20 11:30 AM', dueDate: '2026-03-20', priority: 'high', status: 'todo', linkedLeadId: 3, notes: 'JABA x Purdue. Tanner Ball + Daniel Picioski. Diego and Alanys attending.', createdDate: '2026-03-15' }
         ];
         saveTasks();
     }
@@ -4752,10 +4752,10 @@
       const btn = document.getElementById('taskFormToggle');
       if (form.style.display === 'none') {
         form.style.display = 'block';
-        btn.textContent = '▴';
+        btn.textContent = 'â´';
       } else {
         form.style.display = 'none';
-        btn.textContent = '▾';
+        btn.textContent = 'â¾';
       }
     };
 
@@ -5096,7 +5096,7 @@
         return `
           <div class="task-card ${task.status === 'done' ? 'done' : ''}">
             <div class="task-checkbox" onclick="toggleTaskDone(${task.id})" style="cursor:pointer;">
-              ${task.status === 'done' ? '✓' : ''}
+              ${task.status === 'done' ? 'â' : ''}
             </div>
             <div class="task-content" style="flex:1;">
               <div class="task-title">${task.title}${task.auto ? ' <span style="font-size:10px;background:rgba(226,245,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:600;">AUTO</span>' : ''}</div>
@@ -5124,7 +5124,7 @@
       const playbooks = [
         {
           id: 'power4-5',
-          icon: '🏈',
+          icon: 'ð',
           name: 'Power 4/5 Schools',
           target: '~50 targets',
           color: 'var(--color-schools)',
@@ -5140,7 +5140,7 @@
         },
         {
           id: 'mid-major',
-          icon: '🏀',
+          icon: 'ð',
           name: 'Mid-Major Schools',
           target: 'A-C Conference schools',
           color: 'var(--color-teams)',
@@ -5155,7 +5155,7 @@
         },
         {
           id: 'agencies',
-          icon: '🤝',
+          icon: 'ð¤',
           name: 'Transfer Portal Agencies',
           target: 'All major transfer portal agencies',
           color: 'var(--color-athlete)',
@@ -5170,7 +5170,7 @@
         },
         {
           id: 'brands',
-          icon: '💰',
+          icon: 'ð°',
           name: 'Brands',
           target: 'Consumer brands for NIL deals',
           color: 'var(--color-brands)',
@@ -5323,7 +5323,7 @@
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         return `${months[d.getMonth()]} ${d.getDate()}`;
       };
-      document.getElementById('weekRange').textContent = `${formatDate(currentWeekStart)} — ${formatDate(weekEnd)}`;
+      document.getElementById('weekRange').textContent = `${formatDate(currentWeekStart)} â ${formatDate(weekEnd)}`;
 
       // Build week view
       const weekView = document.getElementById('weekView');
@@ -5361,7 +5361,7 @@
           const checkedCount = checklist.filter(c => c.done).length;
           const totalCount = checklist.length;
           const prepStatus = m.prepStatus || (totalCount === 0 ? 'ready' : 'not_started');
-          const statusDot = prepStatus === 'ready' ? '✓' : prepStatus === 'in_progress' ? '◐' : '◯';
+          const statusDot = prepStatus === 'ready' ? 'â' : prepStatus === 'in_progress' ? 'â' : 'â¯';
           const statusClass = prepStatus.replace('_', '-');
 
           return `
@@ -5452,9 +5452,9 @@
                 <span style="font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${getMeetingTypeLabel(meeting.type)}</span>
               </div>
               <div class="meeting-detail-meta-item">
-                📅 ${new Date(meeting.date).toLocaleDateString()}
+                ð ${new Date(meeting.date).toLocaleDateString()}
               </div>
-              ${meeting.time ? `<div class="meeting-detail-meta-item">🕐 ${meeting.time}</div>` : ''}
+              ${meeting.time ? `<div class="meeting-detail-meta-item">ð ${meeting.time}</div>` : ''}
             </div>
             ${lead ? `
               <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
@@ -5802,7 +5802,7 @@
       const tbody = document.getElementById('tableBody');
 
       if (displayed.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">📋</div><p>No leads found. Try adjusting your filters or search.</p></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">ð</div><p>No leads found. Try adjusting your filters or search.</p></td></tr>';
         return;
       }
 
@@ -5815,7 +5815,7 @@
         const followUpHtml = renderFollowUp(lead.followUp);
         const contactsHtml = lead.contacts.length > 0
           ? lead.contacts.map(c => `<div class="contact-tag">${c}</div>`).join('')
-          : '<span class="text-muted">—</span>';
+          : '<span class="text-muted">â</span>';
 
         return `
           <tr>
@@ -5858,13 +5858,13 @@
 
     // Render follow-up date
     function renderFollowUp(date) {
-      if (!date) return '<span class="text-muted">—</span>';
+      if (!date) return '<span class="text-muted">â</span>';
 
       const today = new Date().toISOString().split('T')[0];
       const followDate = new Date(date);
 
       if (date < today) {
-        return `<span class="followup-overdue">Overdue • ${formatDate(date)}</span>`;
+        return `<span class="followup-overdue">Overdue â¢ ${formatDate(date)}</span>`;
       } else if (date === today) {
         return `<span class="followup-today">Today</span>`;
       } else {
@@ -6166,7 +6166,7 @@
       const today = new Date().toISOString().split('T')[0];
       const isOverdue = lead.followUp && lead.followUp < today;
       const followUpDisplay = lead.followUp
-        ? `<div style="font-size:14px;color:${isOverdue ? 'var(--color-danger)' : 'var(--text-primary)'};">${isOverdue ? 'OVERDUE • ' : ''}${lead.followUp}</div>`
+        ? `<div style="font-size:14px;color:${isOverdue ? 'var(--color-danger)' : 'var(--text-primary)'};">${isOverdue ? 'OVERDUE â¢ ' : ''}${lead.followUp}</div>`
         : '<div style="color:var(--text-secondary);">No follow-up set</div>';
 
       const html = `
@@ -6208,7 +6208,7 @@
 
         <div class="detail-section">
           <div class="detail-section-title">Context/Notes</div>
-          <div class="detail-notes">${lead.context || '—'}</div>
+          <div class="detail-notes">${lead.context || 'â'}</div>
         </div>
 
         ${relatedEmails.length > 0 ? `
@@ -6355,7 +6355,7 @@
             html += `
               <div class="search-result-item" onclick="openDetailPanel(${lead.id})">
                 <div class="search-result-company">${lead.company}</div>
-                <div class="search-result-meta">${BUCKET_LABELS[lead.bucket]} • ${STAGE_LABELS[lead.stage]}</div>
+                <div class="search-result-meta">${BUCKET_LABELS[lead.bucket]} â¢ ${STAGE_LABELS[lead.stage]}</div>
               </div>
             `;
           });
@@ -6369,7 +6369,7 @@
             html += `
               <div class="search-result-item" onclick="switchSection('inbox')">
                 <div class="search-result-company">${email.company}</div>
-                <div class="search-result-meta">${email.contact} • ${email.subject.substring(0, 40)}</div>
+                <div class="search-result-meta">${email.contact} â¢ ${email.subject.substring(0, 40)}</div>
               </div>
             `;
           });
@@ -6817,7 +6817,7 @@
 
         const safeThreadId = (thread.threadId || '').replace(/'/g, "\\'");
         const lastWasSent = latest.isSent;
-        const sentIndicator = lastWasSent ? '<span style="font-size:10px;color:var(--text-secondary);margin-right:2px;">↩</span>' : '';
+        const sentIndicator = lastWasSent ? '<span style="font-size:10px;color:var(--text-secondary);margin-right:2px;">â©</span>' : '';
         html += `<div onclick="openThreadView('${safeThreadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
           ${avatarHtml}
           <div style="flex:1;min-width:0;">
@@ -6826,7 +6826,7 @@
                 ${statusDot}${sentIndicator}
                 <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayName}</span>
                 ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">(' + msgCount + ')</span>' : ''}
-                ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">• ' + companyName + '</span>' : ''}
+                ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">â¢ ' + companyName + '</span>' : ''}
               </div>
               <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;margin-left:8px;">${dateStr}</span>
             </div>
@@ -7002,7 +7002,7 @@
             <div class="inbox-item-content">
               <div class="inbox-item-top">
                 <span class="inbox-item-company">${item.company}</span>
-                <span class="inbox-item-contact">— ${item.contact}</span>
+                <span class="inbox-item-contact">â ${item.contact}</span>
               </div>
               <div class="inbox-item-subject">${item.subject}</div>
               ${stageLabel ? `<span class="inbox-item-stage">${stageLabel}</span>` : ''}
@@ -7086,7 +7086,7 @@
         const isOverdue = l.followUp && l.followUp < today;
         const dateColor = isOverdue ? 'var(--color-danger)' : l.followUp === today ? 'var(--color-warning)' : 'var(--text-primary)';
         const pulse = isOverdue ? '<span style="display:inline-block;width:8px;height:8px;background:var(--color-danger);border-radius:50%;animation:pulse 2s infinite;margin-right:6px;"></span>' : '';
-        const dateDisplay = l.followUp ? (isOverdue?'OVERDUE • ':'') + l.followUp : 'No date';
+        const dateDisplay = l.followUp ? (isOverdue?'OVERDUE â¢ ':'') + l.followUp : 'No date';
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div style="display:flex;align-items:center;gap:10px;flex:1;"><span style="font-weight:600;font-size:13px;">'+l.company+'</span><span class="bucket-pill bucket-'+l.bucket+'" style="font-size:10px;">'+BUCKET_LABELS[l.bucket]+'</span></div><div style="display:flex;align-items:center;gap:8px;color:'+dateColor+';font-size:12px;font-weight:600;">'+pulse+'<span>'+dateDisplay+'</span></div></div>';
       }).join('');
       document.getElementById('upcomingFollowups').innerHTML = followupHtml || '<div style="color:var(--text-secondary);font-size:13px;">No leads to follow up on</div>';
@@ -7114,7 +7114,7 @@
         .sort((a, b) => a.date.localeCompare(b.date))
         .slice(0, 5);
       const meetingsHtml = weekMeetings.map(m => {
-        const statusDot = m.prepStatus === 'ready' ? '🟢' : m.prepStatus === 'in_progress' ? '🟡' : '🔴';
+        const statusDot = m.prepStatus === 'ready' ? 'ð¢' : m.prepStatus === 'in_progress' ? 'ð¡' : 'ð´';
         const dateObj = new Date(m.date);
         const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;cursor:pointer;" onclick="switchSection(\'meetings\')"><div style="display:flex;align-items:center;gap:10px;flex:1;"><span style="font-weight:600;font-size:13px;">'+m.company+'</span><span class="bucket-pill" style="font-size:10px;background:rgba(226, 245, 0, 0.15);color:var(--accent);">'+getMeetingTypeLabel(m.type)+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+dateStr+'</span><span>'+statusDot+'</span></div></div>';
@@ -7125,7 +7125,7 @@
       const recentEmails = INBOX_EMAILS.slice(0, 8);
       const activityHtml = recentEmails.map(e => {
         const statusColor = e.status === 'overdue' ? 'var(--color-danger)' : e.status === 'replied' ? 'var(--color-success)' : 'var(--color-warning)';
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div><span style="font-weight:600;font-size:13px;">'+e.company+'</span> <span style="color:var(--text-secondary);font-size:12px;">— '+e.subject+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+e.sentDate+'</span><span style="width:8px;height:8px;border-radius:50%;background:'+statusColor+';display:inline-block;"></span></div></div>';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div><span style="font-weight:600;font-size:13px;">'+e.company+'</span> <span style="color:var(--text-secondary);font-size:12px;">â '+e.subject+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+e.sentDate+'</span><span style="width:8px;height:8px;border-radius:50%;background:'+statusColor+';display:inline-block;"></span></div></div>';
       }).join('');
       document.getElementById('recentActivity').innerHTML = activityHtml;
 
@@ -7139,7 +7139,7 @@
       document.getElementById('bucketBreakdown').innerHTML = breakdownHtml;
     }
 
-    // ── Schools Board ──────────────────────────────────────────────────
+    // ââ Schools Board ââââââââââââââââââââââââââââââââââââââââââââââââââ
 
     function escapeHtml(text) {
       return String(text || '')
@@ -7341,7 +7341,7 @@
         return record.isUnworked ? 'No CRM activity yet' : 'CRM record active';
       }
 
-      if (upcomingMeeting) return `Meeting ${upcomingMeeting.date}${upcomingMeeting.time ? ' • ' + upcomingMeeting.time : ''}`;
+      if (upcomingMeeting) return `Meeting ${upcomingMeeting.date}${upcomingMeeting.time ? ' â¢ ' + upcomingMeeting.time : ''}`;
       if (record.lead?.context) return record.lead.context.split('|')[0].trim().slice(0, 90);
       if (record.emailItems.length) return `${record.emailItems.length} related email${record.emailItems.length === 1 ? '' : 's'} tracked`;
       return record.isUnworked ? 'No activity yet' : 'Open school record';
@@ -7508,7 +7508,7 @@
           <div class="schools-group">
             <div class="schools-group-header">
               <div class="schools-group-title">${group}</div>
-              <div class="schools-group-meta">${grouped.length} schools • ${groupStats.active} active • ${groupStats.clients} clients</div>
+              <div class="schools-group-meta">${grouped.length} schools â¢ ${groupStats.active} active â¢ ${groupStats.clients} clients</div>
             </div>
             ${conferenceList.map(conference => renderConferenceSection(conference, grouped.filter(record => record.conference === conference))).join('')}
           </div>
@@ -7537,7 +7537,7 @@
         : '<div style="color:var(--text-secondary);font-size:13px;">No related inbox activity</div>';
 
       const meetingsHtml = relatedMeetings.length
-        ? relatedMeetings.map(meeting => `<div style="padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;"><div style="font-weight:600;color:var(--text-primary);">${escapeHtml(meeting.company)}</div><div style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(meeting.date || '')}${meeting.time ? ' • ' + escapeHtml(meeting.time) : ''}</div></div>`).join('')
+        ? relatedMeetings.map(meeting => `<div style="padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;"><div style="font-weight:600;color:var(--text-primary);">${escapeHtml(meeting.company)}</div><div style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(meeting.date || '')}${meeting.time ? ' â¢ ' + escapeHtml(meeting.time) : ''}</div></div>`).join('')
         : '<div style="color:var(--text-secondary);font-size:13px;">No meetings scheduled</div>';
 
       const tasksHtml = relatedTasks.length
@@ -7567,7 +7567,7 @@
           <span class="bucket-pill bucket-schools">Schools</span>
           <span class="school-heat ${record.heat.key}">
             <span class="school-heat-dot" style="background:${record.heat.key === 'green' ? '#00b894' : record.heat.key === 'yellow' ? '#fdcb6e' : '#ff6b6b'}"></span>
-            ${escapeHtml(record.heat.label)} • ${escapeHtml(record.heat.reason)}
+            ${escapeHtml(record.heat.label)} â¢ ${escapeHtml(record.heat.reason)}
           </span>
           <span class="stage-pill ${record.isUnworked ? '' : `stage-${record.stage}`}" style="${getStageStyle(record.stage, record.isUnworked)}">${escapeHtml(record.displayStatus)}</span>
           <span class="bucket-pill" style="background:rgba(226,245,0,0.12);color:var(--accent);">${escapeHtml(record.conference)}</span>
@@ -7677,5 +7677,6 @@
     // Start
     init();
   </script>
+<script src="jaba-custom.js"></script>
 </body>
 </html>
