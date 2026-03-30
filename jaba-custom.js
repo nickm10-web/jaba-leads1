@@ -1,1 +1,269 @@
-document.addEventListener('DOMContentLoaded',function(){const style=document.createElement('style');style.textContent=`*{box-sizing:border-box}body{margin:0;padding:0;font-family:Arial,sans-serif}#sidebar{position:fixed;left:0;top:0;width:240px;height:100vh;background:#1a1a2e;color:#fff;padding:20px;overflow-y:auto;z-index:1000;border-right:1px solid #333}.logo{font-size:24px;font-weight:bold;margin-bottom:30px;color:#00d4ff}.nav-section{margin-bottom:20px}.nav-label{font-size:12px;color:#888;text-transform:uppercase;margin-bottom:10px;font-weight:bold}.nav-item{padding:12px 15px;margin-bottom:5px;border-radius:5px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:#ccc;transition:all 0.2s}.nav-item:hover{background:#333;color:#00d4ff}.nav-item.active{background:#00d4ff;color:#1a1a2e;font-weight:bold}.badge{background:#00d4ff;color:#1a1a2e;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold}.nav-item.active .badge{background:#1a1a2e;color:#00d4ff}#jaba-content{margin-left:240px;padding:30px;min-height:100vh}.view{display:none}.view.active{display:block}.view-title{font-size:28px;font-weight:bold;margin-bottom:20px;color:#1a1a2e}.btn{padding:10px 20px;background:#00d4ff;color:#1a1a2e;border:none;border-radius:5px;cursor:pointer;font-weight:bold;transition:all 0.2s}.btn:hover{background:#00b8d4;transform:translateY(-2px)}.btn-secondary{background:#666;color:#fff}.btn-secondary:hover{background:#777}.btn-small{padding:6px 12px;font-size:12px}.btn-danger{background:#ff4444;color:#fff}.btn-danger:hover{background:#cc0000}.btn-success{background:#44aa44;color:#fff}.btn-success:hover{background:#33aa33}table{width:100%;border-collapse:collapse;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,0.1);margin-bottom:20px}th{background:#f5f5f5;padding:15px;text-align:left;font-weight:bold;border-bottom:2px solid #ddd;color:#333}td{padding:12px 15px;border-bottom:1px solid #eee}tr:hover{background:#f9f9f9}.badge-status{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;display:inline-block}.badge-green{background:#e8f5e9;color:#2e7d32}.badge-blue{background:#e3f2fd;color:#1565c0}.badge-gray{background:#f5f5f5;color:#666}.badge-yellow{background:#fff3e0;color:#e65100}.badge-red{background:#ffebee;color:#c62828}.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:2000;align-items:center;justify-content:center}.modal.active{display:flex}.modal-content{background:#fff;padding:30px;border-radius:10px;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}.modal-title{font-size:20px;font-weight:bold;margin-bottom:20px;color:#1a1a2e}.form-group{margin-bottom:15px}.form-group label{display:block;font-weight:bold;margin-bottom:5px;color:#333}.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;font-family:Arial,sans-serif;font-size:14px}.form-group textarea{resize:vertical;min-height:100px}.kanban{display:flex;gap:20px;overflow-x:auto;margin-bottom:30px}.kanban-column{min-width:300px;background:#f5f5f5;border-radius:8px;padding:15px;flex-shrink:0}.kanban-title{font-weight:bold;margin-bottom:15px;color:#333;font-size:14px}.kanban-card{background:#fff;padding:12px;border-radius:5px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,0.1);border-left:4px solid #00d4ff}.kanban-card input[type="checkbox"]{margin-right:8px;cursor:pointer}.kanban-card.completed{opacity:0.6;text-decoration:line-through}.dashboard-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-bottom:30px}.dashboard-card{background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);border-top:4px solid #00d4ff}.dashboard-card-value{font-size:32px;font-weight:bold;color:#00d4ff;margin-bottom:5px}.dashboard-card-label{color:#666;font-size:14px}.approval-card{background:#fff;padding:15px;border-radius:8px;margin-bottom:15px;border-left:4px solid #ffc107}.approval-card.approved{border-left-color:#4caf50;background:#f1f8f4}.approval-card.rejected{border-left-color:#f44336;background:#fef3f3}.approval-recipient{font-weight:bold;color:#333;margin-bottom:5px}.approval-subject{color:#666;margin-bottom:8px}.approval-body{color:#666;font-size:13px;margin-bottom:10px;white-space:pre-wrap;word-break:break-word}.approval-actions{display:flex;gap:8px;flex-wrap:wrap}.modal-buttons{display:flex;gap:10px;margin-top:20px}.modal-buttons button{flex:1}`;document.head.appendChild(style);const db=firebase.database();let currentView='dashboard';let cachedCounts={};function createSidebar(){const sidebar=document.createElement('div');sidebar.id='sidebar';sidebar.innerHTML=`<div class="logo">JABA</div><div class="nav-section"><div class="nav-label">Menu</div><div class="nav-item active" data-view="dashboard"><span>Dashboard</span></div><div class="nav-item" data-view="leads"><span>Leads</span><span class="badge" id="leads-badge">0</span></div><div class="nav-item" data-view="clients"><span>Clients</span><span class="badge" id="clients-badge">0</span></div><div class="nav-item" data-view="damar"><span>Damar CRM</span><span class="badge" id="damar-badge">0</span></div><div class="nav-item" data-view="clientDash"><span>Client Dashboard</span></div></div><div class="nav-section"><div class="nav-label">Activity</div><div class="nav-item" data-view="tasks"><span>Tasks</span><span class="badge" id="tasks-badge">0</span></div><div class="nav-item" data-view="approvals"><span>Approvals</span><span class="badge" id="approvals-badge">0</span></div></div>`;document.body.insertBefore(sidebar,document.body.firstChild);document.querySelectorAll('#sidebar .nav-item[data-view]').forEach(function(item){item.addEventListener('click',function(){try{window.showView(this.getAttribute('data-view'))}catch(e){console.log(e)}})});}function initContent(){const existingContent=document.querySelector('#app')||document.body;const content=document.createElement('div');content.id='jaba-content';content.innerHTML=`<div id="view-dashboard" class="view active"><div class="view-title">Dashboard</div><div class="dashboard-cards"><div class="dashboard-card"><div class="dashboard-card-value" id="total-clients">0</div><div class="dashboard-card-label">Total Clients</div></div><div class="dashboard-card"><div class="dashboard-card-value" id="active-clients">0</div><div class="dashboard-card-label">Active</div></div><div class="dashboard-card"><div class="dashboard-card-value" id="prospect-clients">0</div><div class="dashboard-card-label">Prospects</div></div><div class="dashboard-card"><div class="dashboard-card-value" id="recent-activity">0</div><div class="dashboard-card-label">Recent Activity</div></div></div><h3>Recent Clients</h3><table id="recent-clients-table"><thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Last Contact</th></tr></thead><tbody></tbody></table></div><div id="view-leads" class="view"><div class="view-title">Leads</div><div id="leads-container"></div></div><div id="view-clients" class="view"><div class="view-title">Clients</div><button class="btn" onclick="showAddClientModal()">Add Client</button><table id="clients-table"><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th><th>Last Contact</th><th>Actions</th></tr></thead><tbody></tbody></table></div><div id="view-damar" class="view"><div class="view-title">Damar CRM</div><button class="btn" onclick="showAddDamarModal()">Add Entry</button><table id="damar-table"><thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Notes</th><th>Last Updated</th><th>Actions</th></tr></thead><tbody></tbody></table></div><div id="view-clientDash" class="view"><div class="view-title">Client Dashboard</div><div class="dashboard-cards"><div class="dashboard-card"><div class="dashboard-card-value" id="dash-total">0</div><div class="dashboard-card-label">Total Clients</div></div><div class="dashboard-card"><div class="dashboard-card-value" id="dash-active">0</div><div class="dashboard-card-label">Active Clients</div></div><div class="dashboard-card"><div class="dashboard-card-value" id="dash-prospect">0</div><div class="dashboard-card-label">Prospects</div></div><div class="dashboard-card"><div class="dashboard-card-value" id="dash-recent">0</div><div class="dashboard-card-label">Recent Contacts</div></div></div><h3>Recent Clients</h3><table id="dash-clients-table"><thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Last Contact</th></tr></thead><tbody></tbody></table></div><div id="view-tasks" class="view"><div class="view-title">Action Tracker</div><div class="kanban" id="kanban-board"></div></div><div id="view-approvals" class="view"><div class="view-title">Approvals</div><button class="btn" onclick="showAddApprovalModal()">Add Approval</button><div id="approvals-container"></div></div>`;document.body.appendChild(content);Array.from(document.body.children).forEach(function(el){if(el.id!=='sidebar'&&el.id!=='jaba-content'&&!el.classList.contains('modal'))el.style.display='none'});const oldApp=document.querySelector('#app');if(oldApp&&oldApp!==content){oldApp.style.display='none'}}const leadsTableHTML=document.querySelector('table');function initLeadsView(){const leadsContainer=document.getElementById('leads-container');if(leadsTableHTML){leadsContainer.appendChild(leadsTableHTML)}}function initListeners(){db.ref('clients').on('value',snap=>{const count=snap.val()?Object.keys(snap.val()).length:0;document.getElementById('clients-badge').textContent=count;cachedCounts.clients=count;updateDashboard()});db.ref('leads').on('value',snap=>{const count=snap.val()?Object.keys(snap.val()).length:0;document.getElementById('leads-badge').textContent=count;cachedCounts.leads=count});db.ref('damarCRM').on('value',snap=>{const count=snap.val()?Object.keys(snap.val()).length:0;document.getElementById('damar-badge').textContent=count;cachedCounts.damar=count});db.ref('tasks').on('value',snap=>{const tasks=snap.val()||{};let count=0;for(let col in tasks){if(tasks[col])count+=Object.keys(tasks[col]).length}document.getElementById('tasks-badge').textContent=count;cachedCounts.tasks=count});db.ref('approvals').on('value',snap=>{const count=snap.val()?Object.keys(snap.val()).length:0;document.getElementById('approvals-badge').textContent=count;cachedCounts.approvals=count})}function updateDashboard(){db.ref('clients').once('value',snap=>{const clients=snap.val()||{};const total=Object.keys(clients).length;let active=0,prospect=0;for(let id in clients){const status=clients[id].status;if(status==='Active')active++;else if(status==='Prospect')prospect++}document.getElementById('total-clients').textContent=total;document.getElementById('active-clients').textContent=active;document.getElementById('prospect-clients').textContent=prospect;document.getElementById('recent-activity').textContent=total;document.getElementById('dash-total').textContent=total;document.getElementById('dash-active').textContent=active;document.getElementById('dash-prospect').textContent=prospect;document.getElementById('dash-recent').textContent=total;const tbody=document.querySelector('#recent-clients-table tbody');tbody.innerHTML='';const sorted=Object.entries(clients).sort((a,b)=>(b[1].lastContact||'').localeCompare(a[1].lastContact||'')).slice(0,5);sorted.forEach(([id,client])=>{const row=document.createElement('tr');row.innerHTML=`<td>${client.name||''}</td><td>${client.company||''}</td><td><span class="badge-status badge-${client.status==='Active'?'green':client.status==='Prospect'?'blue':'gray'}">${client.status||'Unknown'}</span></td><td>${client.lastContact||'N/A'}</td>`;tbody.appendChild(row)});const tbody2=document.querySelector('#dash-clients-table tbody');tbody2.innerHTML='';sorted.forEach(([id,client])=>{const row=document.createElement('tr');row.innerHTML=`<td>${client.name||''}</td><td>${client.company||''}</td><td><span class="badge-status badge-${client.status==='Active'?'green':client.status==='Prospect'?'blue':'gray'}">${client.status||'Unknown'}</span></td><td>${client.lastContact||'N/A'}</td>`;tbody2.appendChild(row)})})}function seedTasks(){firebase.database().ref('kanbanTasks').once('value',snap=>{if(!snap.exists()){const td={'post-meeting':{t1:{done:false,text:'Trey - Made Hoops'},t2:{done:false,text:'denise_white - EAG Sport Management - monday'},t3:{done:false,text:'Parker Graham - Vestible - jordons got it'},t4:{done:false,text:'adam_gunn - NoCap Sports'},t5:{done:false,text:'Krista Burditt'},t6:{done:false,text:'Ali Speck'},t7:{done:false,text:'Ohio State'},t8:{done:false,text:'Religion of Sports'}},'follow-ups':{t9:{done:false,text:'Cheyne - Need big3 dashboard'},t10:{done:false,text:'Cam Tringale - golfer'},t11:{done:false,text:'Jordan VanDina - NIL chat'},t12:{done:false,text:'Steve Tisch'},t13:{done:false,text:'Rich Kleiman'},t14:{done:false,text:'David Gross'}},'responses':{t15:{done:false,text:'Klutch - waiting'},t16:{done:false,text:'IMG / WME - waiting'},t17:{done:false,text:'Fanatics - Michael Rubin'},t18:{done:false,text:'Playfly - follow email'},t19:{done:false,text:'Chase Claypool agent'}},'reports':{t20:{done:false,text:'Washington report'},t21:{done:false,text:'Playfly report'},t22:{done:false,text:'Jack Bishop report'}}};firebase.database().ref('kanbanTasks').set(td)}})}function renderKanban(){const board=document.getElementById('kanban-board');board.innerHTML='';const cols=['post-meeting','follow-ups','responses','reports'];const titles=['Post-Meeting Follow-Ups','Follow-Ups','Responses','Reports'];db.ref('kanbanTasks').once('value',snap=>{const tasks=snap.val()||{};cols.forEach((col,idx)=>{const col_div=document.createElement('div');col_div.className='kanban-column';const col_tasks=tasks[col]||{};col_div.innerHTML=`<div class="kanban-title">${titles[idx]} (${Object.keys(col_tasks).length})</div><div id="col-${col}"></div><button class="btn btn-small" onclick="addTask('${col}')">Add</button>`;const col_content=col_div.querySelector(`#col-${col}`);Object.entries(col_tasks).forEach(([id,task])=>{const card=document.createElement('div');card.className='kanban-card'+(task.done?' completed':'');card.innerHTML=`<input type="checkbox" ${task.done?'checked':''} onchange="toggleTask('${col}','${id}',this.checked)"><span>${task.text}</span><button class="btn btn-small btn-danger" style="float:right;margin:5px 0 0 0" onclick="deleteTask('${col}','${id}')">Del</button>`;col_content.appendChild(card)});board.appendChild(col_div)})})}function addTask(col){const text=prompt('Enter task:');if(text){const id=Math.random().toString(36).substr(2,9);const update={};update[`tasks/${col}/${id}`]={text:text,done:false};db.ref().update(update)}}function toggleTask(col,id,done){db.ref(`tasks/${col}/${id}/done`).set(done)}function deleteTask(col,id){db.ref(`tasks/${col}/${id}`).remove()}function renderClients(){db.ref('clients').once('value',snap=>{const tbody=document.querySelector('#clients-table tbody');tbody.innerHTML='';const clients=snap.val()||{};Object.entries(clients).forEach(([id,client])=>{const row=document.createElement('tr');row.innerHTML=`<td>${client.name||''}</td><td>${client.company||''}</td><td>${client.email||''}</td><td>${client.phone||''}</td><td><span class="badge-status badge-${client.status==='Active'?'green':client.status==='Prospect'?'blue':'gray'}">${client.status||'Unknown'}</span></td><td>${client.lastContact||'N/A'}</td><td><button class="btn btn-small" onclick="editClient('${id}')">Edit</button><button class="btn btn-small btn-danger" onclick="deleteClient('${id}')">Del</button></td>`;tbody.appendChild(row)})})}function renderDamar(){db.ref('damarCRM').once('value',snap=>{const tbody=document.querySelector('#damar-table tbody');tbody.innerHTML='';const items=snap.val()||{};Object.entries(items).forEach(([id,item])=>{const row=document.createElement('tr');row.innerHTML=`<td>${item.name||''}</td><td>${item.company||''}</td><td><span class="badge-status">${item.status||'Unknown'}</span></td><td>${(item.notes||'').substring(0,50)}</td><td>${item.lastUpdated||'N/A'}</td><td><button class="btn btn-small" onclick="editDamar('${id}')">Edit</button><button class="btn btn-small btn-danger" onclick="deleteDamar('${id}')">Del</button></td>`;tbody.appendChild(row)})})}function renderApprovals(){db.ref('approvals').once('value',snap=>{const container=document.getElementById('approvals-container');container.innerHTML='';const approvals=snap.val()||{};Object.entries(approvals).forEach(([id,approval])=>{const card=document.createElement('div');const statusClass=approval.status==='approved'?'approved':approval.status==='rejected'?'rejected':'';const badgeColor=approval.status==='approved'?'green':approval.status==='rejected'?'red':'yellow';card.className='approval-card '+statusClass;card.innerHTML=`<div class="approval-recipient">${approval.recipient}</div><div class="approval-subject"><strong>Subject:</strong> ${approval.subject}</div><div class="approval-body">${approval.body}</div><div class="approval-actions"><button class="btn btn-small btn-success" onclick="approveEmail('${id}')">Approve</button><button class="btn btn-small btn-danger" onclick="rejectEmail('${id}')">Reject</button><button class="btn btn-small" onclick="editApproval('${id}')">Edit</button><button class="btn btn-small btn-danger" onclick="deleteApproval('${id}')">Delete</button></div>`;container.appendChild(card)})})}function approveEmail(id){db.ref(`approvals/${id}/status`).set('approved')}function rejectEmail(id){db.ref(`approvals/${id}/status`).set('rejected')}function deleteApproval(id){db.ref(`approvals/${id}`).remove()}function editApproval(id){db.ref(`approvals/${id}`).once('value',snap=>{const approval=snap.val();if(approval){showModal('approval-modal');document.getElementById('approval-recipient').value=approval.recipient;document.getElementById('approval-subject').value=approval.subject;document.getElementById('approval-body').value=approval.body;document.getElementById('approval-id').value=id}})}function showAddClientModal(){showModal('client-modal');document.getElementById('client-form').reset();document.getElementById('client-id').value=''}function showAddDamarModal(){showModal('damar-modal');document.getElementById('damar-form').reset();document.getElementById('damar-id').value=''}function showAddApprovalModal(){showModal('approval-modal');document.getElementById('approval-form').reset();document.getElementById('approval-id').value=''}function editClient(id){db.ref(`clients/${id}`).once('value',snap=>{const client=snap.val();if(client){showModal('client-modal');document.getElementById('client-name').value=client.name;document.getElementById('client-company').value=client.company;document.getElementById('client-email').value=client.email;document.getElementById('client-phone').value=client.phone;document.getElementById('client-status').value=client.status;document.getElementById('client-lastContact').value=client.lastContact;document.getElementById('client-id').value=id}})}function editDamar(id){db.ref(`damarCRM/${id}`).once('value',snap=>{const item=snap.val();if(item){showModal('damar-modal');document.getElementById('damar-name').value=item.name;document.getElementById('damar-company').value=item.company;document.getElementById('damar-status').value=item.status;document.getElementById('damar-notes').value=item.notes;document.getElementById('damar-id').value=id}})}function deleteClient(id){if(confirm('Delete this client?')){db.ref(`clients/${id}`).remove()}}function deleteDamar(id){if(confirm('Delete this entry?')){db.ref(`damarCRM/${id}`).remove()}}function saveClient(){const id=document.getElementById('client-id').value;const data={name:document.getElementById('client-name').value,company:document.getElementById('client-company').value,email:document.getElementById('client-email').value,phone:document.getElementById('client-phone').value,status:document.getElementById('client-status').value,lastContact:document.getElementById('client-lastContact').value};if(id){db.ref(`clients/${id}`).update(data)}else{db.ref('clients').push(data)}hideModal('client-modal')}function saveDamar(){const id=document.getElementById('damar-id').value;const data={name:document.getElementById('damar-name').value,company:document.getElementById('damar-company').value,status:document.getElementById('damar-status').value,notes:document.getElementById('damar-notes').value,lastUpdated:new Date().toISOString().split('T')[0]};if(id){db.ref(`damarCRM/${id}`).update(data)}else{db.ref('damarCRM').push(data)}hideModal('damar-modal')}function saveApproval(){const id=document.getElementById('approval-id').value;const data={recipient:document.getElementById('approval-recipient').value,subject:document.getElementById('approval-subject').value,body:document.getElementById('approval-body').value,status:'pending'};if(id){db.ref(`approvals/${id}`).update(data)}else{db.ref('approvals').push(data)}hideModal('approval-modal')}function showModal(id){document.getElementById(id).classList.add('active')}function hideModal(id){document.getElementById(id).classList.remove('active')}const modalsHTML=`<div id="client-modal" class="modal"><div class="modal-content"><div class="modal-title">Add/Edit Client</div><form id="client-form"><input type="hidden" id="client-id"><div class="form-group"><label>Name</label><input type="text" id="client-name" required></div><div class="form-group"><label>Company</label><input type="text" id="client-company"></div><div class="form-group"><label>Email</label><input type="email" id="client-email"></div><div class="form-group"><label>Phone</label><input type="text" id="client-phone"></div><div class="form-group"><label>Status</label><select id="client-status"><option value="Active">Active</option><option value="Prospect">Prospect</option><option value="Inactive">Inactive</option></select></div><div class="form-group"><label>Last Contact</label><input type="date" id="client-lastContact"></div><div class="modal-buttons"><button type="button" class="btn" onclick="saveClient()">Save</button><button type="button" class="btn btn-secondary" onclick="hideModal('client-modal')">Cancel</button></div></form></div></div><div id="damar-modal" class="modal"><div class="modal-content"><div class="modal-title">Add/Edit Damar CRM</div><form id="damar-form"><input type="hidden" id="damar-id"><div class="form-group"><label>Name</label><input type="text" id="damar-name" required></div><div class="form-group"><label>Company</label><input type="text" id="damar-company"></div><div class="form-group"><label>Status</label><input type="text" id="damar-status"></div><div class="form-group"><label>Notes</label><textarea id="damar-notes"></textarea></div><div class="modal-buttons"><button type="button" class="btn" onclick="saveDamar()">Save</button><button type="button" class="btn btn-secondary" onclick="hideModal('damar-modal')">Cancel</button></div></form></div></div><div id="approval-modal" class="modal"><div class="modal-content"><div class="modal-title">Add/Edit Approval</div><form id="approval-form"><input type="hidden" id="approval-id"><div class="form-group"><label>Recipient Email</label><input type="email" id="approval-recipient" required></div><div class="form-group"><label>Subject</label><input type="text" id="approval-subject" required></div><div class="form-group"><label>Body</label><textarea id="approval-body" required></textarea></div><div class="modal-buttons"><button type="button" class="btn" onclick="saveApproval()">Save</button><button type="button" class="btn btn-secondary" onclick="hideModal('approval-modal')">Cancel</button></div></form></div></div>`;document.body.insertAdjacentHTML('beforeend',modalsHTML);window.renderClients=renderClients;window.renderDamar=renderDamar;window.renderApprovals=renderApprovals;window.renderKanban=renderKanban;window.seedTasks=seedTasks;window.updateDashboard=updateDashboard;window.showView=function(viewName){var allViews=document.querySelectorAll('#jaba-content .view');allViews.forEach(function(v){v.classList.remove('active')});var allNav=document.querySelectorAll('#sidebar .nav-item[data-view]');allNav.forEach(function(n){n.classList.remove('active')});var target=document.getElementById('view-'+viewName);if(target)target.classList.add('active');allNav.forEach(function(n){if(n.getAttribute('data-view')===viewName)n.classList.add('active')});try{if(viewName==='clients'&&typeof renderClients==='function')renderClients();if(viewName==='damar'&&typeof renderDamar==='function')renderDamar();if(viewName==='tasks'){if(typeof seedTasks==='function')seedTasks();setTimeout(function(){if(typeof renderKanban==='function')renderKanban()},200)}if(viewName==='approvals'&&typeof renderApprovals==='function')renderApprovals();if((viewName==='dashboard'||viewName==='clientDash')&&typeof updateDashboard==='function')updateDashboard();if(viewName==='leads'&&typeof renderLeads==='function')renderLeads();}catch(e){console.log('showView render error:',e)}};window.deleteClient=deleteClient;window.deleteDamar=deleteDamar;window.deleteApproval=deleteApproval;window.editClient=editClient;window.editDamar=editDamar;window.editApproval=editApproval;window.addTask=addTask;window.toggleTask=toggleTask;window.deleteTask=deleteTask;window.approveEmail=approveEmail;window.rejectEmail=rejectEmail;window.showAddClientModal=showAddClientModal;window.showAddDamarModal=showAddDamarModal;window.showAddApprovalModal=showAddApprovalModal;window.saveClient=saveClient;window.saveDamar=saveDamar;window.saveApproval=saveApproval;window.showModal=showModal;window.hideModal=hideModal;createSidebar();initContent();initLeadsView();initListeners();seedTasks();renderKanban();renderClients();renderDamar();renderApprovals();updateDashboard()});
+/* JABA Custom Sidebar - moves top tabs to left sidebar, adds custom sections */
+document.addEventListener('DOMContentLoaded', function() {
+
+  /* -- 1. Create sidebar -- */
+  var sidebar = document.createElement('div');
+  sidebar.id = 'jaba-sidebar';
+  sidebar.innerHTML = '\
+    <div class="sidebar-logo">JABA</div>\
+    <div class="sidebar-section-label">MENU</div>\
+    <div class="sidebar-item active" data-section="dashboard">Dashboard</div>\
+    <div class="sidebar-item" data-section="leads">\
+      Leads <span class="sidebar-badge" id="sidebarLeadsBadge"></span>\
+    </div>\
+    <div class="sidebar-sub-items" id="leadsSubItems">\
+      <div class="sidebar-sub-item active" data-bucket="all">All</div>\
+      <div class="sidebar-sub-item" data-bucket="Schools">Schools</div>\
+      <div class="sidebar-sub-item" data-bucket="Teams/Leagues">Teams/Leagues</div>\
+      <div class="sidebar-sub-item" data-bucket="Athlete Agencies">Athlete Agencies</div>\
+      <div class="sidebar-sub-item" data-bucket="Agencies of Record">Agencies of Record</div>\
+      <div class="sidebar-sub-item" data-bucket="Brands">Brands</div>\
+    </div>\
+    <div class="sidebar-item" data-section="schools">Schools</div>\
+    <div class="sidebar-item" data-section="inbox">\
+      Inbox <span class="sidebar-badge" id="sidebarInboxBadge"></span>\
+    </div>\
+    <div class="sidebar-item" data-section="meetings">\
+      Meetings <span class="sidebar-badge" id="sidebarMeetingsBadge"></span>\
+    </div>\
+    <div class="sidebar-item" data-section="tasks">\
+      Tasks <span class="sidebar-badge" id="sidebarTasksBadge"></span>\
+    </div>\
+    <div class="sidebar-item" data-section="playbooks">Playbooks</div>\
+    <div class="sidebar-section-label">CRM</div>\
+    <div class="sidebar-item" data-section="clients">\
+      Clients <span class="sidebar-badge" id="sidebarClientsBadge">0</span>\
+    </div>\
+    <div class="sidebar-item" data-section="clientDash">Client Dashboard</div>\
+    <div class="sidebar-item" data-section="damar">\
+      Damar CRM <span class="sidebar-badge" id="sidebarDamarBadge">0</span>\
+    </div>\
+    <div class="sidebar-section-label">ACTIVITY</div>\
+    <div class="sidebar-item" data-section="approvals">\
+      Approvals <span class="sidebar-badge" id="sidebarApprovalsBadge">0</span>\
+    </div>\
+  ';
+
+  /* -- 2. Create custom section containers -- */
+  var customSections = {
+    clients: '<div id="clientsSection" class="custom-section" style="display:none;"><h2 class="custom-title">Clients</h2><button class="action-btn" onclick="jabaCustom.addClient()">Add Client</button><div class="custom-table-wrap"><table class="custom-table" id="clientsTable"><thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Status</th><th>Last Contact</th><th>Actions</th></tr></thead><tbody id="clientsBody"></tbody></table></div></div>',
+    clientDash: '<div id="clientDashSection" class="custom-section" style="display:none;"><h2 class="custom-title">Client Dashboard</h2><div class="stat-cards" id="clientDashStats"></div><h3 style="color:#e6edf3;margin:20px 0 10px;">Recent Clients</h3><div class="custom-table-wrap"><table class="custom-table" id="clientDashTable"><thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Last Contact</th></tr></thead><tbody id="clientDashBody"></tbody></table></div></div>',
+    damar: '<div id="damarSection" class="custom-section" style="display:none;"><h2 class="custom-title">Damar CRM</h2><button class="action-btn" onclick="jabaCustom.addDamarEntry()">Add Entry</button><div class="custom-table-wrap"><table class="custom-table" id="damarTable"><thead><tr><th>Name</th><th>Company</th><th>Status</th><th>Notes</th><th>Last Updated</th><th>Actions</th></tr></thead><tbody id="damarBody"></tbody></table></div></div>',
+    approvals: '<div id="approvalsSection" class="custom-section" style="display:none;"><h2 class="custom-title">Approvals</h2><button class="action-btn" onclick="jabaCustom.addApproval()">Add Approval</button><div id="approvalsContainer"></div></div>'
+  };
+
+  /* -- 3. Inject sidebar + styles -- */
+  var style = document.createElement('style');
+  style.textContent = '#jaba-sidebar{position:fixed;left:0;top:0;bottom:0;width:210px;background:#1a1d27;border-right:1px solid #30363d;z-index:1000;overflow-y:auto;padding:15px 0;font-family:DM Sans,sans-serif}.sidebar-logo{font-family:Anton,sans-serif;font-size:28px;color:#00e5ff;padding:10px 20px 20px;letter-spacing:2px}.sidebar-section-label{font-size:10px;color:#8b949e;padding:15px 20px 5px;letter-spacing:1.5px;font-weight:600}.sidebar-item{padding:10px 20px;color:#e6edf3;cursor:pointer;font-size:14px;transition:all .2s;display:flex;align-items:center;justify-content:space-between}.sidebar-item:hover{background:#232733}.sidebar-item.active{background:#00e5ff;color:#0f1117;font-weight:600;border-radius:0 8px 8px 0;margin-right:10px}.sidebar-badge{background:#00e5ff;color:#0f1117;border-radius:50%;min-width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;padding:0 4px}.sidebar-item.active .sidebar-badge{background:#0f1117;color:#00e5ff}.sidebar-sub-items{max-height:0;overflow:hidden;transition:max-height .3s ease}.sidebar-sub-items.open{max-height:300px}.sidebar-sub-item{padding:7px 20px 7px 36px;color:#8b949e;cursor:pointer;font-size:13px;transition:all .15s}.sidebar-sub-item:hover{color:#e6edf3;background:#232733}.sidebar-sub-item.active{color:#00e5ff;font-weight:600}.container{margin-left:210px!important}.top-tabs{display:none!important}.detail-panel{margin-left:210px!important}.custom-section{padding:0 20px 30px}.custom-title{font-family:Saira Extra Condensed,sans-serif;font-size:28px;font-weight:700;color:#E2F500;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px}.action-btn{background:#00e5ff;color:#0f1117;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-weight:600;font-size:14px;margin-bottom:15px}.action-btn:hover{opacity:.85}.custom-table-wrap{overflow-x:auto}.custom-table{width:100%;border-collapse:collapse;background:rgba(26,29,39,.6);border-radius:8px;overflow:hidden}.custom-table th{background:#232733;color:#8b949e;padding:12px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.8px;font-weight:600}.custom-table td{padding:11px 14px;color:#e6edf3;border-bottom:1px solid #30363d;font-size:13px}.custom-table tr:hover td{background:rgba(255,255,255,.03)}.stat-cards{display:flex;gap:15px;flex-wrap:wrap;margin-bottom:20px}.stat-card{background:rgba(26,29,39,.6);border:1px solid #30363d;border-radius:12px;padding:20px 25px;min-width:180px;flex:1}.stat-card .num{font-family:Anton,sans-serif;font-size:36px;font-weight:700;color:#00e5ff}.stat-card .label{font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.8px;margin-top:5px}.approval-card{background:rgba(26,29,39,.6);border:1px solid #30363d;border-radius:10px;padding:18px 22px;margin-bottom:12px}.approval-card .from{font-weight:700;color:#e6edf3;font-size:15px}.approval-card .subject{font-weight:600;color:#e6edf3;margin:4px 0;font-size:14px}.approval-card .body-text{color:#8b949e;margin:8px 0 14px;white-space:pre-line;font-size:13px}.approval-btns{display:flex;gap:8px}.approval-btns button{border:none;padding:7px 16px;border-radius:6px;cursor:pointer;font-weight:600;font-size:12px;color:#fff}.btn-approve{background:#00e5ff;color:#0f1117!important}.btn-reject{background:#ff6b6b}.btn-edit{background:#0984e3}.btn-delete{background:#e17055}.edit-btn{background:#0984e3;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;margin-right:4px;font-size:12px;font-weight:600}.del-btn{background:#ff6b6b;color:#fff;border:none;padding:5px 12px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600}';
+  document.head.appendChild(style);
+  document.body.prepend(sidebar);
+
+  var container = document.querySelector('.container');
+  if (container) {
+    Object.keys(customSections).forEach(function(key) {
+      var div = document.createElement('div');
+      div.innerHTML = customSections[key];
+      container.appendChild(div.firstChild);
+    });
+  }
+
+  /* -- 4. Sync badges -- */
+  function syncBadges() {
+    var origTabs = document.querySelectorAll('.top-tab');
+    origTabs.forEach(function(tab) {
+      var badge = tab.querySelector('.tab-badge');
+      if (!badge) return;
+      var text = badge.textContent.trim();
+      var oc = tab.getAttribute('onclick') || '';
+      if (oc.indexOf('leads') !== -1) { var el = document.getElementById('sidebarLeadsBadge'); if (el) el.textContent = text; }
+      if (oc.indexOf('inbox') !== -1) { var el = document.getElementById('sidebarInboxBadge'); if (el) el.textContent = text; }
+      if (oc.indexOf('meetings') !== -1) { var el = document.getElementById('sidebarMeetingsBadge'); if (el) el.textContent = text; }
+      if (oc.indexOf('tasks') !== -1) { var el = document.getElementById('sidebarTasksBadge'); if (el) el.textContent = text; }
+    });
+  }
+  syncBadges();
+  setInterval(syncBadges, 3000);
+
+  /* -- 5. Sidebar click handlers -- */
+  var allItems = sidebar.querySelectorAll('.sidebar-item');
+  var leadsSubItems = document.getElementById('leadsSubItems');
+  var customSectionIds = ['clients','clientDash','damar','approvals'];
+  var builtInSections = ['dashboard','leads','schools','inbox','meetings','tasks','playbooks'];
+
+  function hideAllCustomSections() {
+    customSectionIds.forEach(function(id) {
+      var el = document.getElementById(id + 'Section');
+      if (el) el.style.display = 'none';
+    });
+  }
+
+  allItems.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var section = this.getAttribute('data-section');
+      allItems.forEach(function(i) { i.classList.remove('active'); });
+      this.classList.add('active');
+      if (section === 'leads') { leadsSubItems.classList.add('open'); } else { leadsSubItems.classList.remove('open'); }
+      if (builtInSections.indexOf(section) !== -1) {
+        hideAllCustomSections();
+        if (typeof switchSection === 'function') switchSection(section);
+      } else {
+        builtInSections.forEach(function(s) { var el = document.getElementById(s + 'Section'); if (el) el.style.display = 'none'; });
+        hideAllCustomSections();
+        var target = document.getElementById(section + 'Section');
+        if (target) target.style.display = 'block';
+        if (section === 'clients') jabaCustom.renderClients();
+        if (section === 'damar') jabaCustom.renderDamar();
+        if (section === 'approvals') jabaCustom.renderApprovals();
+        if (section === 'clientDash') jabaCustom.renderClientDash();
+      }
+    });
+  });
+
+  var subItems = leadsSubItems.querySelectorAll('.sidebar-sub-item');
+  subItems.forEach(function(sub) {
+    sub.addEventListener('click', function(e) {
+      e.stopPropagation();
+      subItems.forEach(function(s) { s.classList.remove('active'); });
+      this.classList.add('active');
+      var bucket = this.getAttribute('data-bucket');
+      allItems.forEach(function(i) { i.classList.remove('active'); });
+      var leadsItem = sidebar.querySelector('[data-section="leads"]');
+      if (leadsItem) leadsItem.classList.add('active');
+      hideAllCustomSections();
+      if (typeof switchSection === 'function') switchSection('leads');
+      setTimeout(function() {
+        var filterBtns = document.querySelectorAll('#leadsSection .filter-btn');
+        filterBtns.forEach(function(btn) {
+          if ((bucket === 'all' && btn.textContent.trim() === 'All') || btn.textContent.trim() === bucket) btn.click();
+        });
+      }, 100);
+    });
+  });
+
+  /* -- 6. Firebase CRUD -- */
+  var db = typeof firebase !== 'undefined' && firebase.database ? firebase.database() : null;
+
+  window.jabaCustom = {
+    renderClients: function() {
+      if (!db) return;
+      db.ref('jabaClients').on('value', function(snap) {
+        var data = snap.val() || {};
+        var body = document.getElementById('clientsBody');
+        if (!body) return;
+        body.innerHTML = '';
+        var count = 0;
+        Object.keys(data).forEach(function(key) {
+          var c = data[key]; count++;
+          body.innerHTML += '<tr><td>'+(c.name||'')+'<\/td><td>'+(c.company||'')+'<\/td><td>'+(c.email||'')+'<\/td><td>'+(c.phone||'')+'<\/td><td>'+(c.status||'')+'<\/td><td>'+(c.lastContact||'')+'<\/td><td><button class="edit-btn" onclick="jabaCustom.editClient(\''+key+'\')">Edit<\/button><button class="del-btn" onclick="jabaCustom.delClient(\''+key+'\')">Del<\/button><\/td><\/tr>';
+        });
+        var badge = document.getElementById('sidebarClientsBadge');
+        if (badge) badge.textContent = count;
+      });
+    },
+    addClient: function() {
+      var name = prompt('Client name:'); if (!name) return;
+      var company = prompt('Company:') || '';
+      var email = prompt('Email:') || '';
+      var phone = prompt('Phone:') || '';
+      db.ref('jabaClients').push({name:name,company:company,email:email,phone:phone,status:'Active',lastContact:new Date().toISOString().split('T')[0]});
+    },
+    editClient: function(key) {
+      db.ref('jabaClients/'+key).once('value', function(snap) {
+        var c = snap.val();
+        var name = prompt('Name:',c.name); if(name===null)return;
+        var company = prompt('Company:',c.company); if(company===null)return;
+        var email = prompt('Email:',c.email); if(email===null)return;
+        var phone = prompt('Phone:',c.phone); if(phone===null)return;
+        var status = prompt('Status:',c.status); if(status===null)return;
+        db.ref('jabaClients/'+key).update({name:name||c.name,company:company||c.company,email:email||c.email,phone:phone||c.phone,status:status||c.status,lastContact:new Date().toISOString().split('T')[0]});
+      });
+    },
+    delClient: function(key) { if(confirm('Delete?')) db.ref('jabaClients/'+key).remove(); },
+
+    renderDamar: function() {
+      if (!db) return;
+      db.ref('damarEntries').on('value', function(snap) {
+        var data = snap.val() || {};
+        var body = document.getElementById('damarBody');
+        if (!body) return;
+        body.innerHTML = ''; var count = 0;
+        Object.keys(data).forEach(function(key) {
+          var d = data[key]; count++;
+          body.innerHTML += '<tr><td>'+(d.name||'')+'<\/td><td>'+(d.company||'')+'<\/td><td>'+(d.status||'Unknown')+'<\/td><td>'+(d.notes||'')+'<\/td><td>'+(d.lastUpdated||'N/A')+'<\/td><td><button class="edit-btn" onclick="jabaCustom.editDamar(\''+key+'\')">Edit<\/button><button class="del-btn" onclick="jabaCustom.delDamar(\''+key+'\')">Del<\/button><\/td><\/tr>';
+        });
+        var badge = document.getElementById('sidebarDamarBadge'); if (badge) badge.textContent = count;
+      });
+    },
+    addDamarEntry: function() {
+      var name = prompt('Name:'); if (!name) return;
+      var notes = prompt('Notes:') || '';
+      db.ref('damarEntries').push({name:name,company:'',status:'Unknown',notes:notes,lastUpdated:new Date().toISOString().split('T')[0]});
+    },
+    editDamar: function(key) {
+      db.ref('damarEntries/'+key).once('value', function(snap) {
+        var d = snap.val();
+        var name = prompt('Name:',d.name); if(name===null)return;
+        var company = prompt('Company:',d.company); if(company===null)return;
+        var status = prompt('Status:',d.status); if(status===null)return;
+        var notes = prompt('Notes:',d.notes); if(notes===null)return;
+        db.ref('damarEntries/'+key).update({name:name||d.name,company:company||d.company,status:status||d.status,notes:notes||d.notes,lastUpdated:new Date().toISOString().split('T')[0]});
+      });
+    },
+    delDamar: function(key) { if(confirm('Delete?')) db.ref('damarEntries/'+key).remove(); },
+
+    renderApprovals: function() {
+      if (!db) return;
+      db.ref('approvals').on('value', function(snap) {
+        var data = snap.val() || {};
+        var cont = document.getElementById('approvalsContainer');
+        if (!cont) return;
+        cont.innerHTML = ''; var count = 0;
+        Object.keys(data).forEach(function(key) {
+          var a = data[key]; count++;
+          cont.innerHTML += '<div class="approval-card"><div class="from">'+(a.from||'Unknown')+'<\/div><div class="subject">Subject: '+(a.subject||'')+'<\/div><div class="body-text">'+(a.body||'')+'<\/div><div class="approval-btns"><button class="btn-approve" onclick="jabaCustom.approveItem(\''+key+'\')">Approve<\/button><button class="btn-reject" onclick="jabaCustom.rejectItem(\''+key+'\')">Reject<\/button><button class="btn-edit" onclick="jabaCustom.editApproval(\''+key+'\')">Edit<\/button><button class="btn-delete" onclick="jabaCustom.delApproval(\''+key+'\')">Delete<\/button><\/div><\/div>';
+        });
+        var badge = document.getElementById('sidebarApprovalsBadge'); if (badge) badge.textContent = count;
+      });
+    },
+    addApproval: function() {
+      var from = prompt('From:'); if (!from) return;
+      var subject = prompt('Subject:') || '';
+      var body = prompt('Body:') || '';
+      db.ref('approvals').push({from:from,subject:subject,body:body,status:'pending'});
+    },
+    approveItem: function(key) { db.ref('approvals/'+key).update({status:'approved'}); },
+    rejectItem: function(key) { db.ref('approvals/'+key).update({status:'rejected'}); },
+    editApproval: function(key) {
+      db.ref('approvals/'+key).once('value', function(snap) {
+        var a = snap.val();
+        var body = prompt('Edit body:',a.body);
+        if (body !== null) db.ref('approvals/'+key).update({body:body});
+      });
+    },
+    delApproval: function(key) { if(confirm('Delete?')) db.ref('approvals/'+key).remove(); },
+
+    renderClientDash: function() {
+      if (!db) return;
+      db.ref('jabaClients').once('value', function(snap) {
+        var data = snap.val() || {};
+        var clients = Object.values(data);
+        var total = clients.length;
+        var active = clients.filter(function(c){return c.status==='Active';}).length;
+        var prospect = clients.filter(function(c){return c.status==='Prospect';}).length;
+        var statsEl = document.getElementById('clientDashStats');
+        if (statsEl) {
+          statsEl.innerHTML = '<div class="stat-card"><div class="num">'+total+'<\/div><div class="label">Total Clients<\/div><\/div><div class="stat-card"><div class="num">'+active+'<\/div><div class="label">Active<\/div><\/div><div class="stat-card"><div class="num">'+prospect+'<\/div><div class="label">Prospects<\/div><\/div>';
+        }
+        var body = document.getElementById('clientDashBody');
+        if (body) {
+          body.innerHTML = '';
+          clients.slice(0,10).forEach(function(c) {
+            body.innerHTML += '<tr><td>'+(c.name||'')+'<\/td><td>'+(c.company||'')+'<\/td><td>'+(c.status||'')+'<\/td><td>'+(c.lastContact||'')+'<\/td><\/tr>';
+          });
+        }
+      });
+    }
+  };
+
+  setTimeout(syncBadges, 1000);
+});
