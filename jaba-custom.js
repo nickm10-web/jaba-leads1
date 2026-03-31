@@ -72,18 +72,24 @@
   // ===== HELPERS =====
   function getLeadsArray() {
     // Access the global leads array from index.html
-    return window.__leads || [];
+    // First try the global 'leads' variable set by index.html
+    if (typeof leads !== 'undefined' && Array.isArray(leads) && leads.length > 0) {
+      return leads;
+    }
+    // Then try window.__leads
+    if (window.__leads && window.__leads.length > 0) {
+      return window.__leads;
+    }
+    // Fallback to localStorage with correct key
+    try {
+      var stored = JSON.parse(localStorage.getItem('bd_leads_v26') || '[]');
+      if (stored.length > 0) return stored;
+    } catch(e) {}
+    return [];
   }
 
   function getLeadsByBucket(bucket) {
     var allLeads = getLeadsArray();
-    if (allLeads.length === 0) {
-      // Fallback: try to read from localStorage
-      try {
-        var stored = JSON.parse(localStorage.getItem('bd_leads') || '[]');
-        return stored.filter(function(l) { return l.bucket === bucket; });
-      } catch(e) { return []; }
-    }
     return allLeads.filter(function(l) { return l.bucket === bucket; });
   }
 
@@ -1312,9 +1318,15 @@
   // ===== EXPOSE LEADS ARRAY =====
   // Hook into the leads array from index.html so card grids can access it
   function hookLeadsArray() {
-    // Try to access leads from localStorage (same source as index.html)
+    // Try to access the global leads variable from index.html
+    if (typeof leads !== 'undefined' && Array.isArray(leads) && leads.length > 0) {
+      window.__leads = leads;
+      updateCardGridBadges();
+      return;
+    }
+    // Try localStorage with correct key
     try {
-      var stored = JSON.parse(localStorage.getItem('bd_leads') || '[]');
+      var stored = JSON.parse(localStorage.getItem('bd_leads_v26') || '[]');
       if (stored.length > 0) {
         window.__leads = stored;
         updateCardGridBadges();
@@ -1341,7 +1353,7 @@
 
     // Also listen for storage changes (leads are saved to localStorage by index.html)
     window.addEventListener('storage', function(e) {
-      if (e.key === 'bd_leads') {
+      if (e.key === 'bd_leads_v26') {
         try {
           window.__leads = JSON.parse(e.newValue || '[]');
           updateCardGridBadges();
