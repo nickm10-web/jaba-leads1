@@ -1,6 +1,7 @@
-// JABA Custom CRM Sidebar & Tabs Module v3
+// JABA Custom CRM Sidebar & Tabs Module v4
 // Adds left sidebar navigation and custom tabs
 // Agencies, Brands, Teams & Leagues now render as card grids from the leads array
+// v4: Apple liquid glass sidebar + fixed pill badges
 
 (function() {
   'use strict';
@@ -71,16 +72,12 @@
 
   // ===== HELPERS =====
   function getLeadsArray() {
-    // Access the global leads array from index.html
-    // First try the global 'leads' variable set by index.html
     if (typeof leads !== 'undefined' && Array.isArray(leads) && leads.length > 0) {
       return leads;
     }
-    // Then try window.__leads
     if (window.__leads && window.__leads.length > 0) {
       return window.__leads;
     }
-    // Fallback to localStorage with correct key
     try {
       var stored = JSON.parse(localStorage.getItem('bd_leads_v26') || '[]');
       if (stored.length > 0) return stored;
@@ -111,14 +108,15 @@
       .toUpperCase();
   }
 
+  // Abbreviated stage labels for compact pills
   function getStageLabel(stage) {
     var labels = {
-      lead: 'Lead', contacted: 'Contacted', meeting_scheduled: 'Meeting Scheduled',
-      scrape: 'Scrape Athletes', building: 'Dashboard Building', auditing: 'Dashboard Auditing',
-      ready: 'Dashboard Ready', meeting_complete: 'Meeting Complete', report_sent: 'Report Sent',
-      contract_sent: 'Contract Sent', client: 'Client', onhold: 'On Hold',
-      announcement_working: 'Announcement Working', announcement_sent: 'Announcement Sent',
-      announcement_approved: 'Announcement Approved'
+      lead: 'Lead', contacted: 'Contacted', meeting_scheduled: 'Mtg Sched',
+      scrape: 'Scrape', building: 'Building', auditing: 'Auditing',
+      ready: 'Ready', meeting_complete: 'Mtg Done', report_sent: 'Report Sent',
+      contract_sent: 'Contract', client: 'Client', onhold: 'On Hold',
+      announcement_working: 'Ann. WIP', announcement_sent: 'Ann. Sent',
+      announcement_approved: 'Ann. OK'
     };
     return labels[stage] || stage || 'Unworked';
   }
@@ -168,7 +166,6 @@
   }
 
   function getBrandColors(company) {
-    // Try to access BRAND_COLORS from index.html
     if (window.BRAND_COLORS && window.BRAND_COLORS[company]) {
       return window.BRAND_COLORS[company];
     }
@@ -177,7 +174,10 @@
 
   // ===== STYLES =====
   var injectStyles = function() {
-    var styleId = 'jaba-custom-styles-v2';
+    var styleId = 'jaba-custom-styles-v4';
+    // Remove old style tags
+    var oldStyle = document.getElementById('jaba-custom-styles-v2');
+    if (oldStyle) oldStyle.remove();
     if (document.getElementById(styleId)) return;
 
     var style = document.createElement('style');
@@ -185,54 +185,137 @@
     style.textContent = `
       .top-tabs { display: none !important; }
 
+      /* ===== APPLE LIQUID GLASS SIDEBAR ===== */
       .jaba-sidebar {
         position: fixed; left: 0; top: 0;
         width: ${CONFIG.sidebarWidth}; height: 100vh;
-        background: var(--bg-secondary, #1a1d27);
-        border-right: 1px solid var(--border, #30363d);
+        background: rgba(15, 17, 23, 0.55);
+        backdrop-filter: blur(40px) saturate(180%);
+        -webkit-backdrop-filter: blur(40px) saturate(180%);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
         overflow-y: auto; overflow-x: hidden;
         z-index: 999;
-        font-family: "DM Sans", sans-serif;
-        padding: 16px 0;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "DM Sans", sans-serif;
+        padding: 20px 0;
       }
 
-      .jaba-sidebar::-webkit-scrollbar { width: 6px; }
-      .jaba-sidebar::-webkit-scrollbar-track { background: transparent; }
-      .jaba-sidebar::-webkit-scrollbar-thumb { background: var(--border, #30363d); border-radius: 3px; }
+      /* Glass noise overlay for depth */
+      .jaba-sidebar::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.04) 0%,
+          rgba(255, 255, 255, 0.01) 40%,
+          rgba(0, 0, 0, 0.02) 100%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
 
-      .jaba-sidebar-section { padding: 12px 0; }
-      .jaba-sidebar-section:not(:first-child) { border-top: 1px solid var(--border, #30363d); margin-top: 8px; }
+      .jaba-sidebar > * { position: relative; z-index: 1; }
+
+      .jaba-sidebar::-webkit-scrollbar { width: 4px; }
+      .jaba-sidebar::-webkit-scrollbar-track { background: transparent; }
+      .jaba-sidebar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+      }
+      .jaba-sidebar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.18);
+      }
+
+      .jaba-sidebar-section { padding: 6px 0; }
+      .jaba-sidebar-section:not(:first-child) {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin-top: 4px; padding-top: 10px;
+      }
 
       .jaba-sidebar-divider {
-        padding: 12px 16px 8px; font-size: 11px; font-weight: 700;
-        text-transform: uppercase; color: var(--text-secondary, #8b949e); letter-spacing: 0.5px;
+        padding: 10px 20px 6px;
+        font-size: 10px; font-weight: 600;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.35);
+        letter-spacing: 1.2px;
       }
 
       .jaba-sidebar-item {
-        display: flex; align-items: center; padding: 10px 16px;
-        cursor: pointer; color: var(--text-primary, #e6edf3);
-        transition: background-color ${CONFIG.animationDuration} ease;
-        font-size: 13px; gap: 8px; border-left: 3px solid transparent; margin: 0 4px;
+        display: flex; align-items: center;
+        padding: 8px 14px; margin: 1px 10px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.72);
+        transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 13px; font-weight: 500;
+        gap: 10px;
+        border-radius: 10px;
+        border-left: none;
+        position: relative;
+        letter-spacing: -0.01em;
       }
-      .jaba-sidebar-item:hover { background-color: var(--bg-tertiary, #232733); }
+
+      .jaba-sidebar-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: rgba(255, 255, 255, 0.92);
+      }
+
       .jaba-sidebar-item.active {
-        background-color: var(--accent, #E2F500); color: var(--bg-primary, #0f1117);
-        font-weight: 600; border-left-color: var(--accent, #E2F500);
+        background: rgba(226, 245, 0, 0.12);
+        color: #E2F500;
+        font-weight: 600;
+        border-left: none;
+        box-shadow: 0 0 20px rgba(226, 245, 0, 0.06);
+      }
+
+      .jaba-sidebar-item.active::before {
+        content: '';
+        position: absolute;
+        left: -10px; top: 50%;
+        transform: translateY(-50%);
+        width: 3px; height: 18px;
+        background: #E2F500;
+        border-radius: 0 3px 3px 0;
+        box-shadow: 0 0 8px rgba(226, 245, 0, 0.4);
       }
 
       .jaba-badge {
-        margin-left: auto; padding: 2px 8px; border-radius: 12px;
-        font-size: 11px; font-weight: 600;
-        background-color: var(--bg-tertiary, #232733); color: var(--text-primary, #e6edf3);
-        min-width: 24px; text-align: center;
+        margin-left: auto;
+        padding: 2px 7px;
+        border-radius: 8px;
+        font-size: 10px; font-weight: 600;
+        min-width: 20px; text-align: center;
+        letter-spacing: 0.02em;
+        transition: all 0.22s ease;
       }
-      .jaba-badge.schools { background-color: #00b894; color: white; }
-      .jaba-badge.teams { background-color: #0984e3; color: white; }
-      .jaba-badge.athlete { background-color: #e17055; color: white; }
-      .jaba-badge.agencies { background-color: #fdcb6e; color: #0f1117; }
-      .jaba-badge.brands { background-color: #a29bfe; color: white; }
-      .jaba-badge.investors { background-color: #6c5ce7; color: white; }
-      .jaba-badge.generic { background-color: var(--text-secondary, #8b949e); color: white; }
+
+      /* Glass-style badges */
+      .jaba-badge.schools {
+        background: rgba(0, 184, 148, 0.18);
+        color: #7ef0cc;
+      }
+      .jaba-badge.teams {
+        background: rgba(9, 132, 227, 0.18);
+        color: #74b9ff;
+      }
+      .jaba-badge.athlete {
+        background: rgba(225, 112, 85, 0.18);
+        color: #ffb4a2;
+      }
+      .jaba-badge.agencies {
+        background: rgba(253, 203, 110, 0.18);
+        color: #ffe08f;
+      }
+      .jaba-badge.brands {
+        background: rgba(162, 155, 254, 0.18);
+        color: #c4bfff;
+      }
+      .jaba-badge.investors {
+        background: rgba(108, 92, 231, 0.18);
+        color: #b8b0ff;
+      }
+      .jaba-badge.generic {
+        background: rgba(139, 148, 158, 0.15);
+        color: rgba(255, 255, 255, 0.5);
+      }
 
       .container { margin-left: ${CONFIG.sidebarWidth}; transition: margin-left ${CONFIG.animationDuration} ease; }
       .detail-panel { margin-left: ${CONFIG.sidebarWidth}; transition: margin-left ${CONFIG.animationDuration} ease; }
@@ -243,7 +326,7 @@
       }
       .jaba-custom-section.active { display: block; animation: fadeIn ${CONFIG.animationDuration} ease; }
 
-      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
       .jaba-section-header {
         display: flex; align-items: center; justify-content: space-between;
@@ -272,7 +355,7 @@
       .jaba-stat-number { font-size: 24px; font-weight: 700; color: var(--accent, #E2F500); margin-bottom: 4px; }
       .jaba-stat-label { font-size: 12px; color: var(--text-secondary, #8b949e); text-transform: uppercase; letter-spacing: 0.5px; }
 
-      /* Card grid styles matching Schools tab */
+      /* ===== CARD GRID STYLES ===== */
       .opp-board-stats {
         display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: 12px; margin-bottom: 20px;
@@ -353,7 +436,7 @@
         border-radius: 16px; padding: 14px; min-height: 165px;
         background: linear-gradient(180deg, rgba(30, 34, 45, 0.95), rgba(20, 22, 29, 0.95));
         border: 1px solid rgba(255,255,255,0.07);
-        display: flex; flex-direction: column; gap: 10px;
+        display: flex; flex-direction: column; gap: 8px;
         cursor: pointer; transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         position: relative; overflow: hidden;
       }
@@ -364,43 +447,76 @@
       .opp-card.unworked { opacity: 0.82; background: linear-gradient(180deg, rgba(26, 29, 39, 0.9), rgba(17, 19, 26, 0.9)); }
       .opp-card.client { border-color: rgba(226, 245, 0, 0.45); box-shadow: inset 0 0 0 1px rgba(226, 245, 0, 0.18); }
 
-      .opp-card-header { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+      .opp-card-header { display: flex; justify-content: space-between; gap: 6px; align-items: flex-start; }
       .opp-card-logo {
-        width: 46px; height: 46px; border-radius: 14px;
+        width: 42px; height: 42px; border-radius: 12px;
         background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center;
-        font-size: 13px; font-weight: 700; color: var(--text-primary, #e6edf3);
+        font-size: 12px; font-weight: 700; color: var(--text-primary, #e6edf3);
         overflow: hidden; flex-shrink: 0;
       }
       .opp-card-logo img { width: 100%; height: 100%; object-fit: contain; background: rgba(255,255,255,0.02); }
+
+      /* Fixed type pill — compact, never stretches */
       .opp-card-type-pill {
-        font-size: 10px; text-transform: uppercase; letter-spacing: 0.7px;
-        color: var(--text-secondary, #8b949e); border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 999px; padding: 4px 8px; background: rgba(255,255,255,0.03); white-space: nowrap;
+        font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px;
+        color: rgba(255, 255, 255, 0.45);
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 6px;
+        padding: 3px 6px;
+        background: rgba(255,255,255,0.03);
+        white-space: nowrap;
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
+        line-height: 1.2;
       }
-      .opp-card-name { font-size: 14px; font-weight: 700; line-height: 1.25; color: var(--text-primary, #e6edf3); min-height: 36px; }
+
+      .opp-card-name {
+        font-size: 13px; font-weight: 700; line-height: 1.25;
+        color: var(--text-primary, #e6edf3);
+        min-height: 0;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+
+      /* Compact pill row — heat + stage side by side */
+      .opp-card-pills {
+        display: flex; gap: 6px; align-items: center; flex-wrap: nowrap;
+      }
+
       .opp-card-heat {
-        display: inline-flex; align-items: center; gap: 6px; width: fit-content;
-        padding: 5px 9px; border-radius: 999px; font-size: 10px; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.7px;
+        display: inline-flex; align-items: center; gap: 4px;
+        padding: 3px 8px; border-radius: 6px;
+        font-size: 9px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        white-space: nowrap; flex-shrink: 0;
       }
       .opp-card-heat.green { background: rgba(0, 184, 148, 0.16); color: #7ef0cc; }
       .opp-card-heat.yellow { background: rgba(253, 203, 110, 0.16); color: #ffe08f; }
       .opp-card-heat.red { background: rgba(255, 107, 107, 0.16); color: #ff9d9d; }
-      .opp-card-heat-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+      .opp-card-heat-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+      /* Fixed stage pill — compact, never stretches */
       .opp-card-status {
-        display: inline-flex; align-items: center; gap: 6px; width: fit-content;
-        padding: 5px 9px; border-radius: 999px; font-size: 10px; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.7px;
-        background: rgba(255,255,255,0.08); color: var(--text-secondary, #8b949e);
+        display: inline-flex; align-items: center;
+        padding: 3px 8px; border-radius: 6px;
+        font-size: 9px; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.5px;
+        white-space: nowrap;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 1;
       }
+
       .opp-card-context {
-        color: var(--text-secondary, #8b949e); font-size: 12px; line-height: 1.5;
-        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
-        overflow: hidden; min-height: 54px;
+        color: var(--text-secondary, #8b949e); font-size: 11px; line-height: 1.45;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        overflow: hidden; flex: 1;
       }
       .opp-card-footer {
         display: flex; justify-content: space-between; align-items: center;
-        gap: 8px; margin-top: auto; font-size: 11px; color: var(--text-secondary, #8b949e);
+        gap: 6px; margin-top: auto; font-size: 10px; color: var(--text-secondary, #8b949e);
       }
       .opp-empty {
         padding: 24px; border-radius: 14px; background: rgba(255,255,255,0.03);
@@ -667,7 +783,6 @@
       }
     });
 
-    // Update badges for card grid sections from leads data
     updateCardGridBadges();
   };
 
@@ -691,12 +806,10 @@
     var section = document.getElementById('agenciesSection');
     if (!section) return;
 
-    // Combine agencies + athlete agencies
     var agencyLeads = getLeadsArray().filter(function(l) {
       return l.bucket === 'agencies' || l.bucket === 'athlete';
     });
 
-    // Apply search
     if (agencySearchQuery) {
       var q = agencySearchQuery.toLowerCase();
       agencyLeads = agencyLeads.filter(function(l) {
@@ -706,25 +819,21 @@
       });
     }
 
-    // Categorize
     agencyLeads.forEach(function(l) {
       l._category = categorize(l.company, AGENCY_CATEGORIES);
     });
 
-    // Stats
     var total = agencyLeads.length;
     var active = agencyLeads.filter(function(l) { return l.stage !== 'lead'; }).length;
     var clients = agencyLeads.filter(function(l) { return l.stage === 'client'; }).length;
     var meetings = agencyLeads.filter(function(l) { return l.stage === 'meeting_scheduled' || l.stage === 'meeting_complete'; }).length;
 
-    // Get categories
     var categories = {};
     agencyLeads.forEach(function(l) {
       if (!categories[l._category]) categories[l._category] = [];
       categories[l._category].push(l);
     });
 
-    // Filter chips
     var categoryNames = ['All'];
     var orderedCats = ['AOR / Sports Property', 'Athlete Agency', 'NIL / College Sports', 'Marketing / Creative', 'Other'];
     orderedCats.forEach(function(cat) {
@@ -744,7 +853,6 @@
       return '<div class="opp-board-stat"><div class="opp-board-stat-value">' + pair[1] + '</div><div class="opp-board-stat-label">' + pair[0] + '</div></div>';
     }).join('');
 
-    // Build board
     var boardHtml = '';
     orderedCats.forEach(function(cat) {
       var catLeads = categories[cat];
@@ -968,17 +1076,35 @@
     var followUpText = lead.followUp ? (lead.followUp < today ? 'OVERDUE \u2022 ' + lead.followUp : 'FU ' + lead.followUp) : 'No follow-up';
     var contactCount = (lead.contacts || []).length;
 
+    // Short category label for the pill
+    var shortCategory = categoryLabel;
+    if (shortCategory.length > 12) {
+      var shortMap = {
+        'AOR / Sports Property': 'AOR',
+        'Athlete Agency': 'Athlete',
+        'NIL / College Sports': 'NIL',
+        'Marketing / Creative': 'Marketing',
+        'Sports & Athletics': 'Sports',
+        'Media & Content': 'Media',
+        'Health & Wellness': 'Health',
+        'Financial & Services': 'Finance'
+      };
+      shortCategory = shortMap[categoryLabel] || categoryLabel.split(' ')[0];
+    }
+
     return '<div class="opp-card ' + cardClass + '" onclick="openDetailPanel(' + lead.id + ')">' +
       '<div class="opp-card-header">' +
         '<div class="opp-card-logo">' + logoHtml + '</div>' +
-        '<span class="opp-card-type-pill">' + escapeHtml(categoryLabel) + '</span>' +
+        '<span class="opp-card-type-pill">' + escapeHtml(shortCategory) + '</span>' +
       '</div>' +
       '<div class="opp-card-name">' + escapeHtml(lead.company) + '</div>' +
-      '<span class="opp-card-heat ' + heat.key + '">' +
-        '<span class="opp-card-heat-dot" style="background:' + getHeatDotColor(heat.key) + '"></span>' +
-        escapeHtml(heat.label) +
-      '</span>' +
-      '<span class="opp-card-status" style="' + stageStyleStr + '">' + escapeHtml(stageLabel) + '</span>' +
+      '<div class="opp-card-pills">' +
+        '<span class="opp-card-heat ' + heat.key + '">' +
+          '<span class="opp-card-heat-dot" style="background:' + getHeatDotColor(heat.key) + '"></span>' +
+          escapeHtml(heat.label) +
+        '</span>' +
+        '<span class="opp-card-status" style="' + stageStyleStr + '">' + escapeHtml(stageLabel) + '</span>' +
+      '</div>' +
       '<div class="opp-card-context">' + escapeHtml(lead.context || '') + '</div>' +
       '<div class="opp-card-footer">' +
         '<span>' + followUpText + '</span>' +
@@ -991,56 +1117,48 @@
   var createCustomSections = function() {
     var container = document.querySelector('.container') || document.body;
 
-    // Agencies Section (card grid - content rendered dynamically)
     var agenciesSection = document.createElement('div');
     agenciesSection.id = 'agenciesSection';
     agenciesSection.className = 'jaba-custom-section';
     agenciesSection.innerHTML = '<div class="opp-empty">Loading agencies...</div>';
     container.appendChild(agenciesSection);
 
-    // Brands Section (card grid - content rendered dynamically)
     var brandsSection = document.createElement('div');
     brandsSection.id = 'brandsSection';
     brandsSection.className = 'jaba-custom-section';
     brandsSection.innerHTML = '<div class="opp-empty">Loading brands...</div>';
     container.appendChild(brandsSection);
 
-    // Teams & Leagues Section (card grid - content rendered dynamically)
     var leaguesSection = document.createElement('div');
     leaguesSection.id = 'leaguesTeamsSection';
     leaguesSection.className = 'jaba-custom-section';
     leaguesSection.innerHTML = '<div class="opp-empty">Loading teams & leagues...</div>';
     container.appendChild(leaguesSection);
 
-    // Investors Section (Firebase table)
     var investorsSection = document.createElement('div');
     investorsSection.id = 'investorsSection';
     investorsSection.className = 'jaba-custom-section';
     investorsSection.innerHTML = createTableSectionHTML('Investors', 'investors', ['name', 'contact', 'title', 'status', 'notes']);
     container.appendChild(investorsSection);
 
-    // Athlete Investors Section (Firebase table)
     var athleteSection = document.createElement('div');
     athleteSection.id = 'athleteInvestorsSection';
     athleteSection.className = 'jaba-custom-section';
     athleteSection.innerHTML = createTableSectionHTML('Athlete Investors', 'athlete_investors', ['name', 'sport', 'status', 'notes']);
     container.appendChild(athleteSection);
 
-    // Damar CRM Section
     var damarSection = document.createElement('div');
     damarSection.id = 'damarCRMSection';
     damarSection.className = 'jaba-custom-section';
     damarSection.innerHTML = createTableSectionHTML('Damar CRM', 'damarCRM', ['name', 'org', 'pipeline', 'introStatus', 'strength', 'notes']);
     container.appendChild(damarSection);
 
-    // Clients Section
     var clientsSection = document.createElement('div');
     clientsSection.id = 'clientDataSection';
     clientsSection.className = 'jaba-custom-section';
     clientsSection.innerHTML = createTableSectionHTML('Clients', 'clientData', ['name', 'status']);
     container.appendChild(clientsSection);
 
-    // Client Dashboard Section
     var dashboardSection = document.createElement('div');
     dashboardSection.id = 'clientDashSection';
     dashboardSection.className = 'jaba-custom-section';
@@ -1053,7 +1171,6 @@
     dashboardSection.innerHTML = dashboardHTML;
     container.appendChild(dashboardSection);
 
-    // Approvals Section
     var approvalsSection = document.createElement('div');
     approvalsSection.id = 'approvalsSection';
     approvalsSection.className = 'jaba-custom-section';
@@ -1316,15 +1433,12 @@
   };
 
   // ===== EXPOSE LEADS ARRAY =====
-  // Hook into the leads array from index.html so card grids can access it
   function hookLeadsArray() {
-    // Try to access the global leads variable from index.html
     if (typeof leads !== 'undefined' && Array.isArray(leads) && leads.length > 0) {
       window.__leads = leads;
       updateCardGridBadges();
       return;
     }
-    // Try localStorage with correct key
     try {
       var stored = JSON.parse(localStorage.getItem('bd_leads_v26') || '[]');
       if (stored.length > 0) {
@@ -1334,7 +1448,6 @@
       }
     } catch(e) {}
 
-    // Retry after a delay if leads aren't loaded yet
     setTimeout(hookLeadsArray, 1000);
   }
 
@@ -1348,10 +1461,8 @@
     setTimeout(syncFirebaseData, 1000);
     setTimeout(syncBadgesFromTopTabs, 2000);
 
-    // Hook into leads array
     hookLeadsArray();
 
-    // Also listen for storage changes (leads are saved to localStorage by index.html)
     window.addEventListener('storage', function(e) {
       if (e.key === 'bd_leads_v26') {
         try {
@@ -1361,7 +1472,6 @@
       }
     });
 
-    // Intercept section changes
     if (typeof window.switchSection === 'function') {
       var originalSwitchSection = window.switchSection;
       window.switchSection = function(sectionName) {
@@ -1382,7 +1492,7 @@
       };
     }
 
-    console.log('JABA Custom v3 initialized successfully');
+    console.log('JABA Custom v4 initialized — liquid glass sidebar + compact pills');
   };
 
   if (document.readyState === 'loading') {
