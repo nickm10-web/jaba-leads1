@@ -3304,7 +3304,7 @@
     </div><!-- /schoolsSection -->
 
     <!-- INBOX SECTION (top-level, separate from leads) -->
-    <div id="inboxSection" style="display:none;">
+    <div id="inboxSection" style="display:none;overflow:hidden;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div class="inbox-header" style="margin-bottom:0;">
           <div class="inbox-stats">
@@ -3345,8 +3345,7 @@
         <button class="gmail-sub-tab" onclick="switchGmailTab('sent')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Sent</button>
         <button class="gmail-sub-tab" onclick="switchGmailTab('needsreply')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Needs Reply</button>
       </div>
-      <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:calc(100vh - 240px);overflow-y:auto;"></div>
-      <div id="inboxSent" style="display:none;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:calc(100vh - 240px);overflow-y:auto;"></div>
+      <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:calc(100vh - 280px);min-height:200px;overflow-y:auto;"></div>
       <div id="inboxKanban" class="inbox-kanban" style="display:none;"></div>
       <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
       <div id="inboxList" style="display:none;"></div>
