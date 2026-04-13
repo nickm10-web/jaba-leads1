@@ -90,14 +90,9 @@
     return allLeads.filter(function(l) { return l.bucket === bucket; });
   }
 
-  function escapeHtml(text) {
-    return String(text || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
+  // Use global versions from index.html (deduplicated)
+  var escapeHtml = window.escapeHtml || function(t) { return String(t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); };
+  var getStageStyle = window.getStageStyle || function() { return ''; };
 
   function getInitials(name) {
     return String(name || '')
@@ -119,19 +114,6 @@
       announcement_approved: 'Ann. OK'
     };
     return labels[stage] || stage || 'Unworked';
-  }
-
-  function getStageStyle(stage, isUnworked) {
-    if (isUnworked) return 'background:rgba(139,148,158,0.14);color:var(--text-secondary);';
-    var stageColors = {
-      lead: '#a29bfe', contacted: '#74b9ff', meeting_scheduled: '#81ecec',
-      scrape: '#ffeaa7', building: '#fab1a0', auditing: '#d6c5ff',
-      ready: '#55efc4', meeting_complete: '#00b894', report_sent: '#74b9ff',
-      contract_sent: '#fd79a8', client: '#E2F500', onhold: '#8b949e'
-    };
-    var bg = stageColors[stage] || '#30363d';
-    var fg = (stage === 'client' || stage === 'scrape') ? '#000' : '#fff';
-    return 'background:' + bg + ';color:' + fg + ';';
   }
 
   function getHeat(lead) {
