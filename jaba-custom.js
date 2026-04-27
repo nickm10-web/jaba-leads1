@@ -16,8 +16,7 @@
       investors: 'investors',
       athleteInvestors: 'athlete_investors',
       damarCRM: 'damarCRM',
-      clientData: 'clientData',
-      approvals: 'approvals'
+      jordonCRM: 'jordonCRM'
     }
   };
 
@@ -25,8 +24,7 @@
     investors: {},
     athleteInvestors: {},
     damarCRM: {},
-    clientData: {},
-    approvals: {}
+    jordonCRM: {}
   };
 
   var activeCustomSection = null;
@@ -544,6 +542,12 @@
       .jaba-btn-approve { background: var(--color-schools, #00b894); color: white; }
       .jaba-btn-reject { background: var(--color-athlete, #e17055); color: white; }
 
+      /* Date-cell highlights for follow-up tracking */
+      .jaba-date-overdue { color: #ff6b6b; font-weight: 600; }
+      .jaba-date-soon { color: #ffd166; font-weight: 600; }
+      .jaba-date-empty { color: var(--text-secondary, #8b949e); opacity: 0.5; }
+      .jaba-table tbody tr.jaba-row-overdue { background: rgba(255, 107, 107, 0.06); }
+
       .jaba-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
       .jaba-card {
         background: var(--glass-bg, rgba(26, 29, 39, 0.8)); border: 1px solid var(--border, #30363d);
@@ -575,13 +579,13 @@
         label: null,
         items: [
           { name: 'Dashboard', id: 'dashboard', section: 'dashboardSection', type: 'builtin' },
-          { name: 'Leads', id: 'leads', section: 'leadsSection', type: 'builtin', badge: true },
-          { name: 'Schools', id: 'schools', section: 'schoolsSection', type: 'builtin', badge: 'schools' }
+          { name: 'Leads', id: 'leads', section: 'leadsSection', type: 'builtin', badge: true }
         ]
       },
       {
         label: 'OPPORTUNITIES',
         items: [
+          { name: 'Schools', id: 'schools', section: 'schoolsSection', type: 'builtin', badge: 'schools' },
           { name: 'Agencies', id: 'agencies', section: 'agenciesSection', type: 'custom', badge: 'agencies', cardGrid: true },
           { name: 'Brands', id: 'brands', section: 'brandsSection', type: 'custom', badge: 'brands', cardGrid: true },
           { name: 'Teams & Leagues', id: 'leagues_teams', section: 'leaguesTeamsSection', type: 'custom', badge: 'teams', cardGrid: true },
@@ -601,15 +605,8 @@
       {
         label: 'CRM',
         items: [
-          { name: 'Damar CRM', id: 'damarCRM', section: 'damarCRMSection', type: 'custom', badge: 'generic' },
-          { name: 'Clients', id: 'clientData', section: 'clientDataSection', type: 'custom', badge: 'generic' },
-          { name: 'Client Dashboard', id: 'clientDash', section: 'clientDashSection', type: 'custom' }
-        ]
-      },
-      {
-        label: 'ACTIVITY',
-        items: [
-          { name: 'Approvals', id: 'approvals', section: 'approvalsSection', type: 'custom', badge: 'generic' }
+          { name: 'Jordon CRM', id: 'jordonCRM', section: 'jordonCRMSection', type: 'custom', badge: 'generic' },
+          { name: 'Damar CRM', id: 'damarCRM', section: 'damarCRMSection', type: 'custom', badge: 'generic' }
         ]
       }
     ];
@@ -636,16 +633,10 @@
         label.textContent = item.name;
         itemDiv.appendChild(label);
 
-        if (item.badge) {
-          var badge = document.createElement('div');
-          badge.className = 'jaba-badge';
-          if (typeof item.badge === 'string' && item.badge !== true) {
-            badge.classList.add(item.badge);
-          }
-          badge.dataset.badgeKey = item.id;
-          badge.textContent = '0';
-          itemDiv.appendChild(badge);
-        }
+        // Sidebar badges intentionally not rendered — count pills were noisy
+        // and most read 0. The `badge` field is left in the section config in
+        // case we want to bring them back, and the updateBadge / sync helpers
+        // are harmless no-ops when no badge elements exist in the DOM.
 
         itemDiv.addEventListener('click', function() {
           handleSidebarClick(item, itemDiv);
@@ -735,13 +726,9 @@
       dataCache.damarCRM = data;
       updateBadge('damarCRM', Object.keys(data).length);
     });
-    loadFirebaseData(CONFIG.firebasePaths.clientData, function(data) {
-      dataCache.clientData = data;
-      updateBadge('clientData', Object.keys(data).length);
-    });
-    loadFirebaseData(CONFIG.firebasePaths.approvals, function(data) {
-      dataCache.approvals = data;
-      updateBadge('approvals', Object.keys(data).length);
+    loadFirebaseData(CONFIG.firebasePaths.jordonCRM, function(data) {
+      dataCache.jordonCRM = data;
+      updateBadge('jordonCRM', Object.keys(data).length);
     });
   };
 
@@ -1129,38 +1116,31 @@
     athleteSection.innerHTML = createTableSectionHTML('Athlete Investors', 'athlete_investors', ['name', 'sport', 'status', 'notes']);
     container.appendChild(athleteSection);
 
+    // Jordon CRM Section. Schema lives in RELATIONSHIP_COLUMNS (single source
+    // of truth, also used by getColumnsForDataKey for table rendering).
+    var jordonSection = document.createElement('div');
+    jordonSection.id = 'jordonCRMSection';
+    jordonSection.className = 'jaba-custom-section';
+    jordonSection.innerHTML = createTableSectionHTML('Jordon CRM', 'jordonCRM', RELATIONSHIP_COLUMNS);
+    container.appendChild(jordonSection);
+
+    // Damar CRM Section
     var damarSection = document.createElement('div');
     damarSection.id = 'damarCRMSection';
     damarSection.className = 'jaba-custom-section';
-    damarSection.innerHTML = createTableSectionHTML('Damar CRM', 'damarCRM', ['name', 'org', 'pipeline', 'introStatus', 'strength', 'notes']);
+    damarSection.innerHTML = createTableSectionHTML('Damar CRM', 'damarCRM', RELATIONSHIP_COLUMNS);
     container.appendChild(damarSection);
+  };
 
-    var clientsSection = document.createElement('div');
-    clientsSection.id = 'clientDataSection';
-    clientsSection.className = 'jaba-custom-section';
-    clientsSection.innerHTML = createTableSectionHTML('Clients', 'clientData', ['name', 'status']);
-    container.appendChild(clientsSection);
-
-    var dashboardSection = document.createElement('div');
-    dashboardSection.id = 'clientDashSection';
-    dashboardSection.className = 'jaba-custom-section';
-    var dashboardHTML = '<div class="jaba-section-header"><h1 class="jaba-section-title">Client Dashboard</h1></div>';
-    dashboardHTML += '<div class="jaba-stats-container">';
-    dashboardHTML += '<div class="jaba-stat-card"><div class="jaba-stat-number" id="stat-total-clients">0</div><div class="jaba-stat-label">Total Clients</div></div>';
-    dashboardHTML += '<div class="jaba-stat-card"><div class="jaba-stat-number" id="stat-total-crm">0</div><div class="jaba-stat-label">CRM Contacts</div></div>';
-    dashboardHTML += '<div class="jaba-stat-card"><div class="jaba-stat-number" id="stat-total-approvals">0</div><div class="jaba-stat-label">Pending Approvals</div></div>';
-    dashboardHTML += '</div>';
-    dashboardSection.innerHTML = dashboardHTML;
-    container.appendChild(dashboardSection);
-
-    var approvalsSection = document.createElement('div');
-    approvalsSection.id = 'approvalsSection';
-    approvalsSection.className = 'jaba-custom-section';
-    var approvalsHTML = '<div class="jaba-section-header"><h1 class="jaba-section-title">Approvals</h1></div>';
-    approvalsHTML += '<button class="jaba-btn jaba-btn-add" onclick="jabaCustom.renderApprovalsSection()">Refresh</button>';
-    approvalsHTML += '<div id="approvals-container" class="jaba-card-grid"></div>';
-    approvalsSection.innerHTML = approvalsHTML;
-    container.appendChild(approvalsSection);
+  // Turn 'lastContact' -> 'Last Contact', 'nextFollowUp' -> 'Next Follow-Up'.
+  // Hyphenates 'follow' + 'up' as a special case so the header matches how
+  // people actually write it.
+  var formatColumnHeader = function(col) {
+    var spaced = col.replace(/([A-Z])/g, ' $1').replace(/-/g, ' ');
+    var titled = spaced.replace(/\w\S*/g, function(w) {
+      return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).trim();
+    return titled.replace(/Follow Up/g, 'Follow-Up');
   };
 
   var createTableSectionHTML = function(title, dataKey, columns) {
@@ -1175,7 +1155,7 @@
     html += '<table class="jaba-table" id="table-' + dataKey + '">';
     html += '<thead><tr>';
     columns.forEach(function(col) {
-      html += '<th>' + col.charAt(0).toUpperCase() + col.slice(1) + '</th>';
+      html += '<th>' + formatColumnHeader(col) + '</th>';
     });
     html += '<th>Actions</th></tr></thead>';
     html += '<tbody id="tbody-' + dataKey + '"></tbody>';
@@ -1184,6 +1164,38 @@
   };
 
   // ===== RENDERING FUNCTIONS (Firebase tables) =====
+  // Returns YYYY-MM-DD for "today" in local time. Used to compare against
+  // date-input values (which are also YYYY-MM-DD strings).
+  var todayISO = function() {
+    var d = new Date();
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + mm + '-' + dd;
+  };
+
+  // Days from `today` to `dateStr`. Negative = overdue, 0 = today,
+  // positive = future. Returns null if dateStr is empty or invalid.
+  var daysFromToday = function(dateStr) {
+    if (!dateStr) return null;
+    var parts = String(dateStr).split('-');
+    if (parts.length !== 3) return null;
+    var target = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    if (isNaN(target.getTime())) return null;
+    var now = new Date();
+    var t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.round((target - t0) / (1000 * 60 * 60 * 24));
+  };
+
+  // Bucket a date column for styling: 'overdue', 'soon' (today..+3),
+  // 'future', or 'empty'. Only applied to nextFollowUp.
+  var classifyFollowUp = function(dateStr) {
+    var d = daysFromToday(dateStr);
+    if (d === null) return 'empty';
+    if (d < 0) return 'overdue';
+    if (d <= 3) return 'soon';
+    return 'future';
+  };
+
   var renderTableData = function(dataKey, searchTerm) {
     var data = dataCache[dataKey] || {};
     var tbody = document.getElementById('tbody-' + dataKey);
@@ -1199,13 +1211,11 @@
         item.id = key;
         if (searchTerm) {
           var matches = false;
-          for (var col in columns) {
-            if (columns.hasOwnProperty(col)) {
-              var val = item[columns[col]];
-              if (val && val.toString().toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
-                matches = true;
-                break;
-              }
+          for (var ci = 0; ci < columns.length; ci++) {
+            var sval = item[columns[ci]];
+            if (sval && sval.toString().toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
+              matches = true;
+              break;
             }
           }
           if (!matches) continue;
@@ -1214,9 +1224,27 @@
       }
     }
 
+    // Sort by Next Follow-Up ascending when the column is present:
+    // overdue dates float to the top; empty / no-date rows sink to the bottom.
+    if (columns.indexOf('nextFollowUp') !== -1) {
+      rows.sort(function(a, b) {
+        var av = a.nextFollowUp || '';
+        var bv = b.nextFollowUp || '';
+        if (!av && !bv) return (a.name || '').localeCompare(b.name || '');
+        if (!av) return 1;
+        if (!bv) return -1;
+        return av.localeCompare(bv);
+      });
+    }
+
     tbody.innerHTML = '';
     rows.forEach(function(item) {
       var tr = document.createElement('tr');
+      var followUpClass = classifyFollowUp(item.nextFollowUp);
+      if (columns.indexOf('nextFollowUp') !== -1 && followUpClass === 'overdue') {
+        tr.classList.add('jaba-row-overdue');
+      }
+
       columns.forEach(function(col) {
         var td = document.createElement('td');
         var val = item[col] || '';
@@ -1225,6 +1253,22 @@
           td.innerHTML = '<span class="jaba-status-badge ' + statusClass + '">' + val + '</span>';
         } else if (col === 'strength') {
           td.textContent = renderStars(val);
+        } else if (col === 'nextFollowUp') {
+          if (!val) {
+            td.textContent = '\u2014';
+            td.classList.add('jaba-date-empty');
+          } else {
+            td.textContent = val;
+            if (followUpClass === 'overdue') td.classList.add('jaba-date-overdue');
+            else if (followUpClass === 'soon') td.classList.add('jaba-date-soon');
+          }
+        } else if (col === 'lastContact') {
+          if (!val) {
+            td.textContent = '\u2014';
+            td.classList.add('jaba-date-empty');
+          } else {
+            td.textContent = val;
+          }
         } else {
           td.textContent = val;
         }
@@ -1248,130 +1292,237 @@
     return stars || '\u2014';
   };
 
-  var renderApprovalsSection = function() {
-    var data = dataCache.approvals || {};
-    var container = document.getElementById('approvals-container');
-    if (!container) return;
-
-    container.innerHTML = '';
-    for (var key in data) {
-      if (data.hasOwnProperty(key)) {
-        var item = data[key];
-        var card = document.createElement('div');
-        card.className = 'jaba-card';
-        var name = item.name || 'Unnamed Item';
-        var status = item.status || 'pending';
-        card.innerHTML = '<div class="jaba-card-title">' + name + '</div>' +
-                         '<div class="jaba-card-content"><strong>Status:</strong> ' + status + '<br>' +
-                         (item.notes ? '<strong>Notes:</strong> ' + item.notes : '') + '</div>' +
-                         '<div class="jaba-card-actions">' +
-                         '<button class="jaba-btn jaba-btn-approve" onclick="jabaCustom.handleApprove(\'' + key + '\')">Approve</button>' +
-                         '<button class="jaba-btn jaba-btn-reject" onclick="jabaCustom.handleReject(\'' + key + '\')">Reject</button>' +
-                         '<button class="jaba-btn jaba-btn-edit" onclick="jabaCustom.handleEdit(\'approvals\', \'' + key + '\')">Edit</button>' +
-                         '<button class="jaba-btn jaba-btn-delete" onclick="jabaCustom.handleDelete(\'approvals\', \'' + key + '\')">Delete</button>' +
-                         '</div>';
-        container.appendChild(card);
-      }
-    }
-  };
-
-  var updateClientDashboard = function() {
-    var el1 = document.getElementById('stat-total-clients');
-    var el2 = document.getElementById('stat-total-crm');
-    var el3 = document.getElementById('stat-total-approvals');
-    if (el1) el1.textContent = Object.keys(dataCache.clientData).length;
-    if (el2) el2.textContent = Object.keys(dataCache.damarCRM).length;
-    if (el3) el3.textContent = Object.keys(dataCache.approvals).length;
-  };
+  // Both Jordon CRM and Damar CRM use the same relationship-tracking schema.
+  var RELATIONSHIP_COLUMNS = ['name', 'relationship', 'org', 'lastContact', 'nextFollowUp', 'context'];
 
   var getColumnsForDataKey = function(dataKey) {
     var columnsMap = {
       'investors': ['name', 'contact', 'title', 'status', 'notes'],
       'athlete_investors': ['name', 'sport', 'status', 'notes'],
-      'damarCRM': ['name', 'org', 'pipeline', 'introStatus', 'strength', 'notes'],
-      'clientData': ['name', 'status']
+      'damarCRM': RELATIONSHIP_COLUMNS,
+      'jordonCRM': RELATIONSHIP_COLUMNS
     };
     return columnsMap[dataKey] || [];
   };
 
+  // ===== RECORD EDITOR MODAL =====
+  // Reuses .modal / .modal-content / .form-group styles from index.html so
+  // the editor visually matches the rest of the app. The modal is created
+  // once on first use and reused for all dataKeys.
+
+  var RELATIONSHIP_OPTIONS = [
+    'Friend', 'Investor', 'Potential Client', 'Client',
+    'Partner', 'Vendor', 'Press', 'Other'
+  ];
+  var DATE_COLUMNS = ['lastContact', 'nextFollowUp', 'followUp'];
+  var TEXTAREA_COLUMNS = ['context', 'notes'];
+
+  var escapeAttr = function(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  };
+
+  var getInputType = function(col) {
+    if (DATE_COLUMNS.indexOf(col) !== -1) return 'date';
+    if (TEXTAREA_COLUMNS.indexOf(col) !== -1) return 'textarea';
+    if (col === 'relationship') return 'select-relationship';
+    return 'text';
+  };
+
+  var ensureCrmModal = function() {
+    if (document.getElementById('crmRecordModal')) return;
+    var modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'crmRecordModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'crmRecordModalTitle');
+    modal.innerHTML =
+      '<div class="modal-content">' +
+        '<div class="modal-header">' +
+          '<h2 id="crmRecordModalTitle">Edit Contact</h2>' +
+          '<button class="modal-close" type="button" data-crm-modal-action="close" aria-label="Close dialog">&times;</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<form id="crmRecordForm" onsubmit="return false;"></form>' +
+        '</div>' +
+        '<div class="modal-footer">' +
+          '<button type="button" class="btn btn-secondary" id="crmRecordDelete" style="margin-right:auto;">Delete</button>' +
+          '<button type="button" class="btn btn-secondary" data-crm-modal-action="close">Cancel</button>' +
+          '<button type="button" class="btn btn-primary" id="crmRecordSave">Save</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    // Close on backdrop click or any element marked data-crm-modal-action="close"
+    modal.addEventListener('click', function(e) {
+      var t = e.target;
+      if (t === modal) { closeCrmModal(); return; }
+      if (t.dataset && t.dataset.crmModalAction === 'close') { closeCrmModal(); }
+    });
+    // ESC to close (attached once, no-op when modal isn't open)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeCrmModal();
+      }
+    });
+  };
+
+  var closeCrmModal = function() {
+    var modal = document.getElementById('crmRecordModal');
+    if (modal) modal.classList.remove('active');
+  };
+
+  var openCrmRecordModal = function(dataKey, itemId) {
+    ensureCrmModal();
+    var modal = document.getElementById('crmRecordModal');
+    var form = document.getElementById('crmRecordForm');
+    var titleEl = document.getElementById('crmRecordModalTitle');
+    var deleteBtn = document.getElementById('crmRecordDelete');
+    var saveBtn = document.getElementById('crmRecordSave');
+
+    var columns = getColumnsForDataKey(dataKey);
+    var existing = (itemId && dataCache[dataKey] && dataCache[dataKey][itemId])
+      ? dataCache[dataKey][itemId] : null;
+    var isEdit = !!existing;
+
+    titleEl.textContent = isEdit ? 'Edit Contact' : 'Add Contact';
+    deleteBtn.style.display = isEdit ? '' : 'none';
+
+    // Build form fields per column
+    var html = '';
+    columns.forEach(function(col) {
+      var label = formatColumnHeader(col);
+      var val = existing ? (existing[col] != null ? existing[col] : '') : '';
+      var requiredAttr = col === 'name' ? ' required' : '';
+      var requiredMark = col === 'name' ? ' *' : '';
+      var type = getInputType(col);
+      var fieldId = 'crm-field-' + col;
+      html += '<div class="form-group">';
+      html += '<label for="' + fieldId + '">' + label + requiredMark + '</label>';
+      if (type === 'date') {
+        html += '<input type="date" id="' + fieldId + '" data-crm-field="' + col + '" value="' + escapeAttr(val) + '">';
+      } else if (type === 'textarea') {
+        html += '<textarea id="' + fieldId + '" data-crm-field="' + col + '" rows="4" placeholder="Long-form notes, history, why they matter...">' + escapeAttr(val) + '</textarea>';
+      } else if (type === 'select-relationship') {
+        html += '<select id="' + fieldId + '" data-crm-field="' + col + '">';
+        html += '<option value="">— Select —</option>';
+        var hasMatch = false;
+        RELATIONSHIP_OPTIONS.forEach(function(opt) {
+          var selected = (opt === val) ? ' selected' : '';
+          if (opt === val) hasMatch = true;
+          html += '<option value="' + escapeAttr(opt) + '"' + selected + '>' + escapeAttr(opt) + '</option>';
+        });
+        // Preserve any existing custom value not in our preset list
+        if (val && !hasMatch) {
+          html += '<option value="' + escapeAttr(val) + '" selected>' + escapeAttr(val) + '</option>';
+        }
+        html += '</select>';
+      } else {
+        html += '<input type="text" id="' + fieldId + '" data-crm-field="' + col + '" value="' + escapeAttr(val) + '"' + requiredAttr + '>';
+      }
+      html += '</div>';
+    });
+    form.innerHTML = html;
+
+    // Save: gather fields, preserve unmapped legacy keys (e.g. old Damar
+    // pipeline/introStatus/strength), write to Firebase.
+    saveBtn.onclick = function() {
+      var record = isEdit ? cloneRecord(existing) : {};
+      var fields = form.querySelectorAll('[data-crm-field]');
+      var nameField = '';
+      Array.prototype.forEach.call(fields, function(f) {
+        var col = f.dataset.crmField;
+        var v = f.value || '';
+        if (col === 'name') nameField = v.trim();
+        record[col] = v;
+      });
+      if (!nameField) {
+        alert('Name is required.');
+        return;
+      }
+      record.updated = new Date().toISOString();
+      if (!isEdit) record.created = new Date().toISOString();
+      saveCrmRecord(dataKey, itemId, record);
+    };
+
+    // Delete (edit mode only)
+    deleteBtn.onclick = function() {
+      if (!isEdit) return;
+      if (!confirm('Delete this record?')) return;
+      deleteCrmRecord(dataKey, itemId);
+    };
+
+    modal.classList.add('active');
+    // Focus first field after the modal becomes visible
+    setTimeout(function() {
+      var first = form.querySelector('[data-crm-field]');
+      if (first) first.focus();
+    }, 50);
+  };
+
+  // Shallow clone so we don't mutate the cached object before the write succeeds.
+  var cloneRecord = function(obj) {
+    var out = {};
+    for (var k in obj) {
+      if (obj.hasOwnProperty(k)) out[k] = obj[k];
+    }
+    return out;
+  };
+
+  var saveCrmRecord = function(dataKey, itemId, record) {
+    var path = CONFIG.firebasePaths[getFirebasePath(dataKey)];
+    var finalize = function(savedKey) {
+      dataCache[dataKey] = dataCache[dataKey] || {};
+      dataCache[dataKey][savedKey] = record;
+      closeCrmModal();
+      renderTableData(dataKey, '');
+      updateBadge(dataKey, Object.keys(dataCache[dataKey]).length);
+    };
+    if (typeof firebase === 'undefined') {
+      // Offline fallback: keep editing usable even when Firebase isn't loaded.
+      finalize(itemId || ('local-' + Date.now()));
+      return;
+    }
+    var ref = itemId
+      ? firebase.database().ref(path + '/' + itemId)
+      : firebase.database().ref(path).push();
+    ref.set(record, function(error) {
+      if (error) { alert('Error saving: ' + error.message); return; }
+      finalize(itemId || ref.key);
+    });
+  };
+
+  var deleteCrmRecord = function(dataKey, itemId) {
+    var path = CONFIG.firebasePaths[getFirebasePath(dataKey)];
+    var finalize = function() {
+      if (dataCache[dataKey]) delete dataCache[dataKey][itemId];
+      closeCrmModal();
+      renderTableData(dataKey, '');
+      updateBadge(dataKey, Object.keys(dataCache[dataKey] || {}).length);
+    };
+    if (typeof firebase === 'undefined') { finalize(); return; }
+    firebase.database().ref(path + '/' + itemId).remove(function(error) {
+      if (error) { alert('Error deleting: ' + error.message); return; }
+      finalize();
+    });
+  };
+
   // ===== CRUD OPERATIONS =====
   jabaCustom.handleAddNew = function(dataKey) {
-    var itemName = prompt('Enter ' + dataKey + ' name:');
-    if (!itemName) return;
-    var newItem = { name: itemName, status: 'unworked', created: new Date().toISOString() };
-    if (typeof firebase !== 'undefined') {
-      var newRef = firebase.database().ref(CONFIG.firebasePaths[getFirebasePath(dataKey)]).push();
-      newRef.set(newItem, function(error) {
-        if (error) { alert('Error adding item: ' + error.message); }
-        else {
-          dataCache[dataKey][newRef.key] = newItem;
-          renderTableData(dataKey, '');
-          updateBadge(dataKey, Object.keys(dataCache[dataKey]).length);
-        }
-      });
-    }
+    openCrmRecordModal(dataKey, null);
   };
 
   jabaCustom.handleEdit = function(dataKey, itemId) {
-    var item = dataCache[dataKey] && dataCache[dataKey][itemId];
-    if (!item) return;
-    var newName = prompt('Edit name:', item.name || '');
-    if (newName === null) return;
-    item.name = newName;
-    item.updated = new Date().toISOString();
-    if (typeof firebase !== 'undefined') {
-      var path = CONFIG.firebasePaths[getFirebasePath(dataKey)];
-      firebase.database().ref(path + '/' + itemId).set(item, function(error) {
-        if (error) { alert('Error updating item: ' + error.message); }
-        else { renderTableData(dataKey, ''); }
-      });
-    }
+    openCrmRecordModal(dataKey, itemId);
   };
 
   jabaCustom.handleDelete = function(dataKey, itemId) {
     if (!confirm('Are you sure you want to delete this item?')) return;
-    if (typeof firebase !== 'undefined') {
-      var path = CONFIG.firebasePaths[getFirebasePath(dataKey)];
-      firebase.database().ref(path + '/' + itemId).remove(function(error) {
-        if (error) { alert('Error deleting item: ' + error.message); }
-        else {
-          delete dataCache[dataKey][itemId];
-          renderTableData(dataKey, '');
-          updateBadge(dataKey, Object.keys(dataCache[dataKey]).length);
-        }
-      });
-    }
-  };
-
-  jabaCustom.handleApprove = function(itemId) {
-    var item = dataCache.approvals[itemId];
-    if (!item) return;
-    item.status = 'approved';
-    item.updated = new Date().toISOString();
-    if (typeof firebase !== 'undefined') {
-      firebase.database().ref('approvals/' + itemId).set(item, function(error) {
-        if (error) { alert('Error approving item: ' + error.message); }
-        else { renderApprovalsSection(); }
-      });
-    }
-  };
-
-  jabaCustom.handleReject = function(itemId) {
-    var item = dataCache.approvals[itemId];
-    if (!item) return;
-    item.status = 'rejected';
-    item.updated = new Date().toISOString();
-    if (typeof firebase !== 'undefined') {
-      firebase.database().ref('approvals/' + itemId).set(item, function(error) {
-        if (error) { alert('Error rejecting item: ' + error.message); }
-        else { renderApprovalsSection(); }
-      });
-    }
-  };
-
-  jabaCustom.renderApprovalsSection = function() {
-    syncFirebaseData();
-    setTimeout(renderApprovalsSection, 500);
+    deleteCrmRecord(dataKey, itemId);
   };
 
   var getFirebasePath = function(dataKey) {
@@ -1379,8 +1530,7 @@
       'investors': 'investors',
       'athlete_investors': 'athleteInvestors',
       'damarCRM': 'damarCRM',
-      'clientData': 'clientData',
-      'approvals': 'approvals'
+      'jordonCRM': 'jordonCRM'
     };
     return pathMap[dataKey] || dataKey;
   };
@@ -1396,12 +1546,10 @@
 
   jabaCustom.renderDamarCRM = function() {
     renderTableData('damarCRM', '');
-    updateClientDashboard();
   };
 
-  jabaCustom.renderClientData = function() {
-    renderTableData('clientData', '');
-    updateClientDashboard();
+  jabaCustom.renderJordonCRM = function() {
+    renderTableData('jordonCRM', '');
   };
 
   // ===== SEARCH FUNCTIONALITY =====
@@ -1483,8 +1631,62 @@
     init();
   }
 
+  // ===== CROSS-MODULE ACCESSORS (for the briefing/dashboard) =====
+  // Returns a flat array of follow-ups across all CRM dataKeys, sorted by
+  // most overdue first. Items without a nextFollowUp are excluded.
+  // Shape: [{ name, source, dataKey, itemId, date, daysFromToday }]
+  jabaCustom.getCrmFollowUps = function() {
+    var sources = [
+      { dataKey: 'jordonCRM', source: 'Jordon CRM' },
+      { dataKey: 'damarCRM', source: 'Damar CRM' }
+    ];
+    var out = [];
+    sources.forEach(function(s) {
+      var data = dataCache[s.dataKey] || {};
+      for (var key in data) {
+        if (!data.hasOwnProperty(key)) continue;
+        var item = data[key];
+        if (!item || !item.nextFollowUp) continue;
+        var d = daysFromToday(item.nextFollowUp);
+        if (d === null) continue;
+        out.push({
+          name: item.name || '(unnamed)',
+          source: s.source,
+          dataKey: s.dataKey,
+          itemId: key,
+          date: item.nextFollowUp,
+          daysFromToday: d,
+          relationship: item.relationship || '',
+          context: item.context || ''
+        });
+      }
+    });
+    out.sort(function(a, b) { return a.daysFromToday - b.daysFromToday; });
+    return out;
+  };
+
+  // Expose the helpers used by the briefing for date math, so the dashboard
+  // doesn't need to reimplement them.
+  jabaCustom.daysFromToday = daysFromToday;
+  jabaCustom.classifyFollowUp = classifyFollowUp;
+  jabaCustom.todayISO = todayISO;
+
+  // Programmatic open of a CRM record from the briefing (used by click-throughs).
+  jabaCustom.openRecord = function(dataKey, itemId) {
+    if (typeof window.switchSection === 'function') {
+      // Briefing lives outside the custom sections; the sidebar item handler
+      // hides builtins and shows the right custom section. Simulate by
+      // clicking the matching sidebar item.
+      var sidebarItem = document.querySelector('[data-item-id="' + dataKey + '"]');
+      if (sidebarItem) sidebarItem.click();
+    }
+    // Once the section is visible, open the editor.
+    setTimeout(function() {
+      openCrmRecordModal(dataKey, itemId);
+    }, 50);
+  };
+
   jabaCustom.init = init;
-  jabaCustom.renderApprovalsSection = renderApprovalsSection;
   jabaCustom.syncFirebaseData = syncFirebaseData;
 
 })();

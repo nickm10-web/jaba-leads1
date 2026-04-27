@@ -2639,6 +2639,167 @@
       background: #ff5252;
     }
 
+    /* ===== Daily Briefing (Mission Control) ===== */
+    .briefing-header {
+      margin-bottom: 24px;
+      padding: 20px 24px;
+      background: var(--glass-bg, rgba(26, 29, 39, 0.8));
+      border: 1px solid var(--border, #30363d);
+      border-radius: 12px;
+    }
+    .briefing-greeting {
+      font-family: 'Anton', sans-serif;
+      font-size: 32px;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      margin: 0 0 4px;
+    }
+    .briefing-date {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .briefing-summary {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-secondary);
+      align-items: baseline;
+    }
+    .briefing-summary span {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .briefing-summary strong {
+      font-family: 'Anton', sans-serif;
+      font-size: 26px;
+      letter-spacing: 0.02em;
+    }
+    .briefing-summary .br-stat-overdue strong { color: var(--color-danger); }
+    .briefing-summary .br-stat-emails strong { color: var(--color-warning); }
+    .briefing-summary .br-stat-tasks strong { color: var(--accent); }
+
+    .briefing-card {
+      background: var(--glass-bg, rgba(26, 29, 39, 0.8));
+      border: 1px solid var(--border, #30363d);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+    }
+    .briefing-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .briefing-card-header h3 {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-primary);
+      margin: 0;
+    }
+    .briefing-count {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border-radius: 999px;
+      padding: 2px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 22px;
+      text-align: center;
+    }
+    .briefing-count.urgent {
+      background: rgba(255, 107, 107, 0.18);
+      color: var(--color-danger);
+    }
+    .briefing-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .briefing-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border-left: 3px solid transparent;
+    }
+    .briefing-item:hover {
+      background: var(--bg-secondary);
+      transform: translateX(2px);
+    }
+    .briefing-item.overdue { border-left-color: var(--color-danger); }
+    .briefing-item.soon { border-left-color: var(--color-warning); }
+    .briefing-item-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+    .briefing-item-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .briefing-item-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-family: 'DM Sans', sans-serif;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .briefing-item-meta {
+      font-size: 11px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      font-weight: 700;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .briefing-item-meta.overdue { color: var(--color-danger); }
+    .briefing-item-meta.soon { color: var(--color-warning); }
+    .briefing-empty {
+      padding: 14px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+      background: rgba(0, 184, 148, 0.05);
+      border: 1px dashed rgba(0, 184, 148, 0.2);
+      border-radius: 8px;
+    }
+    .briefing-footer {
+      margin-top: 12px;
+      text-align: right;
+    }
+    .briefing-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .briefing-footer a:hover { opacity: 0.8; }
+
     /* Inline Date Picker for Follow-up */
     .followup-date-editor {
       display: flex;
@@ -3120,76 +3281,57 @@
       <button class="top-tab" data-section="playbooks" onclick="switchSection('playbooks')">Playbooks</button>
     </div>
 
-    <!-- DASHBOARD SECTION -->
+    <!-- DASHBOARD SECTION (Daily Briefing / Mission Control) -->
     <div id="dashboardSection">
-      <!-- Action Required Banner -->
-      <div class="action-required-banner" id="actionRequiredBanner">
-        <div class="action-required-content">
-          <div class="action-required-pulse"></div>
-          <div class="action-required-text" id="actionRequiredText">0 overdue follow-ups need your attention</div>
-        </div>
-        <button class="action-required-btn" onclick="switchSection('leads');filterByOverdue();">View All</button>
-      </div>
-
-      <div class="stats-row" style="grid-template-columns: repeat(5, 1fr);">
-        <div class="glass-card" style="text-align:center;">
-          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">TOTAL LEADS</div>
-          <div class="stat-value" id="dashTotalLeads" style="font-family:'Anton',sans-serif;color:var(--accent);font-size:36px;">0</div>
-        </div>
-        <div class="glass-card" style="text-align:center;">
-          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">ACTIVE DEALS</div>
-          <div class="stat-value" id="dashActiveDeals" style="font-family:'Anton',sans-serif;color:var(--color-info);font-size:36px;">0</div>
-        </div>
-        <div class="glass-card" style="text-align:center;">
-          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">CLIENTS</div>
-          <div class="stat-value" id="dashClients" style="font-family:'Anton',sans-serif;color:var(--color-success);font-size:36px;">0</div>
-        </div>
-        <div class="glass-card" style="text-align:center;">
-          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">NEEDS FOLLOW-UP</div>
-          <div class="stat-value" id="dashOverdue" style="font-family:'Anton',sans-serif;color:var(--color-danger);font-size:36px;">0</div>
-        </div>
-        <div class="glass-card" style="text-align:center;">
-          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">CONVERSION RATE</div>
-          <div class="stat-value" id="dashConversion" style="font-family:'Anton',sans-serif;color:var(--color-warning);font-size:36px;">0%</div>
+      <!-- Greeting + summary strip -->
+      <div class="briefing-header">
+        <h1 class="briefing-greeting" id="briefingGreeting">Good Morning</h1>
+        <div class="briefing-date" id="briefingDate"></div>
+        <div class="briefing-summary">
+          <span class="br-stat-overdue"><strong id="brSummaryOverdue">0</strong>overdue</span>
+          <span class="br-stat-emails"><strong id="brSummaryEmails">0</strong>need a reply</span>
+          <span class="br-stat-tasks"><strong id="brSummaryTasks">0</strong>due today</span>
         </div>
       </div>
 
-      <!-- Pipeline Funnel -->
-      <div class="glass-card" style="margin-bottom:24px;">
-        <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Pipeline Overview</h3>
-        <div id="pipelineFunnel" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <!-- Today's Meetings -->
+      <div class="briefing-card">
+        <div class="briefing-card-header">
+          <h3>Today's Meetings</h3>
+          <span class="briefing-count" id="brMeetingsCount">0</span>
+        </div>
+        <div class="briefing-list" id="brMeetingsList"></div>
+        <div class="briefing-footer" id="brMeetingsFooter"></div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;">
-        <!-- Upcoming Follow-Ups -->
-        <div class="glass-card">
-          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Upcoming Follow-Ups</h3>
-          <div id="upcomingFollowups" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <!-- Overdue Follow-Ups -->
+      <div class="briefing-card">
+        <div class="briefing-card-header">
+          <h3>Overdue Follow-Ups</h3>
+          <span class="briefing-count" id="brFollowUpsCount">0</span>
         </div>
-
-        <!-- Today's Tasks -->
-        <div class="glass-card">
-          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Today's Tasks</h3>
-          <div id="dashboardTodaysTasks" style="display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
-
-        <!-- This Week's Meetings -->
-        <div class="glass-card">
-          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">This Week's Meetings</h3>
-          <div id="dashboardThisWeekMeetings" style="display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
-
-        <!-- Recent Activity -->
-        <div class="glass-card">
-          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Recent Inbox Activity</h3>
-          <div id="recentActivity" style="display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
+        <div class="briefing-list" id="brFollowUpsList"></div>
+        <div class="briefing-footer" id="brFollowUpsFooter"></div>
       </div>
 
-      <!-- Bucket Breakdown -->
-      <div class="glass-card" style="margin-top:24px;">
-        <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Lead Breakdown</h3>
-        <div id="bucketBreakdown" style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;"></div>
+      <!-- Needs Response -->
+      <div class="briefing-card">
+        <div class="briefing-card-header">
+          <h3>Needs Response</h3>
+          <span class="briefing-count" id="brEmailsCount">0</span>
+        </div>
+        <div class="briefing-list" id="brEmailsList"></div>
+        <div class="briefing-footer" id="brEmailsFooter"></div>
+      </div>
+
+      <!-- Tasks Due / Overdue -->
+      <div class="briefing-card">
+        <div class="briefing-card-header">
+          <h3>Tasks Due Today or Overdue</h3>
+          <span class="briefing-count" id="brTasksCount">0</span>
+        </div>
+        <div class="briefing-list" id="brTasksList"></div>
+        <div class="briefing-footer" id="brTasksFooter"></div>
       </div>
     </div>
 
@@ -5085,40 +5227,8 @@
     }
 
     function loadDefaultTasks() {
-        tasks = [
-          { id: 1, title: 'Follow up with Minnesota — Jeremiah Carter re: JABA Contract', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Email sent 2/27, no reply. Contract discussion.', createdDate: '2026-03-15' },
-          { id: 2, title: 'Prep for Cal/Berkeley meeting Thu 3/19', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Justin DiTolla replied, meeting scheduled for Thursday.', createdDate: '2026-03-15' },
-          { id: 3, title: 'Send Boise State NIL Report follow-up', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Collin Stoecker — report sent 3/2, needs follow-up.', createdDate: '2026-03-15' },
-          { id: 4, title: 'Schedule Washington meeting — Derek Sullivan', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Derek replied to AI for NIL Depts email. Confirm time.', createdDate: '2026-03-15' },
-          { id: 5, title: 'Follow up with Octagon — Emily McKiernan', dueDate: '2026-03-16', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Sent 2/11, 30+ days no reply. Try different contact or channel.', createdDate: '2026-03-15' },
-          { id: 6, title: 'Review Religion of Sport investor deck feedback', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Pietro Moro replied to investor deck. Review and respond.', createdDate: '2026-03-15' },
-          { id: 7, title: 'Send Arkansas NIL Report to Davonte', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 25, notes: 'Report sent 3/2, overdue follow-up. 11 days.', createdDate: '2026-03-15' },
-          { id: 8, title: 'Cincinnati meeting prep — Eddie Taylor', dueDate: '2026-03-18', priority: 'medium', status: 'todo', linkedLeadId: 2, notes: 'Eddie replied. Prep dashboard and talking points.', createdDate: '2026-03-15' },
-          { id: 9, title: 'Reconnect with Nicole Tepper — Damar connection', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Last email 2/10. Warm intro through Damar. 31 days.', createdDate: '2026-03-15' },
-          { id: 10, title: 'UCLA report update for Teri Hanneke', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: 16, notes: 'Active conversation. Update report with latest data.', createdDate: '2026-03-15' },
-          { id: 11, title: 'Cold outreach follow-ups — check replies from 15+ schools', dueDate: '2026-03-19', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Mass outreach sent 3/12. Check for new replies beyond Cal, Washington.', createdDate: '2026-03-15' },
-          { id: 12, title: 'Update Purdue dashboard — Tanner Ball', dueDate: '2026-03-18', priority: 'medium', status: 'in_progress', linkedLeadId: 3, notes: 'Tanner replied re: next steps + dashboard updates.', createdDate: '2026-03-15' },
-          { id: 13, title: 'Follow up with Jeremiah Carter (Minnesota) — texted last week', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Boss meeting: Jeremiah texted last week, waiting. JABA Contract discussion.', createdDate: '2026-03-15' },
-          { id: 14, title: 'Reach out to Colin Stoecker (Boise State) — wrestler', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 38, notes: 'Boss meeting: Reach out early next week. Wrestler.', createdDate: '2026-03-15' },
-          { id: 15, title: 'Reach out to John Bishop (Playfly) — Tuesday', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Didn\'t get back to Jordon. Follow up Tuesday.', createdDate: '2026-03-15' },
-          { id: 16, title: 'Nick connect with Diego on agent scraping', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Scrape every athlete\'s agent from email addresses and bios. Build agency database.', createdDate: '2026-03-15' },
-          { id: 17, title: 'Get Chris King (RMU) quote for mid-major pitch', dueDate: '2026-03-21', priority: 'medium', status: 'todo', linkedLeadId: 5, notes: 'Boss meeting: Need testimonial from Chris King for mid-major school outreach. Critical for pitch deck.', createdDate: '2026-03-15' },
-          { id: 18, title: 'Research Sponsor United LinkedIn followers', dueDate: '2026-03-21', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Use AI to analyze every Sponsor United LinkedIn follower. Find companies using them just for contacts. Go after them with JABA.', createdDate: '2026-03-15' },
-          { id: 19, title: 'Onboard Mario to agency + brand sales process', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Mario getting heavily involved. Double up on agency side with Nick. Walk through CRM and playbooks.', createdDate: '2026-03-15' },
-          { id: 20, title: 'Document all agencies from Slack into CRM leads', dueDate: '2026-03-19', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Jordon has been sending agencies in Slack. Need to capture all of them as leads in CRM.', createdDate: '2026-03-15' },
-          { id: 21, title: 'Made Hoops / American Cornhole League follow-up', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Made Hoops guy says $20M opportunity. Director of partnerships was COO at American Cornhole League. Heavily connected in sports industry.', createdDate: '2026-03-15' },
-
-          // MEETING WEEK 3/16-3/19
-          { id: 22, title: 'Washington meeting — MON 3/16 5:00 PM', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 79, notes: 'Derek Sullivan replied to cold outreach. Prep dashboard with Washington athlete data. Multiple contacts: Cody Scott, Chris Hein, Jack Murrey, Sandy, Joe Knight.', createdDate: '2026-03-15' },
-          { id: 23, title: 'The Team meeting — WED 3/18 12:30 PM', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: 96, notes: 'Jordan Tirico intro call. Prep JABA overview and agency pitch.', createdDate: '2026-03-15' },
-          { id: 24, title: 'Playfly coffee — TUE 3/17 8:30 AM at Devoción', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 28, notes: 'In-person meeting. Bring IP report. Tucker Ballbach, Jon Bishop, Robert Eckstein all active contacts.', createdDate: '2026-03-15' },
-          { id: 25, title: 'Notre Dame meeting — THU 3/19 12:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 9, notes: 'Client meeting. Kayla Rogers. Discuss announcement and next steps.', createdDate: '2026-03-15' },
-          { id: 26, title: 'Cal/Berkeley meeting — THU 3/19 6:00 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 81, notes: 'Justin DiTolla replied to cold outreach. First meeting. Prep Berkeley athlete data and JABA demo.', createdDate: '2026-03-15' },
-          { id: 27, title: 'Multiplier meeting — THU 3/19 1:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 166, notes: 'Meeting scheduled Thursday.', createdDate: '2026-03-15' },
-          { id: 28, title: 'NOCAP Sports meeting — THU 3/19 3:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 129, notes: 'NIL compliance/data company. Meeting Thursday.', createdDate: '2026-03-15' },
-          { id: 29, title: 'Jack Bishop meeting — TUE 3/17 2:00 PM', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Jack x Jordon. Nick Mudd also attending.', createdDate: '2026-03-15' },
-          { id: 30, title: 'Purdue meeting — FRI 3/20 11:30 AM', dueDate: '2026-03-20', priority: 'high', status: 'todo', linkedLeadId: 3, notes: 'JABA x Purdue. Tanner Ball + Daniel Picioski. Diego and Alanys attending.', createdDate: '2026-03-15' }
-        ];
+        // No seeded tasks. Start empty; the user adds their own.
+        tasks = [];
         saveTasks();
     }
 
@@ -6332,6 +6442,19 @@
     window.switchSection = function(section) {
       currentSection = section;
       localStorage.setItem('bd_leads_section', section);
+
+      // Always enter Leads in table view. The pipeline toggle is still
+      // available within the section, but we don't carry a previously
+      // saved 'pipeline' preference across navigations — the user wants
+      // the table on every entry to Leads.
+      if (section === 'leads') {
+        currentViewMode = 'table';
+        document.querySelectorAll('.view-toggle-btn').forEach(btn => {
+          var isTable = btn.dataset.view === 'table';
+          btn.classList.toggle('active', isTable);
+          btn.setAttribute('aria-pressed', isTable ? 'true' : 'false');
+        });
+      }
 
       // Update tab states
       document.querySelectorAll('.top-tab').forEach(tab => {
@@ -7603,107 +7726,234 @@
       } catch(e) {}
     }
 
-    // Render Dashboard
-    function renderDashboard() {
-      refreshInboxDates();
-      const today = getTodayDate();
-      const totalLeads = leads.length;
-      const clients = leads.filter(l => l.stage === 'client').length;
-      const activeDeals = leads.filter(l => !['lead', 'onhold', 'client'].includes(l.stage)).length;
-      const overdue = leads.filter(l => l.followUp && l.followUp < today && l.stage !== 'client').length;
-      const convRate = totalLeads > 0 ? Math.round((clients / totalLeads) * 100) : 0;
+    // ===== Daily Briefing (replaces the old dashboard) =====
+    // Single landing surface that aggregates from leads + CRM + meetings +
+    // tasks + inbox so missed follow-ups, unanswered emails, and overdue
+    // tasks all surface in one place.
 
-      document.getElementById('dashTotalLeads').textContent = totalLeads;
-      document.getElementById('dashActiveDeals').textContent = activeDeals;
-      document.getElementById('dashClients').textContent = clients;
-      document.getElementById('dashOverdue').textContent = overdue;
-      document.getElementById('dashConversion').textContent = convRate + '%';
+    const BR_STATE = { followUpsExpanded: false };
 
-      // Update action required banner
-      const banner = document.getElementById('actionRequiredBanner');
-      if (overdue > 0) {
-        document.getElementById('actionRequiredText').textContent = overdue + (overdue === 1 ? ' overdue follow-up' : ' overdue follow-ups') + ' need' + (overdue === 1 ? 's' : '') + ' your attention';
-        banner.classList.add('active');
+    // Days from `today` (YYYY-MM-DD) to `target` (YYYY-MM-DD).
+    // Positive when target is in the future; negative when overdue.
+    function briefingDaysBetween(today, target) {
+      if (!today || !target) return 0;
+      const t0 = new Date(today + 'T00:00:00');
+      const t1 = new Date(target + 'T00:00:00');
+      return Math.round((t1 - t0) / (1000 * 60 * 60 * 24));
+    }
+
+    function getTodayMeetings(today) {
+      return (meetings || [])
+        .filter(m => m && m.date === today)
+        .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+    }
+
+    function getOverdueFollowUps(today) {
+      const fromLeads = (leads || [])
+        .filter(l => l && l.followUp && l.followUp < today && l.stage !== 'client')
+        .map(l => ({
+          kind: 'lead',
+          name: l.company,
+          sub: BUCKET_LABELS[l.bucket] || l.bucket,
+          date: l.followUp,
+          daysOverdue: -briefingDaysBetween(today, l.followUp),
+          leadId: l.id
+        }));
+      const fromCrms = (window.jabaCustom && typeof window.jabaCustom.getCrmFollowUps === 'function')
+        ? window.jabaCustom.getCrmFollowUps()
+            .filter(f => f.daysFromToday < 0)
+            .map(f => ({
+              kind: 'crm',
+              name: f.name,
+              sub: f.source + (f.relationship ? ' \u00b7 ' + f.relationship : ''),
+              date: f.date,
+              daysOverdue: -f.daysFromToday,
+              dataKey: f.dataKey,
+              itemId: f.itemId
+            }))
+        : [];
+      return fromLeads.concat(fromCrms).sort((a, b) => b.daysOverdue - a.daysOverdue);
+    }
+
+    function getNeedsResponseEmails() {
+      if (typeof INBOX_EMAILS === 'undefined' || !Array.isArray(INBOX_EMAILS)) return [];
+      return INBOX_EMAILS
+        .filter(e => e && !e.dismissed && categorizeEmail(e) === 'needs_response')
+        .sort((a, b) => (b.daysSince || 0) - (a.daysSince || 0));
+    }
+
+    function getDueOrOverdueTasks(today) {
+      return (tasks || [])
+        .filter(t => t && t.status !== 'done' && t.dueDate && t.dueDate <= today)
+        .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
+    }
+
+    function renderBriefingMeetings(items) {
+      const list = document.getElementById('brMeetingsList');
+      const count = document.getElementById('brMeetingsCount');
+      const footer = document.getElementById('brMeetingsFooter');
+      if (!list) return;
+      count.textContent = items.length;
+      if (items.length === 0) {
+        list.innerHTML = '<div class="briefing-empty">No meetings today.</div>';
+        footer.innerHTML = '';
+        return;
+      }
+      const shown = items.slice(0, 5);
+      list.innerHTML = shown.map(m => {
+        const checklist = m.prepChecklist || [];
+        const done = checklist.filter(c => c.done).length;
+        const total = checklist.length;
+        const prepStatus = total > 0 ? done + '/' + total + ' prep' : 'no prep checklist';
+        const time = m.time ? safeHtml(m.time) : '(no time)';
+        const attendees = (m.attendees || []).slice(0, 2).join(', ');
+        return '<div class="briefing-item" onclick="openMeetingDetail(' + m.id + ')">' +
+          '<div class="briefing-item-main">' +
+            '<div class="briefing-item-title">' + safeHtml(m.company || '(no company)') +
+              (attendees ? ' \u00b7 ' + safeHtml(attendees) : '') + '</div>' +
+            '<div class="briefing-item-sub">' + time + ' \u00b7 ' + prepStatus + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      footer.innerHTML = items.length > 5
+        ? '<a onclick="switchSection(\'meetings\')">Show all ' + items.length + ' in Meetings &rarr;</a>'
+        : '';
+    }
+
+    function renderBriefingFollowUps(items) {
+      const list = document.getElementById('brFollowUpsList');
+      const count = document.getElementById('brFollowUpsCount');
+      const footer = document.getElementById('brFollowUpsFooter');
+      if (!list) return;
+      count.textContent = items.length;
+      count.classList.toggle('urgent', items.length > 0);
+      if (items.length === 0) {
+        list.innerHTML = '<div class="briefing-empty">No overdue follow-ups. Caught up.</div>';
+        footer.innerHTML = '';
+        return;
+      }
+      const limit = BR_STATE.followUpsExpanded ? items.length : 5;
+      const shown = items.slice(0, limit);
+      list.innerHTML = shown.map(f => {
+        const overdueLabel = f.daysOverdue + 'd overdue';
+        const click = f.kind === 'lead'
+          ? 'openDetailPanel(' + f.leadId + ')'
+          : 'window.jabaCustom && window.jabaCustom.openRecord(\'' + f.dataKey + '\',\'' + f.itemId + '\')';
+        return '<div class="briefing-item overdue" onclick="' + click + '">' +
+          '<div class="briefing-item-main">' +
+            '<div class="briefing-item-title">' + safeHtml(f.name || '') + '</div>' +
+            '<div class="briefing-item-sub">' + safeHtml(f.sub || '') + '</div>' +
+          '</div>' +
+          '<div class="briefing-item-meta overdue">' + overdueLabel + '</div>' +
+        '</div>';
+      }).join('');
+      if (items.length > 5) {
+        footer.innerHTML = BR_STATE.followUpsExpanded
+          ? '<a onclick="toggleBriefingFollowUpsExpand()">Show less &uarr;</a>'
+          : '<a onclick="toggleBriefingFollowUpsExpand()">Show all ' + items.length + ' &darr;</a>';
       } else {
-        banner.classList.remove('active');
+        footer.innerHTML = '';
+      }
+    }
+
+    window.toggleBriefingFollowUpsExpand = function() {
+      BR_STATE.followUpsExpanded = !BR_STATE.followUpsExpanded;
+      renderBriefingFollowUps(getOverdueFollowUps(getTodayDate()));
+    };
+
+    function renderBriefingEmails(items) {
+      const list = document.getElementById('brEmailsList');
+      const count = document.getElementById('brEmailsCount');
+      const footer = document.getElementById('brEmailsFooter');
+      if (!list) return;
+      count.textContent = items.length;
+      if (items.length === 0) {
+        list.innerHTML = '<div class="briefing-empty">No emails awaiting your reply.</div>';
+        footer.innerHTML = '';
+        return;
+      }
+      const shown = items.slice(0, 5);
+      list.innerHTML = shown.map(e => {
+        const days = e.daysSince ? e.daysSince + 'd waiting' : '';
+        const sender = e.company || e.contact || '(unknown)';
+        return '<div class="briefing-item" onclick="switchSection(\'inbox\')">' +
+          '<div class="briefing-item-main">' +
+            '<div class="briefing-item-title">' + safeHtml(sender) + '</div>' +
+            '<div class="briefing-item-sub">' + safeHtml(e.subject || '') + '</div>' +
+          '</div>' +
+          '<div class="briefing-item-meta">' + days + '</div>' +
+        '</div>';
+      }).join('');
+      footer.innerHTML = items.length > 5
+        ? '<a onclick="switchSection(\'inbox\')">Show all ' + items.length + ' in Inbox &rarr;</a>'
+        : '';
+    }
+
+    function renderBriefingTasks(items, today) {
+      const list = document.getElementById('brTasksList');
+      const count = document.getElementById('brTasksCount');
+      const footer = document.getElementById('brTasksFooter');
+      if (!list) return;
+      count.textContent = items.length;
+      if (items.length === 0) {
+        list.innerHTML = '<div class="briefing-empty">No tasks due today or overdue.</div>';
+        footer.innerHTML = '';
+        return;
+      }
+      const shown = items.slice(0, 5);
+      list.innerHTML = shown.map(t => {
+        const isOverdue = t.dueDate < today;
+        const itemClass = isOverdue ? 'overdue' : 'soon';
+        const dateLabel = isOverdue ? 'OVERDUE \u00b7 ' + t.dueDate : 'Due today';
+        const priorityColor = t.priority === 'high'
+          ? 'var(--color-danger)'
+          : t.priority === 'medium' ? 'var(--color-warning)' : 'var(--color-success)';
+        const sub = dateLabel + (t.notes ? ' \u00b7 ' + safeHtml(String(t.notes).slice(0, 60)) : '');
+        return '<div class="briefing-item ' + itemClass + '" onclick="switchSection(\'tasks\')">' +
+          '<div class="briefing-item-main">' +
+            '<div class="briefing-item-title">' + safeHtml(t.title || '') + '</div>' +
+            '<div class="briefing-item-sub">' + sub + '</div>' +
+          '</div>' +
+          '<span style="width:10px;height:10px;border-radius:50%;background:' + priorityColor + ';flex-shrink:0;"></span>' +
+        '</div>';
+      }).join('');
+      footer.innerHTML = items.length > 5
+        ? '<a onclick="switchSection(\'tasks\')">Show all ' + items.length + ' in Tasks &rarr;</a>'
+        : '';
+    }
+
+    function renderDashboard() {
+      if (typeof refreshInboxDates === 'function') refreshInboxDates();
+      const today = getTodayDate();
+      const now = new Date();
+
+      const hour = now.getHours();
+      const greeting = hour < 12 ? 'Good Morning' : (hour < 18 ? 'Good Afternoon' : 'Good Evening');
+      const greetingEl = document.getElementById('briefingGreeting');
+      const dateEl = document.getElementById('briefingDate');
+      if (greetingEl) greetingEl.textContent = greeting + ', Jordon';
+      if (dateEl) {
+        dateEl.textContent = now.toLocaleDateString('en-US', {
+          weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+        });
       }
 
-      // Pipeline funnel
-      const stageOrder = ['lead','contacted','meeting_scheduled','scrape','building','auditing','ready','meeting_complete','report_sent','contract_sent','client','onhold'];
-      const stageColors = {lead:'#a29bfe',contacted:'#74b9ff',meeting_scheduled:'#81ecec',scrape:'#ffeaa7',building:'#fab1a0',auditing:'#d6c5ff',ready:'#55efc4',meeting_complete:'#00b894',report_sent:'#74b9ff',contract_sent:'#fd79a8',client:'#E2F500',onhold:'#a8a8a8'};
-      const maxCount = Math.max(...stageOrder.map(s => leads.filter(l => l.stage === s).length), 1);
-      const funnelHtml = stageOrder.map(s => {
-        const count = leads.filter(l => l.stage === s).length;
-        if (count === 0) return '';
-        const pct = Math.max((count / maxCount) * 100, 8);
-        return '<div style="display:flex;align-items:center;gap:12px;"><div style="width:140px;font-size:12px;color:var(--text-secondary);text-align:right;font-family:\'Saira Extra Condensed\',sans-serif;text-transform:uppercase;">' + (STAGE_LABELS[s]||s) + '</div><div style="flex:1;background:var(--bg-tertiary);border-radius:6px;height:28px;overflow:hidden;"><div style="width:'+pct+'%;background:'+stageColors[s]+';height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:13px;font-weight:700;color:#000;font-family:\'DM Sans\',sans-serif;">'+count+'</div></div></div>';
-      }).filter(Boolean).join('');
-      document.getElementById('pipelineFunnel').innerHTML = funnelHtml;
+      const todayMeetings = getTodayMeetings(today);
+      const overdueFollowUps = getOverdueFollowUps(today);
+      const needsResponse = getNeedsResponseEmails();
+      const dueTasks = getDueOrOverdueTasks(today);
 
-      // Upcoming follow-ups
-      const upcoming = leads
-        .filter(l => l.stage !== 'client')
-        .sort((a, b) => {
-          const aDate = a.followUp || '9999-12-31';
-          const bDate = b.followUp || '9999-12-31';
-          return aDate.localeCompare(bDate);
-        })
-        .slice(0, 8);
-      const followupHtml = upcoming.map(l => {
-        const isOverdue = l.followUp && l.followUp < today;
-        const dateColor = isOverdue ? 'var(--color-danger)' : l.followUp === today ? 'var(--color-warning)' : 'var(--text-primary)';
-        const pulse = isOverdue ? '<span style="display:inline-block;width:8px;height:8px;background:var(--color-danger);border-radius:50%;animation:pulse 2s infinite;margin-right:6px;"></span>' : '';
-        const dateDisplay = l.followUp ? (isOverdue?'OVERDUE • ':'') + l.followUp : 'No date';
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div style="display:flex;align-items:center;gap:10px;flex:1;"><span style="font-weight:600;font-size:13px;">'+l.company+'</span><span class="bucket-pill bucket-'+l.bucket+'" style="font-size:10px;">'+BUCKET_LABELS[l.bucket]+'</span></div><div style="display:flex;align-items:center;gap:8px;color:'+dateColor+';font-size:12px;font-weight:600;">'+pulse+'<span>'+dateDisplay+'</span></div></div>';
-      }).join('');
-      document.getElementById('upcomingFollowups').innerHTML = followupHtml || '<div style="color:var(--text-secondary);font-size:13px;">No leads to follow up on</div>';
+      const sumOver = document.getElementById('brSummaryOverdue');
+      const sumEm = document.getElementById('brSummaryEmails');
+      const sumTk = document.getElementById('brSummaryTasks');
+      if (sumOver) sumOver.textContent = overdueFollowUps.length;
+      if (sumEm) sumEm.textContent = needsResponse.length;
+      if (sumTk) sumTk.textContent = dueTasks.filter(t => t.dueDate === today).length;
 
-      // Today's tasks
-      const todayDate = getTodayDate();
-      const todaysTasks = tasks
-        .filter(t => t.dueDate === todayDate && t.status !== 'done')
-        .slice(0, 5);
-      const tasksHtml = todaysTasks.map(t => {
-        const lead = t.linkedLeadId ? leads.find(l => l.id === t.linkedLeadId) : null;
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div style="display:flex;align-items:center;gap:10px;flex:1;"><input type="checkbox" onclick="toggleTaskDone('+t.id+')" style="cursor:pointer;"><span style="font-weight:600;font-size:13px;">'+t.title+'</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:'+(t.priority === 'high' ? '#ff6b6b' : t.priority === 'medium' ? '#fdcb6e' : '#00b894')+';display:inline-block;"></span>'+(lead ? '<span style="font-size:10px;background:'+BUCKET_COLORS[lead.bucket]+';color:#000;padding:2px 6px;border-radius:4px;font-weight:600;">'+lead.company+'</span>' : '')+'</div></div>';
-      }).join('');
-      document.getElementById('dashboardTodaysTasks').innerHTML = tasksHtml || '<div style="color:var(--text-secondary);font-size:13px;">No tasks due today</div>';
-
-      // This week's meetings
-      if (!currentWeekStart) initWeekStart();
-      const weekEnd = new Date(currentWeekStart);
-      weekEnd.setDate(weekEnd.getDate() + 4);
-      const weekMeetings = meetings
-        .filter(m => {
-          const mDate = new Date(m.date);
-          return mDate >= currentWeekStart && mDate <= weekEnd;
-        })
-        .sort((a, b) => a.date.localeCompare(b.date))
-        .slice(0, 5);
-      const meetingsHtml = weekMeetings.map(m => {
-        const statusDot = m.prepStatus === 'ready' ? 'ð¢' : m.prepStatus === 'in_progress' ? 'ð¡' : 'ð´';
-        const dateObj = new Date(m.date);
-        const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;cursor:pointer;" onclick="switchSection(\'meetings\')"><div style="display:flex;align-items:center;gap:10px;flex:1;"><span style="font-weight:600;font-size:13px;">'+m.company+'</span><span class="bucket-pill" style="font-size:10px;background:rgba(226, 245, 0, 0.15);color:var(--accent);">'+getMeetingTypeLabel(m.type)+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+dateStr+'</span><span>'+statusDot+'</span></div></div>';
-      }).join('');
-      document.getElementById('dashboardThisWeekMeetings').innerHTML = meetingsHtml || '<div style="color:var(--text-secondary);font-size:13px;">No meetings this week</div>';
-
-      // Recent activity (from inbox emails)
-      const recentEmails = INBOX_EMAILS.slice(0, 8);
-      const activityHtml = recentEmails.map(e => {
-        const statusColor = e.status === 'overdue' ? 'var(--color-danger)' : e.status === 'replied' ? 'var(--color-success)' : 'var(--color-warning)';
-        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div><span style="font-weight:600;font-size:13px;">'+e.company+'</span> <span style="color:var(--text-secondary);font-size:12px;">— '+e.subject+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+e.sentDate+'</span><span style="width:8px;height:8px;border-radius:50%;background:'+statusColor+';display:inline-block;"></span></div></div>';
-      }).join('');
-      document.getElementById('recentActivity').innerHTML = activityHtml;
-
-      // Bucket breakdown
-      const buckets = ['schools','teams','athlete','agencies','brands'];
-      const breakdownHtml = buckets.map(b => {
-        const count = leads.filter(l => l.bucket === b).length;
-        const clientCount = leads.filter(l => l.bucket === b && l.stage === 'client').length;
-        return '<div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:10px;border-left:3px solid '+BUCKET_COLORS[b]+';"><div style="font-family:\'Anton\',sans-serif;font-size:28px;color:'+BUCKET_COLORS[b]+';">'+count+'</div><div style="font-family:\'Saira Extra Condensed\',sans-serif;font-size:13px;color:var(--text-secondary);text-transform:uppercase;">'+BUCKET_LABELS[b]+'</div><div style="font-size:11px;color:var(--color-success);margin-top:4px;">'+clientCount+' clients</div></div>';
-      }).join('');
-      document.getElementById('bucketBreakdown').innerHTML = breakdownHtml;
+      renderBriefingMeetings(todayMeetings);
+      renderBriefingFollowUps(overdueFollowUps);
+      renderBriefingEmails(needsResponse);
+      renderBriefingTasks(dueTasks, today);
     }
 
     // ── Schools Board ──────────────────────────────────────────────────
