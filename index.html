@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Built Different — Control Center</title>
+  <title>Built Different â Control Center</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Anton&family=DM+Sans:wght@400;500;600;700&family=Saira+Extra+Condensed:wght@400;500;600;700&display=swap');
 
@@ -40,19 +40,6 @@
       background: var(--bg-primary);
       color: var(--text-primary);
       line-height: 1.5;
-    }
-
-    /* Screen-reader only (visually hidden but accessible) */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
     }
 
     .container {
@@ -461,18 +448,18 @@
     }
 
     th.sortable::after {
-      content: ' ⇅';
+      content: ' â';
       font-size: 10px;
       opacity: 0.5;
     }
 
     th.sort-asc::after {
-      content: ' ↑';
+      content: ' â';
       opacity: 1;
     }
 
     th.sort-desc::after {
-      content: ' ↓';
+      content: ' â';
       opacity: 1;
     }
 
@@ -822,65 +809,6 @@
         width: 95%;
         max-height: 95vh;
       }
-
-      .pipeline-view {
-        flex-direction: column;
-      }
-
-      .pipeline-column {
-        min-width: unset;
-        width: 100%;
-      }
-
-      .task-quick-add {
-        grid-template-columns: 1fr;
-      }
-
-      .view-toggle {
-        width: 100%;
-        justify-content: stretch;
-      }
-
-      .view-toggle-btn {
-        flex: 1;
-      }
-
-      .container {
-        padding: 12px;
-      }
-
-      .detail-panel {
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-
-      .header h1 {
-        font-size: 18px;
-      }
-
-      .filter-bar {
-        gap: 4px;
-      }
-
-      .filter-btn {
-        font-size: 12px;
-        padding: 6px 8px;
-      }
-
-      .actions-cell {
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .btn-action {
-        font-size: 11px;
-        padding: 4px 8px;
-      }
     }
 
     /* Scrollbar */
@@ -1083,27 +1011,23 @@
     .inbox-kanban {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      height: calc(100vh - 240px);
+      gap: 16px;
       min-height: 400px;
     }
     .kanban-col {
       background: var(--bg-secondary);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
+      padding: 16px;
+      min-height: 300px;
     }
     .kanban-col-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
       border-bottom: 2px solid var(--border);
-      flex-shrink: 0;
     }
     .kanban-col-title {
       font-size: 12px;
@@ -1120,14 +1044,6 @@
       border-radius: 10px;
       color: var(--text-secondary);
     }
-    .kanban-col-body {
-      flex: 1;
-      overflow-y: auto;
-      min-height: 0;
-    }
-    .kanban-col-body::-webkit-scrollbar { width: 4px; }
-    .kanban-col-body::-webkit-scrollbar-track { background: transparent; }
-    .kanban-col-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
     .kanban-col.needs-reply .kanban-col-header { border-bottom-color: #ff6b6b; }
     .kanban-col.needs-reply .kanban-col-title { color: #ff6b6b; }
     .kanban-col.waiting .kanban-col-header { border-bottom-color: #fdcb6e; }
@@ -1141,67 +1057,32 @@
       background: var(--bg-primary);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 6px;
-      cursor: grab;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
       transition: all 0.15s;
-      position: relative;
-      user-select: none;
     }
     .kanban-card:hover {
       border-color: var(--text-secondary);
       transform: translateY(-1px);
     }
-    .kanban-card.dragging {
-      opacity: 0.4;
-      cursor: grabbing;
-    }
-    .kanban-col.drag-over {
-      background: var(--bg-tertiary);
-      border: 2px dashed var(--accent);
-    }
-    .kanban-card-dismiss {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: none;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 14px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.15s;
-      padding: 0 4px;
-      line-height: 1;
-      z-index: 1;
-    }
-    .kanban-card:hover .kanban-card-dismiss {
-      opacity: 0.7;
-    }
-    .kanban-card-dismiss:hover {
-      opacity: 1 !important;
-      color: #ff6b6b;
-    }
     .kanban-card-name {
       font-weight: 600;
-      font-size: 12px;
-      margin-bottom: 1px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 13px;
+      margin-bottom: 2px;
     }
     .kanban-card-company {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-secondary);
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .kanban-card-subject {
-      font-size: 10px;
+      font-size: 11px;
       color: var(--text-secondary);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .kanban-card-footer {
       display: flex;
@@ -1209,9 +1090,9 @@
       align-items: center;
     }
     .kanban-card-days {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 600;
-      padding: 1px 5px;
+      padding: 2px 6px;
       border-radius: 4px;
     }
     .kanban-card-days.urgent { background: rgba(255,107,107,0.15); color: #ff6b6b; }
@@ -1219,13 +1100,10 @@
     .kanban-card-days.ok { background: rgba(0,184,148,0.15); color: #00b894; }
     .kanban-card-days.info { background: rgba(116,185,255,0.15); color: #74b9ff; }
     .kanban-card-note {
-      font-size: 9px;
+      font-size: 10px;
       color: var(--text-secondary);
-      margin-top: 4px;
+      margin-top: 6px;
       line-height: 1.3;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
     /* Timeline Table */
@@ -2639,167 +2517,6 @@
       background: #ff5252;
     }
 
-    /* ===== Daily Briefing (Mission Control) ===== */
-    .briefing-header {
-      margin-bottom: 24px;
-      padding: 20px 24px;
-      background: var(--glass-bg, rgba(26, 29, 39, 0.8));
-      border: 1px solid var(--border, #30363d);
-      border-radius: 12px;
-    }
-    .briefing-greeting {
-      font-family: 'Anton', sans-serif;
-      font-size: 32px;
-      letter-spacing: 0.04em;
-      color: var(--text-primary);
-      margin: 0 0 4px;
-    }
-    .briefing-date {
-      font-family: 'Saira Extra Condensed', sans-serif;
-      font-size: 14px;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 16px;
-    }
-    .briefing-summary {
-      display: flex;
-      gap: 28px;
-      flex-wrap: wrap;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      color: var(--text-secondary);
-      align-items: baseline;
-    }
-    .briefing-summary span {
-      display: inline-flex;
-      align-items: baseline;
-      gap: 8px;
-    }
-    .briefing-summary strong {
-      font-family: 'Anton', sans-serif;
-      font-size: 26px;
-      letter-spacing: 0.02em;
-    }
-    .briefing-summary .br-stat-overdue strong { color: var(--color-danger); }
-    .briefing-summary .br-stat-emails strong { color: var(--color-warning); }
-    .briefing-summary .br-stat-tasks strong { color: var(--accent); }
-
-    .briefing-card {
-      background: var(--glass-bg, rgba(26, 29, 39, 0.8));
-      border: 1px solid var(--border, #30363d);
-      border-radius: 12px;
-      padding: 18px 22px;
-      margin-bottom: 16px;
-    }
-    .briefing-card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 14px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-    .briefing-card-header h3 {
-      font-family: 'Saira Extra Condensed', sans-serif;
-      font-size: 18px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-primary);
-      margin: 0;
-    }
-    .briefing-count {
-      background: var(--bg-tertiary);
-      color: var(--text-secondary);
-      border-radius: 999px;
-      padding: 2px 10px;
-      font-size: 12px;
-      font-weight: 700;
-      min-width: 22px;
-      text-align: center;
-    }
-    .briefing-count.urgent {
-      background: rgba(255, 107, 107, 0.18);
-      color: var(--color-danger);
-    }
-    .briefing-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .briefing-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      background: var(--bg-tertiary);
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      border-left: 3px solid transparent;
-    }
-    .briefing-item:hover {
-      background: var(--bg-secondary);
-      transform: translateX(2px);
-    }
-    .briefing-item.overdue { border-left-color: var(--color-danger); }
-    .briefing-item.soon { border-left-color: var(--color-warning); }
-    .briefing-item-main {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      flex: 1;
-      min-width: 0;
-    }
-    .briefing-item-title {
-      font-weight: 600;
-      font-size: 13px;
-      color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .briefing-item-sub {
-      font-size: 11px;
-      color: var(--text-secondary);
-      font-family: 'DM Sans', sans-serif;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .briefing-item-meta {
-      font-size: 11px;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      font-weight: 700;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .briefing-item-meta.overdue { color: var(--color-danger); }
-    .briefing-item-meta.soon { color: var(--color-warning); }
-    .briefing-empty {
-      padding: 14px;
-      text-align: center;
-      color: var(--text-secondary);
-      font-size: 13px;
-      background: rgba(0, 184, 148, 0.05);
-      border: 1px dashed rgba(0, 184, 148, 0.2);
-      border-radius: 8px;
-    }
-    .briefing-footer {
-      margin-top: 12px;
-      text-align: right;
-    }
-    .briefing-footer a {
-      color: var(--accent);
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .briefing-footer a:hover { opacity: 0.8; }
-
     /* Inline Date Picker for Follow-up */
     .followup-date-editor {
       display: flex;
@@ -3255,7 +2972,7 @@
         <div style="background:var(--accent);color:#000;font-family:'Anton',sans-serif;font-size:20px;padding:6px 14px;border-radius:8px;letter-spacing:1px;">JABA</div>
         <div>
           <h1 style="font-family:'Saira Extra Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Control Center</h1>
-          <div style="font-size:12px;color:var(--text-secondary);">Built Different — Business Development</div>
+          <div style="font-size:12px;color:var(--text-secondary);">Built Different â Business Development</div>
         </div>
       </div>
       <!-- Global Search Bar -->
@@ -3281,57 +2998,76 @@
       <button class="top-tab" data-section="playbooks" onclick="switchSection('playbooks')">Playbooks</button>
     </div>
 
-    <!-- DASHBOARD SECTION (Daily Briefing / Mission Control) -->
+    <!-- DASHBOARD SECTION -->
     <div id="dashboardSection">
-      <!-- Greeting + summary strip -->
-      <div class="briefing-header">
-        <h1 class="briefing-greeting" id="briefingGreeting">Good Morning</h1>
-        <div class="briefing-date" id="briefingDate"></div>
-        <div class="briefing-summary">
-          <span class="br-stat-overdue"><strong id="brSummaryOverdue">0</strong>overdue</span>
-          <span class="br-stat-emails"><strong id="brSummaryEmails">0</strong>need a reply</span>
-          <span class="br-stat-tasks"><strong id="brSummaryTasks">0</strong>due today</span>
+      <!-- Action Required Banner -->
+      <div class="action-required-banner" id="actionRequiredBanner">
+        <div class="action-required-content">
+          <div class="action-required-pulse"></div>
+          <div class="action-required-text" id="actionRequiredText">0 overdue follow-ups need your attention</div>
+        </div>
+        <button class="action-required-btn" onclick="switchSection('leads');filterByOverdue();">View All</button>
+      </div>
+
+      <div class="stats-row" style="grid-template-columns: repeat(5, 1fr);">
+        <div class="glass-card" style="text-align:center;">
+          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">TOTAL LEADS</div>
+          <div class="stat-value" id="dashTotalLeads" style="font-family:'Anton',sans-serif;color:var(--accent);font-size:36px;">0</div>
+        </div>
+        <div class="glass-card" style="text-align:center;">
+          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">ACTIVE DEALS</div>
+          <div class="stat-value" id="dashActiveDeals" style="font-family:'Anton',sans-serif;color:var(--color-info);font-size:36px;">0</div>
+        </div>
+        <div class="glass-card" style="text-align:center;">
+          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">CLIENTS</div>
+          <div class="stat-value" id="dashClients" style="font-family:'Anton',sans-serif;color:var(--color-success);font-size:36px;">0</div>
+        </div>
+        <div class="glass-card" style="text-align:center;">
+          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">NEEDS FOLLOW-UP</div>
+          <div class="stat-value" id="dashOverdue" style="font-family:'Anton',sans-serif;color:var(--color-danger);font-size:36px;">0</div>
+        </div>
+        <div class="glass-card" style="text-align:center;">
+          <div class="stat-label" style="font-family:'Saira Extra Condensed',sans-serif;">CONVERSION RATE</div>
+          <div class="stat-value" id="dashConversion" style="font-family:'Anton',sans-serif;color:var(--color-warning);font-size:36px;">0%</div>
         </div>
       </div>
 
-      <!-- Today's Meetings -->
-      <div class="briefing-card">
-        <div class="briefing-card-header">
-          <h3>Today's Meetings</h3>
-          <span class="briefing-count" id="brMeetingsCount">0</span>
-        </div>
-        <div class="briefing-list" id="brMeetingsList"></div>
-        <div class="briefing-footer" id="brMeetingsFooter"></div>
+      <!-- Pipeline Funnel -->
+      <div class="glass-card" style="margin-bottom:24px;">
+        <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Pipeline Overview</h3>
+        <div id="pipelineFunnel" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
 
-      <!-- Overdue Follow-Ups -->
-      <div class="briefing-card">
-        <div class="briefing-card-header">
-          <h3>Overdue Follow-Ups</h3>
-          <span class="briefing-count" id="brFollowUpsCount">0</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:24px;">
+        <!-- Upcoming Follow-Ups -->
+        <div class="glass-card">
+          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Upcoming Follow-Ups</h3>
+          <div id="upcomingFollowups" style="display:flex;flex-direction:column;gap:8px;"></div>
         </div>
-        <div class="briefing-list" id="brFollowUpsList"></div>
-        <div class="briefing-footer" id="brFollowUpsFooter"></div>
+
+        <!-- Today's Tasks -->
+        <div class="glass-card">
+          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Today's Tasks</h3>
+          <div id="dashboardTodaysTasks" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+
+        <!-- This Week's Meetings -->
+        <div class="glass-card">
+          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">This Week's Meetings</h3>
+          <div id="dashboardThisWeekMeetings" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="glass-card">
+          <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Recent Inbox Activity</h3>
+          <div id="recentActivity" style="display:flex;flex-direction:column;gap:8px;"></div>
+        </div>
       </div>
 
-      <!-- Needs Response -->
-      <div class="briefing-card">
-        <div class="briefing-card-header">
-          <h3>Needs Response</h3>
-          <span class="briefing-count" id="brEmailsCount">0</span>
-        </div>
-        <div class="briefing-list" id="brEmailsList"></div>
-        <div class="briefing-footer" id="brEmailsFooter"></div>
-      </div>
-
-      <!-- Tasks Due / Overdue -->
-      <div class="briefing-card">
-        <div class="briefing-card-header">
-          <h3>Tasks Due Today or Overdue</h3>
-          <span class="briefing-count" id="brTasksCount">0</span>
-        </div>
-        <div class="briefing-list" id="brTasksList"></div>
-        <div class="briefing-footer" id="brTasksFooter"></div>
+      <!-- Bucket Breakdown -->
+      <div class="glass-card" style="margin-top:24px;">
+        <h3 style="font-family:'Saira Extra Condensed',sans-serif;font-size:18px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;color:var(--text-secondary);">Lead Breakdown</h3>
+        <div id="bucketBreakdown" style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;"></div>
       </div>
     </div>
 
@@ -3339,30 +3075,28 @@
     <div id="leadsSection" style="display:none;">
       <!-- Search Bar -->
       <div class="search-bar">
-        <label for="searchInput" class="sr-only">Search leads</label>
         <input
-          type="search"
+          type="text"
           class="search-input"
           id="searchInput"
           placeholder="Search companies, contacts, or notes..."
-          aria-label="Search leads by company, contacts, or notes"
         >
       </div>
 
       <!-- Filter Bar -->
-      <div class="filter-bar" role="toolbar" aria-label="Filter leads by bucket">
-        <button class="filter-btn active" data-bucket="all" aria-pressed="true">All</button>
-        <button class="filter-btn" data-bucket="schools" aria-pressed="false">Schools</button>
-        <button class="filter-btn" data-bucket="teams" aria-pressed="false">Teams/Leagues</button>
-        <button class="filter-btn" data-bucket="athlete" aria-pressed="false">Athlete Agencies</button>
-        <button class="filter-btn" data-bucket="agencies" aria-pressed="false">Agencies of Record</button>
-        <button class="filter-btn" data-bucket="brands" aria-pressed="false">Brands</button>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-bucket="all">All</button>
+        <button class="filter-btn" data-bucket="schools">Schools</button>
+        <button class="filter-btn" data-bucket="teams">Teams/Leagues</button>
+        <button class="filter-btn" data-bucket="athlete">Athlete Agencies</button>
+        <button class="filter-btn" data-bucket="agencies">Agencies of Record</button>
+        <button class="filter-btn" data-bucket="brands">Brands</button>
       </div>
 
       <!-- View Toggle (Table / Pipeline) -->
-      <div class="view-toggle" role="toolbar" aria-label="Switch view mode">
-        <button class="view-toggle-btn active" data-view="table" onclick="toggleView('table')" aria-pressed="true">Table</button>
-        <button class="view-toggle-btn" data-view="pipeline" onclick="toggleView('pipeline')" aria-pressed="false">Pipeline</button>
+      <div class="view-toggle">
+        <button class="view-toggle-btn active" data-view="table" onclick="toggleView('table')">Table</button>
+        <button class="view-toggle-btn" data-view="pipeline" onclick="toggleView('pipeline')">Pipeline</button>
       </div>
 
     <!-- Stats Row -->
@@ -3446,7 +3180,7 @@
     </div><!-- /schoolsSection -->
 
     <!-- INBOX SECTION (top-level, separate from leads) -->
-    <div id="inboxSection" style="display:none;overflow:hidden;">
+    <div id="inboxSection" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div class="inbox-header" style="margin-bottom:0;">
           <div class="inbox-stats">
@@ -3487,12 +3221,13 @@
         <button class="gmail-sub-tab" onclick="switchGmailTab('sent')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Sent</button>
         <button class="gmail-sub-tab" onclick="switchGmailTab('needsreply')" style="padding:6px 16px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;background:var(--bg-tertiary);color:var(--text-secondary);font-family:'DM Sans',sans-serif;">Needs Reply</button>
       </div>
-      <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:calc(100vh - 280px);min-height:200px;overflow-y:auto;"></div>
+      <div id="inboxGmail" style="display:flex;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
+      <div id="inboxSent" style="display:none;flex-direction:column;background:var(--bg-secondary);border:1px solid var(--border);border-radius:10px;overflow:hidden;max-height:70vh;overflow-y:auto;"></div>
       <div id="inboxKanban" class="inbox-kanban" style="display:none;"></div>
       <div id="inboxTimeline" style="display:none;overflow-x:auto;"></div>
       <div id="inboxList" style="display:none;"></div>
       <!-- Thread Detail Panel (slides in from right) -->
-      <div id="threadPanel" style="display:none;position:fixed;top:0;right:0;width:560px;max-width:90vw;height:100vh;background:var(--bg-primary);border-left:1px solid var(--border);z-index:1000;padding:24px;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.3);transition:transform 0.2s ease;"></div>
+      <div id="threadPanel" style="display:none;position:fixed;top:0;right:0;width:560px;max-width:90vw;height:100vh;background:var(--bg-primary);border-left:1px solid var(--border);z-index:1000;padding:24px;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.3);"></div>
     </div><!-- /inboxSection -->
 
     <!-- MEETINGS SECTION -->
@@ -3503,8 +3238,8 @@
       <!-- Week View Header -->
       <div class="week-header">
         <div class="week-nav">
-          <button class="week-nav-btn" onclick="prevWeek()">← Previous</button>
-          <button class="week-nav-btn" onclick="nextWeek()">Next →</button>
+          <button class="week-nav-btn" onclick="prevWeek()">â Previous</button>
+          <button class="week-nav-btn" onclick="nextWeek()">Next â</button>
         </div>
         <div class="week-range" id="weekRange"></div>
       </div>
@@ -3528,7 +3263,7 @@
       <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
         <input type="text" id="taskQuickInput" placeholder="+ Add task... (e.g. &quot;Follow up with Jon Bishop Friday&quot;)" style="flex:1;padding:12px 16px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;" onkeydown="if(event.key==='Enter')smartAddTask()">
         <button class="btn btn-primary" onclick="smartAddTask()" style="white-space:nowrap;">Add</button>
-        <button class="btn btn-secondary" onclick="toggleTaskForm()" id="taskFormToggle" style="padding:8px 12px;font-size:16px;" title="Expand form">▾</button>
+        <button class="btn btn-secondary" onclick="toggleTaskForm()" id="taskFormToggle" style="padding:8px 12px;font-size:16px;" title="Expand form">â¾</button>
       </div>
       <!-- Expandable full form (hidden by default) -->
       <div id="taskFullForm" style="display:none;margin-bottom:16px;">
@@ -3549,7 +3284,7 @@
       </div>
       <!-- Auto-generated tasks banner -->
       <div id="autoTasksBanner" style="display:none;background:rgba(226,245,0,0.08);border:1px solid rgba(226,245,0,0.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;align-items:center;gap:12px;">
-        <span style="font-size:16px;">⚡</span>
+        <span style="font-size:16px;">â¡</span>
         <span style="font-size:13px;color:var(--text-primary);" id="autoTasksText">Auto-tasks generated based on your activity</span>
         <button class="btn btn-secondary" onclick="document.getElementById('autoTasksBanner').style.display='none'" style="margin-left:auto;padding:4px 8px;font-size:11px;">Dismiss</button>
       </div>
@@ -3588,7 +3323,7 @@
 
       <!-- Empty State -->
       <div id="taskEmptyState" class="task-empty-state">
-        <div class="task-empty-state-icon">✓</div>
+        <div class="task-empty-state-icon">â</div>
         <p>No tasks yet. Add one to get started.</p>
       </div>
     </div><!-- /tasksSection -->
@@ -3605,20 +3340,20 @@
   </div>
 
   <!-- Detail Panel -->
-  <div class="detail-panel" id="detailPanel" role="complementary" aria-label="Lead details">
+  <div class="detail-panel" id="detailPanel">
     <div class="detail-panel-header">
       <div style="flex:1;"></div>
-      <button class="detail-panel-close" id="detailPanelClose" aria-label="Close detail panel">&times;</button>
+      <button class="detail-panel-close" id="detailPanelClose">&times;</button>
     </div>
     <div class="detail-panel-content" id="detailPanelContent"></div>
   </div>
 
   <!-- Modal -->
-  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal" id="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2 id="modalTitle">Add Lead</h2>
-        <button class="modal-close" id="modalClose" aria-label="Close dialog">&times;</button>
+        <button class="modal-close" id="modalClose">&times;</button>
       </div>
       <div class="modal-body">
         <form id="leadForm">
@@ -3829,35 +3564,6 @@
       }
     }
 
-    // Decode HTML entities from Gmail snippets (fixes â and other garbled chars)
-    function decodeHtmlEntities(str) {
-      if (!str) return '';
-      const el = document.createElement('textarea');
-      el.innerHTML = str;
-      return el.value;
-    }
-
-    // Escape text for safe HTML insertion (prevents < > " ' from breaking DOM)
-    function safeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-
-    // Safe logo HTML: uses hidden fallback sibling instead of innerHTML in onerror
-    function buildLogoHtml(src, company, colors) {
-      if (!colors) colors = ['#a29bfe', '#fff'];
-      const initials = safeHtml(getInitials(company));
-      if (!src) {
-        return `<div class="logo-initials" style="background:${colors[0]};color:${colors[1]}">${initials}</div>`;
-      }
-      return `<img class="logo-img" src="${safeHtml(src)}" alt="${safeHtml(company)} logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="logo-initials" style="background:${colors[0]};color:${colors[1]};display:none;">${initials}</div>`;
-    }
-
-    // Decode Gmail entities then escape for safe HTML insertion
-    function safeDecode(str) {
-      return safeHtml(decodeHtmlEntities(str));
-    }
-
     // Gmail thread cache (persisted to Firebase)
     let gmailThreadCache = {}; // threadId -> { messages: [...], contact, email, company, subject }
 
@@ -3942,14 +3648,11 @@
         let status = 'pending';
         let note = '';
         if (latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp)) {
-          // They replied last — ball in our court, needs response
-          status = 'replied';
+          status = 'overdue';
           note = 'They replied. Ball in our court.';
         } else if (latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp)) {
-          // We sent last — check how long ago
-          const daysSinceSent = Math.floor((Date.now() - latestSent.timestamp) / (1000 * 60 * 60 * 24));
-          status = daysSinceSent >= 4 ? 'overdue' : 'pending';
-          note = daysSinceSent >= 4 ? ('No reply in ' + daysSinceSent + ' days. Needs follow-up.') : 'Sent, waiting for reply.';
+          status = daysSince >= 4 ? 'overdue' : 'pending';
+          note = daysSince >= 4 ? ('No reply in ' + daysSince + ' days.') : 'Sent, waiting for reply.';
         }
 
         const entry = {
@@ -3969,14 +3672,6 @@
           const existing = INBOX_EMAILS[existingIdx];
           if (existing.category) entry.category = existing.category;
           if (existing.note && !existing.live) entry.note = existing.note;
-          // Clear manual override if status changed (new message arrived)
-          if (existing.status !== entry.status) {
-            delete existing.pipelineOverride;
-            delete existing.dismissed;
-          } else {
-            if (existing.pipelineOverride) entry.pipelineOverride = existing.pipelineOverride;
-            if (existing.dismissed) entry.dismissed = existing.dismissed;
-          }
           INBOX_EMAILS[existingIdx] = { ...existing, ...entry, note: existing.note && !existing.live ? existing.note : entry.note };
         } else {
           INBOX_EMAILS.push(entry);
@@ -4102,7 +3797,7 @@
         db.ref('gmail_threads').set({ lastSync: Date.now(), threads: cacheForFirebase });
 
         document.getElementById('gmailStatus').style.color = '#00b894';
-        document.getElementById('gmailStatus').textContent = 'Synced ' + Object.keys(cacheForFirebase).length + ' threads • ' + new Date().toLocaleTimeString();
+        document.getElementById('gmailStatus').textContent = 'Synced ' + Object.keys(cacheForFirebase).length + ' threads â¢ ' + new Date().toLocaleTimeString();
 
         renderInbox();
 
@@ -4151,46 +3846,22 @@
       return `Hey ${firstName},\n\n`;
     }
 
-    // Extract plain text body from Gmail message MIME parts
-    function extractBodyFromParts(payload) {
-      if (!payload) return '';
-      // Direct body (simple messages)
-      if (payload.body && payload.body.data) {
-        try {
-          return atob(payload.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-        } catch(e) { return ''; }
-      }
-      // Multipart — recurse through parts, prefer text/plain
-      if (payload.parts) {
-        // First pass: look for text/plain
-        for (const part of payload.parts) {
-          if (part.mimeType === 'text/plain' && part.body && part.body.data) {
-            try {
-              return atob(part.body.data.replace(/-/g, '+').replace(/_/g, '/'));
-            } catch(e) {}
-          }
-        }
-        // Second pass: recurse into nested multipart
-        for (const part of payload.parts) {
-          const nested = extractBodyFromParts(part);
-          if (nested) return nested;
-        }
-      }
-      return '';
-    }
-
-    // Render the thread panel HTML (used by initial render and after full body fetch)
-    function renderThreadPanelHtml(thread, msgs) {
+    window.openThreadView = function(threadId) {
+      const thread = gmailThreadCache[threadId];
+      if (!thread || !thread.messages) return;
+      activeThreadId = threadId;
+      const msgs = [...thread.messages].sort((a, b) => a.timestamp - b.timestamp);
+      const panel = document.getElementById('threadPanel');
       const subject = msgs[0]?.subject || '(no subject)';
       const displayName = cleanContactName(thread.contact, thread.email);
 
       let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
         <div>
           <div style="font-size:18px;font-weight:700;">${displayName}</div>
-          <div style="font-size:12px;color:var(--text-secondary);">${thread.email} &bull; ${thread.company}</div>
-          <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">${safeDecode(subject)}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">${thread.email} â¢ ${thread.company}</div>
+          <div style="font-size:14px;color:var(--text-secondary);margin-top:4px;">${subject}</div>
         </div>
-        <button onclick="closeThreadView()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:8px;">✕</button>
+        <button onclick="closeThreadView()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer;padding:8px;">â</button>
       </div>
       <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:16px;">`;
 
@@ -4199,13 +3870,12 @@
         const date = new Date(msg.timestamp);
         const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + ' at ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
         const isMine = msg.isSent;
-        const bodyText = safeHtml(msg.fullBody) || safeDecode(msg.snippet) || '(no preview available)';
         html += `<div style="margin-bottom:16px;padding:14px;border-radius:10px;border:1px solid ${isMine ? 'rgba(226,245,0,0.2)' : 'var(--border)'};background:${isMine ? 'rgba(226,245,0,0.04)' : 'var(--bg-secondary)'};">
           <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
             <span style="font-weight:600;font-size:13px;color:${isMine ? 'var(--accent)' : 'var(--text-primary)'};">${isMine ? 'Jordon Rooney' : sender.name}</span>
             <span style="font-size:11px;color:var(--text-secondary);">${dateStr}</span>
           </div>
-          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;white-space:pre-wrap;">${bodyText}</div>
+          <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">${msg.snippet || '(no preview available)'}</div>
         </div>`;
       });
       html += '</div>';
@@ -4228,74 +3898,14 @@
         </div>
       </div>`;
 
-      return html;
-    }
-
-    window.openThreadView = function(threadId) {
-      const thread = gmailThreadCache[threadId];
-      if (!thread || !thread.messages) return;
-      activeThreadId = threadId;
-      const msgs = [...thread.messages].sort((a, b) => a.timestamp - b.timestamp);
-      const panel = document.getElementById('threadPanel');
-
-      // Render immediately with snippets
-      panel.innerHTML = renderThreadPanelHtml(thread, msgs);
+      panel.innerHTML = html;
       panel.style.display = 'block';
-
-      // If we have a Gmail token, fetch full message bodies in background
-      if (gmailAccessToken) {
-        (async function() {
-          try {
-            const fullMsgs = await Promise.all(msgs.map(msg =>
-              fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
-                headers: { 'Authorization': 'Bearer ' + gmailAccessToken }
-              }).then(r => r.ok ? r.json() : null).catch(() => null)
-            ));
-
-            // Extract bodies and update msgs
-            let updated = false;
-            fullMsgs.forEach((fullMsg, i) => {
-              if (fullMsg && fullMsg.payload) {
-                const body = extractBodyFromParts(fullMsg.payload);
-                if (body) {
-                  msgs[i].fullBody = body;
-                  updated = true;
-                }
-              }
-            });
-
-            // Re-render panel with full bodies if still viewing this thread
-            if (updated && activeThreadId === threadId) {
-              const scrollPos = panel.scrollTop;
-              panel.innerHTML = renderThreadPanelHtml(thread, msgs);
-              panel.scrollTop = scrollPos;
-            }
-          } catch(e) {
-            console.log('Could not fetch full message bodies:', e);
-          }
-        })();
-      }
     };
 
     window.closeThreadView = function() {
       document.getElementById('threadPanel').style.display = 'none';
       activeThreadId = null;
     };
-
-    // Close thread panel on Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape' && activeThreadId) {
-        closeThreadView();
-      }
-    });
-
-    // Close thread panel on click outside
-    document.addEventListener('mousedown', function(e) {
-      const panel = document.getElementById('threadPanel');
-      if (panel && panel.style.display === 'block' && !panel.contains(e.target)) {
-        closeThreadView();
-      }
-    });
 
     window.generateNewDraft = function() {
       if (!activeThreadId) return;
@@ -4366,38 +3976,7 @@
           statusEl.textContent = 'Sent!';
           statusEl.style.color = '#00b894';
           document.getElementById('composeBody').value = '';
-
-          // Update thread cache: add sent message so it moves to "Waiting" pipeline
-          const sentMsg = await res.json();
-          const now = Date.now();
-          if (thread.messages) {
-            thread.messages.push({
-              id: sentMsg.id || '',
-              from: 'Jordon Rooney <jordon@jaba.ai>',
-              to: toEmail,
-              subject: replySubject,
-              timestamp: now,
-              isSent: true,
-              snippet: body.substring(0, 100)
-            });
-          }
-
-          // Update INBOX_EMAILS entry: we sent last, so status = pending (waiting)
-          const inboxEntry = INBOX_EMAILS.find(e => e && e.email && e.email.toLowerCase() === thread.email.toLowerCase());
-          if (inboxEntry) {
-            inboxEntry.status = 'pending';
-            inboxEntry.daysSince = 0;
-            inboxEntry.sentDate = getTodayDate();
-            inboxEntry.note = 'Sent, waiting for reply.';
-            delete inboxEntry.pipelineOverride;
-            delete inboxEntry.dismissed;
-            saveInboxOverrides();
-          }
-
-          // Re-render inbox views to reflect the move
-          renderInbox();
-          if (currentInboxView === 'gmail') renderGmailInbox();
-
+          // Refresh thread data after a moment
           setTimeout(() => {
             statusEl.textContent = '';
           }, 3000);
@@ -4540,7 +4119,7 @@
         { id: 25, company: 'Arkansas', bucket: 'schools', stage: 'lead', followUp: '', contacts: ['Davante Higginbottom (dhigg@uark.edu)'], context: 'Biz dev.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/8.png' },
         { id: 26, company: 'Virginia', bucket: 'schools', stage: 'lead', followUp: '2026-03-17', contacts: ['Clay Walker (Clay@virginiasp.com)'], context: 'Biz dev. Follow up.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/258.png' },
         { id: 27, company: 'Penn State', bucket: 'schools', stage: 'report_sent', followUp: '2026-02-25', contacts: ['Dann Kabala (djk441@psu.edu)'], context: 'Biz dev. Report sent. Contract sent.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/213.png' },
-        { id: 28, company: 'Playfly', bucket: 'agencies', stage: 'meeting_scheduled', followUp: '2026-03-17', contacts: ['Craig Sloan (craig.sloan@playfly.com)'], context: 'IN PERSON coffee TUESDAY 3/17 8:30 AM at Devoción, NYC. Robert Eckstein. Tucker Ballbach, Jon Bishop also active.', domain: 'https://www.google.com/s2/favicons?domain=playfly.com&sz=128' },
+        { id: 28, company: 'Playfly', bucket: 'agencies', stage: 'meeting_scheduled', followUp: '2026-03-17', contacts: ['Craig Sloan (craig.sloan@playfly.com)'], context: 'IN PERSON coffee TUESDAY 3/17 8:30 AM at DevociÃ³n, NYC. Robert Eckstein. Tucker Ballbach, Jon Bishop also active.', domain: 'https://www.google.com/s2/favicons?domain=playfly.com&sz=128' },
         { id: 29, company: 'UNC', bucket: 'schools', stage: 'report_sent', followUp: '2026-03-09', contacts: ['Kara Cannizzaro (cannizza@email.unc.edu)'], context: 'Biz dev. Report sending. Contract sent.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/153.png' },
         { id: 30, company: 'USC', bucket: 'schools', stage: 'contacted', followUp: '2026-03-10', contacts: ['Lyndsey Lopes (lyndsey.lopes@altiussp.com)'], context: 'Biz dev. Send real dashboard. Contract and campaign sent.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/30.png' },
         { id: 31, company: 'Texas', bucket: 'schools', stage: 'contacted', followUp: '2026-03-16', contacts: ['Sarah Baumgartner (sarah.baumgartner@athletics.utexas.edu)', 'Brett Bell (Brett.Bell@athletics.utexas.edu)'], context: 'Biz dev. Report sent. Waiting for CEO approval. Emailed Dec 9 - Gregg Hamburger connection.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/251.png' },
@@ -4550,7 +4129,7 @@
         { id: 35, company: 'Iowa', bucket: 'schools', stage: 'contacted', followUp: '2026-03-19', contacts: ['Scott Brickman (scott-brickman@uiowa.edu)', 'Cynthia Leonard (cynthia-leonard@uiowa.edu)', 'Dave Aspelmeier (david-aspelmeier@uiowa.edu)', 'Lyla Clerry (lyla-clerry@uiowa.edu)'], context: 'Cold outreach sent 3/12. AI for NIL Depts campaign.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/2294.png' },
         { id: 36, company: 'MSU', bucket: 'schools', stage: 'contacted', followUp: '2026-03-09', contacts: ['Darien Harris (darien@ath.msu.edu)'], context: 'Biz dev. Report sending.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/127.png' },
         { id: 37, company: 'Arizona', bucket: 'schools', stage: 'contacted', followUp: '2026-03-09', contacts: ['Brian Rooney (brianrooney@arizona.edu)', 'Bud Sasser (bsasser@arizona.edu)', 'Matthew Herrera (matthewherrera@arizona.edu)'], context: 'Biz dev. Report sending.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/12.png' },
-        { id: 38, company: 'Boise State', bucket: 'schools', stage: 'contacted', followUp: '', contacts: ['Collin Stoecker (collinstoecker@boisestate.edu)'], context: 'Biz dev. Report sent. | 3/15 meeting: Colin wrestler — reach out early next week.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/68.png' },
+        { id: 38, company: 'Boise State', bucket: 'schools', stage: 'contacted', followUp: '', contacts: ['Collin Stoecker (collinstoecker@boisestate.edu)'], context: 'Biz dev. Report sent. | 3/15 meeting: Colin wrestler â reach out early next week.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/68.png' },
         { id: 39, company: 'Creighton', bucket: 'schools', stage: 'onhold', followUp: '', contacts: ['Eric Lewis (ericlewis@creighton.edu)'], context: 'On hold.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/156.png' },
         { id: 40, company: 'Texas Tech', bucket: 'schools', stage: 'contacted', followUp: '', contacts: ['Jennifer Brashear (jennifer.brashear@ttu.edu)', 'Ryan Frenzel (Ryan.Frenzel@ttu.edu)'], context: 'Emailed Dec 16. New role at Texas Tech.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/2641.png' },
         { id: 41, company: 'Nebraska', bucket: 'schools', stage: 'onhold', followUp: '', contacts: ['Patricia Peterson (ppeterson@huskers.com)'], context: 'On hold.', domain: 'https://a.espncdn.com/i/teamlogos/ncaa/500/158.png' },
@@ -4679,7 +4258,7 @@
         { id: 151, company: 'A&P Sports Agency', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Transfer portal agency. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=aandsportsagency.com&sz=128' },
         { id: 152, company: '247 Sports Transfer Portal', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Transfer portal services. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=247sports.com&sz=128' },
         { id: 153, company: 'Roc Nation Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Jay-Z founded agency. Major athlete representation. In HubSpot.', domain: 'https://www.google.com/s2/favicons?domain=rocnation.com&sz=128' },
-        { id: 154, company: 'Steinberg Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Leigh Steinberg — legendary sports agent. NFL-heavy.', domain: 'https://www.google.com/s2/favicons?domain=steinbergsports.com&sz=128' },
+        { id: 154, company: 'Steinberg Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Leigh Steinberg â legendary sports agent. NFL-heavy.', domain: 'https://www.google.com/s2/favicons?domain=steinbergsports.com&sz=128' },
         { id: 155, company: 'ISE (Independent Sports)', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Independent Sports & Entertainment. Major NFL/NBA agency.', domain: 'https://www.google.com/s2/favicons?domain=iseworldwide.com&sz=128' },
         { id: 156, company: 'Blueprint Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Full-service athlete agency. Football and basketball.', domain: 'https://www.google.com/s2/favicons?domain=blueprintsports.com&sz=128' },
         { id: 157, company: 'Paradigm Sports', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Major athlete management agency. MMA, boxing, NFL, NBA.', domain: 'https://www.google.com/s2/favicons?domain=paradigmsports.com&sz=128' },
@@ -4692,7 +4271,7 @@
         { id: 164, company: 'Student Athlete NIL', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'NIL services for student athletes. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=studentathletenil.com&sz=128' },
         { id: 165, company: 'Athletes for Hope', bucket: 'athlete', stage: 'lead', followUp: '', contacts: [], context: 'Athlete engagement platform. HubSpot deal.', domain: 'https://www.google.com/s2/favicons?domain=athletesforhope.org&sz=128' },
 
-        // NEW — Meeting week 3/16
+        // NEW â Meeting week 3/16
         { id: 166, company: 'Multiplier', bucket: 'brands', stage: 'meeting_scheduled', followUp: '2026-03-19', contacts: [], context: 'Meeting THURSDAY 3/19 1:30 PM. Caryn Swibel.', domain: 'https://www.google.com/s2/favicons?domain=multiplier.com&sz=128' },
         // === NEW LEADS FROM EMAIL CRM IMPORT ===
         { id: 167, company: "3N2Sports", bucket: 'agencies', stage: 'contacted', followUp: '2026-02-06', contacts: ["Robert Kohn (rkohn@3n2sports.com)", "Sean Murphy (sean@3n2sports.com)"], context: "3N2Sports agency contact", domain: "https://www.google.com/s2/favicons?domain=3n2sports.com&sz=128" },
@@ -4787,7 +4366,6 @@
       console.log('Loaded', meetings.length, 'meetings');
       loadTasks();
       console.log('Loaded', tasks.length, 'tasks');
-      refreshInboxDates(); // Recompute daysSince and auto-escalate stale statuses on load
       setupEventListeners();
       setupGlobalSearch();
       populateLeadLinker();
@@ -4941,7 +4519,7 @@
       { text: 'Prepare updates since last conversation', done: false },
       { text: 'Draft partnership proposal', done: false }
     ],
-    notes: 'IN PERSON — Coffee at Devoción (1134 Broadway, NYC). Robert Eckstein from Playfly. Tucker Ballbach and Jon Bishop also active contacts.',
+    notes: 'IN PERSON â Coffee at DevociÃ³n (1134 Broadway, NYC). Robert Eckstein from Playfly. Tucker Ballbach and Jon Bishop also active contacts.',
     meetingNotes: '',
     outcome: '',
     createdDate: '2026-03-15'
@@ -5030,7 +4608,7 @@
       { text: 'Prepare JABA overview deck', done: true },
       { text: 'Reference UCLA positive feedback as social proof', done: false }
     ],
-    notes: 'Cal x JABA. First meeting. Justin DiTolla replied to cold outreach. Thomas Wymore and Mika Costello also contacted. UCLA gave positive feedback — use as reference.',
+    notes: 'Cal x JABA. First meeting. Justin DiTolla replied to cold outreach. Thomas Wymore and Mika Costello also contacted. UCLA gave positive feedback â use as reference.',
     meetingNotes: '',
     outcome: '',
     createdDate: '2026-03-15'
@@ -5084,69 +4662,39 @@
       db.ref('calendar_meetings').on('value', snapshot => {
         const data = snapshot.val();
         if (data && data.meetings && Array.isArray(data.meetings)) {
-          // Filter: include meetings with JABA/Jordon in title, attendees, or organizer
-          // Also include any meeting where jordon@jaba.ai is an attendee
+          // Only show pitch meetings: "X x JABA", "X x Jordon", "Jordon x X", "JABA x X"
+          const pitchPatterns = [/\bx\b\s*jaba/i, /jaba\s*\bx\b/i, /\bx\b\s*jordon/i, /jordon\s*\bx\b/i];
           const calMeetings = data.meetings
-            .filter(cm => {
-              if (!cm.title) return false;
-              const title = cm.title.toLowerCase();
-              const desc = (cm.description || '').toLowerCase();
-              const attendeeStr = (cm.attendees || []).map(a => (a.email || '') + ' ' + (a.name || '')).join(' ').toLowerCase();
-              // Include if JABA or Jordon appears anywhere
-              if (/jaba|jordon/i.test(title + ' ' + desc + ' ' + attendeeStr)) return true;
-              // Include if jordon@jaba.ai is in attendees
-              if (attendeeStr.includes('jordon@jaba.ai')) return true;
-              // Include "x" pattern meetings (Company x Company)
-              if (/\bx\b/i.test(title)) return true;
-              // Include meetings with known lead companies
-              const leadMatch = leads.some(l => title.includes(l.company.toLowerCase()));
-              if (leadMatch) return true;
-              return false;
-            })
+            .filter(cm => cm.title && pitchPatterns.some(p => p.test(cm.title)))
             .map(cm => {
             const start = new Date(cm.startTime);
             const end = new Date(cm.endTime);
-            if (isNaN(start.getTime())) return null;
             const timeStr = start.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
             const endTimeStr = end.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-            const exists = meetings.find(m => (m.title === cm.title && m.date === cm.date) || (m.id === 'gcal_' + (cm.id || '').substring(0, 8)));
+            const exists = meetings.find(m => m.title === cm.title && m.date === cm.date);
             if (exists) return null;
-
-            // Extract company/contact from title
-            let company = cm.company || '', contact = cm.contact || '';
+            // Extract company/contact from title: "Company x JABA" or "Jordon x Contact"
             const titleParts = cm.title.split(/\s*x\s*/i);
+            let company = '', contact = '';
             if (titleParts.length === 2) {
               const left = titleParts[0].trim();
               const right = titleParts[1].trim();
-              if (/jaba/i.test(right)) { company = company || left; contact = contact || left; }
-              else if (/jaba/i.test(left)) { company = company || right; contact = contact || right; }
-              else if (/jordon/i.test(left)) { contact = contact || right; company = company || right; }
-              else if (/jordon/i.test(right)) { contact = contact || left; company = company || left; }
-              else { company = company || left; contact = contact || right; }
+              if (/jaba/i.test(right)) { company = left; contact = cm.contact || left; }
+              else if (/jaba/i.test(left)) { company = right; contact = cm.contact || right; }
+              else if (/jordon/i.test(left)) { contact = right; company = cm.company || right; }
+              else if (/jordon/i.test(right)) { contact = left; company = cm.company || left; }
             }
-            // Try to match to a CRM lead by company name
-            if (!company) {
-              const titleLower = cm.title.toLowerCase();
-              const matchedLead = leads.find(l => titleLower.includes(l.company.toLowerCase()));
-              if (matchedLead) company = matchedLead.company;
-            }
-            // Fall back to first attendee who isn't jordon
-            if (!contact && cm.attendees) {
-              const other = cm.attendees.find(a => a.email && !a.email.includes('jordon') && !a.email.includes('jaba'));
-              if (other) contact = other.name || other.email;
-            }
-
             return {
-              id: 'gcal_' + (cm.id || '').substring(0, 8),
+              id: 'gcal_' + cm.id?.substring(0, 8),
               title: cm.title,
-              company: company || contact || cm.title.split(/\s*[@x]\s*/i)[0].trim(),
-              contact: contact || '',
+              company: company || cm.company || '',
+              contact: contact || cm.contact || '',
               date: cm.date,
               time: timeStr,
               endTime: endTimeStr,
               location: cm.location || '',
               type: 'call',
-              status: start < new Date() ? 'completed' : 'confirmed',
+              status: new Date(cm.startTime) < new Date() ? 'completed' : 'confirmed',
               notes: cm.description || '',
               prep: [],
               attendees: (cm.attendees || []).map(a => a.name || a.email),
@@ -5156,12 +4704,11 @@
 
           if (calMeetings.length > 0) {
             calMeetings.forEach(cm => {
-              if (!meetings.find(m => (m.title === cm.title && m.date === cm.date) || m.id === cm.id)) {
+              if (!meetings.find(m => m.title === cm.title && m.date === cm.date)) {
                 meetings.push(cm);
               }
             });
             if (currentSection === 'meetings') renderMeetings();
-            renderInbox(); // Update meeting count in pipeline
           }
           console.log('Calendar: loaded', calMeetings.length, 'new meetings from Google Calendar');
         }
@@ -5227,8 +4774,40 @@
     }
 
     function loadDefaultTasks() {
-        // No seeded tasks. Start empty; the user adds their own.
-        tasks = [];
+        tasks = [
+          { id: 1, title: 'Follow up with Minnesota â Jeremiah Carter re: JABA Contract', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Email sent 2/27, no reply. Contract discussion.', createdDate: '2026-03-15' },
+          { id: 2, title: 'Prep for Cal/Berkeley meeting Thu 3/19', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Justin DiTolla replied, meeting scheduled for Thursday.', createdDate: '2026-03-15' },
+          { id: 3, title: 'Send Boise State NIL Report follow-up', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Collin Stoecker â report sent 3/2, needs follow-up.', createdDate: '2026-03-15' },
+          { id: 4, title: 'Schedule Washington meeting â Derek Sullivan', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Derek replied to AI for NIL Depts email. Confirm time.', createdDate: '2026-03-15' },
+          { id: 5, title: 'Follow up with Octagon â Emily McKiernan', dueDate: '2026-03-16', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Sent 2/11, 30+ days no reply. Try different contact or channel.', createdDate: '2026-03-15' },
+          { id: 6, title: 'Review Religion of Sport investor deck feedback', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Pietro Moro replied to investor deck. Review and respond.', createdDate: '2026-03-15' },
+          { id: 7, title: 'Send Arkansas NIL Report to Davonte', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 25, notes: 'Report sent 3/2, overdue follow-up. 11 days.', createdDate: '2026-03-15' },
+          { id: 8, title: 'Cincinnati meeting prep â Eddie Taylor', dueDate: '2026-03-18', priority: 'medium', status: 'todo', linkedLeadId: 2, notes: 'Eddie replied. Prep dashboard and talking points.', createdDate: '2026-03-15' },
+          { id: 9, title: 'Reconnect with Nicole Tepper â Damar connection', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Last email 2/10. Warm intro through Damar. 31 days.', createdDate: '2026-03-15' },
+          { id: 10, title: 'UCLA report update for Teri Hanneke', dueDate: '2026-03-17', priority: 'medium', status: 'todo', linkedLeadId: 16, notes: 'Active conversation. Update report with latest data.', createdDate: '2026-03-15' },
+          { id: 11, title: 'Cold outreach follow-ups â check replies from 15+ schools', dueDate: '2026-03-19', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Mass outreach sent 3/12. Check for new replies beyond Cal, Washington.', createdDate: '2026-03-15' },
+          { id: 12, title: 'Update Purdue dashboard â Tanner Ball', dueDate: '2026-03-18', priority: 'medium', status: 'in_progress', linkedLeadId: 3, notes: 'Tanner replied re: next steps + dashboard updates.', createdDate: '2026-03-15' },
+          { id: 13, title: 'Follow up with Jeremiah Carter (Minnesota) â texted last week', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 12, notes: 'Boss meeting: Jeremiah texted last week, waiting. JABA Contract discussion.', createdDate: '2026-03-15' },
+          { id: 14, title: 'Reach out to Colin Stoecker (Boise State) â wrestler', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 38, notes: 'Boss meeting: Reach out early next week. Wrestler.', createdDate: '2026-03-15' },
+          { id: 15, title: 'Reach out to John Bishop (Playfly) â Tuesday', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Didn\'t get back to Jordon. Follow up Tuesday.', createdDate: '2026-03-15' },
+          { id: 16, title: 'Nick connect with Diego on agent scraping', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Scrape every athlete\'s agent from email addresses and bios. Build agency database.', createdDate: '2026-03-15' },
+          { id: 17, title: 'Get Chris King (RMU) quote for mid-major pitch', dueDate: '2026-03-21', priority: 'medium', status: 'todo', linkedLeadId: 5, notes: 'Boss meeting: Need testimonial from Chris King for mid-major school outreach. Critical for pitch deck.', createdDate: '2026-03-15' },
+          { id: 18, title: 'Research Sponsor United LinkedIn followers', dueDate: '2026-03-21', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Use AI to analyze every Sponsor United LinkedIn follower. Find companies using them just for contacts. Go after them with JABA.', createdDate: '2026-03-15' },
+          { id: 19, title: 'Onboard Mario to agency + brand sales process', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Mario getting heavily involved. Double up on agency side with Nick. Walk through CRM and playbooks.', createdDate: '2026-03-15' },
+          { id: 20, title: 'Document all agencies from Slack into CRM leads', dueDate: '2026-03-19', priority: 'medium', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Jordon has been sending agencies in Slack. Need to capture all of them as leads in CRM.', createdDate: '2026-03-15' },
+          { id: 21, title: 'Made Hoops / American Cornhole League follow-up', dueDate: '2026-03-19', priority: 'low', status: 'todo', linkedLeadId: null, notes: 'Boss meeting: Made Hoops guy says $20M opportunity. Director of partnerships was COO at American Cornhole League. Heavily connected in sports industry.', createdDate: '2026-03-15' },
+
+          // MEETING WEEK 3/16-3/19
+          { id: 22, title: 'Washington meeting â MON 3/16 5:00 PM', dueDate: '2026-03-16', priority: 'high', status: 'todo', linkedLeadId: 79, notes: 'Derek Sullivan replied to cold outreach. Prep dashboard with Washington athlete data. Multiple contacts: Cody Scott, Chris Hein, Jack Murrey, Sandy, Joe Knight.', createdDate: '2026-03-15' },
+          { id: 23, title: 'The Team meeting â WED 3/18 12:30 PM', dueDate: '2026-03-18', priority: 'high', status: 'todo', linkedLeadId: 96, notes: 'Jordan Tirico intro call. Prep JABA overview and agency pitch.', createdDate: '2026-03-15' },
+          { id: 24, title: 'Playfly coffee â TUE 3/17 8:30 AM at DevociÃ³n', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: 28, notes: 'In-person meeting. Bring IP report. Tucker Ballbach, Jon Bishop, Robert Eckstein all active contacts.', createdDate: '2026-03-15' },
+          { id: 25, title: 'Notre Dame meeting â THU 3/19 12:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 9, notes: 'Client meeting. Kayla Rogers. Discuss announcement and next steps.', createdDate: '2026-03-15' },
+          { id: 26, title: 'Cal/Berkeley meeting â THU 3/19 6:00 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 81, notes: 'Justin DiTolla replied to cold outreach. First meeting. Prep Berkeley athlete data and JABA demo.', createdDate: '2026-03-15' },
+          { id: 27, title: 'Multiplier meeting â THU 3/19 1:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 166, notes: 'Meeting scheduled Thursday.', createdDate: '2026-03-15' },
+          { id: 28, title: 'NOCAP Sports meeting â THU 3/19 3:30 PM', dueDate: '2026-03-19', priority: 'high', status: 'todo', linkedLeadId: 129, notes: 'NIL compliance/data company. Meeting Thursday.', createdDate: '2026-03-15' },
+          { id: 29, title: 'Jack Bishop meeting â TUE 3/17 2:00 PM', dueDate: '2026-03-17', priority: 'high', status: 'todo', linkedLeadId: null, notes: 'Jack x Jordon. Nick Mudd also attending.', createdDate: '2026-03-15' },
+          { id: 30, title: 'Purdue meeting â FRI 3/20 11:30 AM', dueDate: '2026-03-20', priority: 'high', status: 'todo', linkedLeadId: 3, notes: 'JABA x Purdue. Tanner Ball + Daniel Picioski. Diego and Alanys attending.', createdDate: '2026-03-15' }
+        ];
         saveTasks();
     }
 
@@ -5254,10 +4833,10 @@
       const btn = document.getElementById('taskFormToggle');
       if (form.style.display === 'none') {
         form.style.display = 'block';
-        btn.textContent = '▴';
+        btn.textContent = 'â´';
       } else {
         form.style.display = 'none';
-        btn.textContent = '▾';
+        btn.textContent = 'â¾';
       }
     };
 
@@ -5342,7 +4921,6 @@
     // 3. 4 days after we send an email with no reply -> "Follow up with [Contact]"
 
     function generateAutoTasks() {
-      refreshInboxDates();
       const today = getTodayDate();
       const existingTitles = tasks.map(t => t.title.toLowerCase());
       let newAutoTasks = [];
@@ -5599,7 +5177,7 @@
         return `
           <div class="task-card ${task.status === 'done' ? 'done' : ''}">
             <div class="task-checkbox" onclick="toggleTaskDone(${task.id})" style="cursor:pointer;">
-              ${task.status === 'done' ? '✓' : ''}
+              ${task.status === 'done' ? 'â' : ''}
             </div>
             <div class="task-content" style="flex:1;">
               <div class="task-title">${task.title}${task.auto ? ' <span style="font-size:10px;background:rgba(226,245,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:600;">AUTO</span>' : ''}</div>
@@ -5826,7 +5404,7 @@
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         return `${months[d.getMonth()]} ${d.getDate()}`;
       };
-      document.getElementById('weekRange').textContent = `${formatDate(currentWeekStart)} — ${formatDate(weekEnd)}`;
+      document.getElementById('weekRange').textContent = `${formatDate(currentWeekStart)} â ${formatDate(weekEnd)}`;
 
       // Build week view
       const weekView = document.getElementById('weekView');
@@ -5864,7 +5442,7 @@
           const checkedCount = checklist.filter(c => c.done).length;
           const totalCount = checklist.length;
           const prepStatus = m.prepStatus || (totalCount === 0 ? 'ready' : 'not_started');
-          const statusDot = prepStatus === 'ready' ? '✓' : prepStatus === 'in_progress' ? '◐' : '◯';
+          const statusDot = prepStatus === 'ready' ? 'â' : prepStatus === 'in_progress' ? 'â' : 'â¯';
           const statusClass = prepStatus.replace('_', '-');
 
           return `
@@ -6174,7 +5752,7 @@
         notes: '',
         meetingNotes: '',
         outcome: '',
-        createdDate: getTodayDate()
+        createdDate: new Date().toISOString().split('T')[0]
       };
 
       meetings.push(newMeeting);
@@ -6193,22 +5771,17 @@
       // Filters
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
           e.target.classList.add('active');
-          e.target.setAttribute('aria-pressed', 'true');
           currentFilter = e.target.dataset.bucket;
           renderView();
         });
       });
 
-      // Search (debounced for performance)
-      let searchDebounceTimer = null;
+      // Search
       document.getElementById('searchInput').addEventListener('input', (e) => {
-        clearTimeout(searchDebounceTimer);
-        searchDebounceTimer = setTimeout(() => {
-          searchQuery = e.target.value.toLowerCase();
-          renderView();
-        }, 150);
+        searchQuery = e.target.value.toLowerCase();
+        renderView();
       });
 
       // Table sorting
@@ -6267,7 +5840,7 @@
 
       // Filter by overdue if flagged
       if (window.showOnlyOverdue) {
-        const today = getTodayDate();
+        const today = new Date().toISOString().split('T')[0];
         filtered = filtered.filter(lead => lead.followUp && lead.followUp < today);
       }
 
@@ -6316,19 +5889,21 @@
 
       tbody.innerHTML = displayed.map(lead => {
         const colors = BRAND_COLORS[lead.company] || ['#a29bfe', '#fff'];
-        const logoHtml = buildLogoHtml(lead.domain, lead.company, colors);
+        const logoHtml = lead.domain
+          ? `<img class="logo-img" src="${lead.domain}" onerror="this.parentElement.innerHTML='<div class=\\'logo-initials\\' style=\\'background:${colors[0]};color:${colors[1]}\\'>${getInitials(lead.company)}</div>'">`
+          : `<div class="logo-initials" style="background: ${colors[0]}; color: ${colors[1]}">${getInitials(lead.company)}</div>`;
 
         const followUpHtml = renderFollowUp(lead.followUp);
         const contactsHtml = lead.contacts.length > 0
-          ? lead.contacts.map(c => `<div class="contact-tag">${safeHtml(c)}</div>`).join('')
-          : '<span class="text-muted">—</span>';
+          ? lead.contacts.map(c => `<div class="contact-tag">${c}</div>`).join('')
+          : '<span class="text-muted">â</span>';
 
         return `
           <tr>
             <td>
               <div class="company-cell">
                 ${logoHtml}
-                <span class="company-name">${safeHtml(lead.company)}</span>
+                <span class="company-name">${lead.company}</span>
               </div>
             </td>
             <td>
@@ -6347,12 +5922,12 @@
                 ${contactsHtml}
               </div>
             </td>
-            <td class="text-muted" title="${safeHtml(lead.context)}">${safeHtml(lead.context.substring(0, 50))}${lead.context.length > 50 ? '...' : ''}</td>
+            <td class="text-muted" title="${lead.context}">${lead.context.substring(0, 50)}${lead.context.length > 50 ? '...' : ''}</td>
             <td>
               <div class="actions-cell">
-                <button class="btn btn-action" style="background:var(--color-info);color:#fff;" onclick="openDetailPanel(${lead.id})" aria-label="View ${safeHtml(lead.company)}">View</button>
-                <button class="btn btn-action btn-edit" onclick="openEditModal(${lead.id})" aria-label="Edit ${safeHtml(lead.company)}">Edit</button>
-                <button class="btn btn-action btn-delete" onclick="deleteLead(${lead.id})" aria-label="Delete ${safeHtml(lead.company)}">Delete</button>
+                <button class="btn btn-action" style="background:var(--color-info);color:#fff;" onclick="openDetailPanel(${lead.id})">View</button>
+                <button class="btn btn-action btn-edit" onclick="openEditModal(${lead.id})">Edit</button>
+                <button class="btn btn-action btn-delete" onclick="deleteLead(${lead.id})">Delete</button>
               </div>
             </td>
           </tr>
@@ -6364,13 +5939,13 @@
 
     // Render follow-up date
     function renderFollowUp(date) {
-      if (!date) return '<span class="text-muted">—</span>';
+      if (!date) return '<span class="text-muted">â</span>';
 
-      const today = getTodayDate();
+      const today = new Date().toISOString().split('T')[0];
       const followDate = new Date(date);
 
       if (date < today) {
-        return `<span class="followup-overdue">Overdue • ${formatDate(date)}</span>`;
+        return `<span class="followup-overdue">Overdue â¢ ${formatDate(date)}</span>`;
       } else if (date === today) {
         return `<span class="followup-today">Today</span>`;
       } else {
@@ -6391,7 +5966,7 @@
       const won = leads.filter(l => l.stage === 'client').length;
 
       let overdue = 0;
-      const today = getTodayDate();
+      const today = new Date().toISOString().split('T')[0];
       leads.forEach(lead => {
         if (lead.followUp && lead.followUp < today) {
           overdue++;
@@ -6442,19 +6017,6 @@
     window.switchSection = function(section) {
       currentSection = section;
       localStorage.setItem('bd_leads_section', section);
-
-      // Always enter Leads in table view. The pipeline toggle is still
-      // available within the section, but we don't carry a previously
-      // saved 'pipeline' preference across navigations — the user wants
-      // the table on every entry to Leads.
-      if (section === 'leads') {
-        currentViewMode = 'table';
-        document.querySelectorAll('.view-toggle-btn').forEach(btn => {
-          var isTable = btn.dataset.view === 'table';
-          btn.classList.toggle('active', isTable);
-          btn.setAttribute('aria-pressed', isTable ? 'true' : 'false');
-        });
-      }
 
       // Update tab states
       document.querySelectorAll('.top-tab').forEach(tab => {
@@ -6548,19 +6110,19 @@
               ${leads.map(lead => {
                 const colors = BRAND_COLORS[lead.company] || ['#a29bfe', '#fff'];
                 const logoHtml = lead.domain
-                  ? `<img src="${safeHtml(lead.domain)}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="width:100%;height:100%;object-fit:cover;">`
+                  ? `<img src="${lead.domain}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" style="width:100%;height:100%;object-fit:cover;">`
                   : '';
-                const initialsHtml = `<div class="pipeline-card-initials" style="background:${colors[0]};color:${colors[1]}; ${lead.domain ? 'display:none;' : ''}">${safeHtml(getInitials(lead.company))}</div>`;
+                const initialsHtml = `<div class="pipeline-card-initials" style="background:${colors[0]};color:${colors[1]}; ${lead.domain ? 'display:none;' : ''}">${getInitials(lead.company)}</div>`;
 
                 const followUpHtml = renderFollowUp(lead.followUp);
 
                 return `
-                  <div class="pipeline-card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" data-lead-id="${lead.id}" onclick="openDetailPanel(${lead.id})" role="listitem" aria-label="${safeHtml(lead.company)}">
+                  <div class="pipeline-card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" data-lead-id="${lead.id}" onclick="openDetailPanel(${lead.id})">
                     <div class="pipeline-card-logo">
                       ${logoHtml}
                       ${initialsHtml}
                     </div>
-                    <div class="pipeline-card-company">${safeHtml(lead.company)}</div>
+                    <div class="pipeline-card-company">${lead.company}</div>
                     ${followUpHtml ? `<div class="pipeline-card-followup">${followUpHtml}</div>` : ''}
                   </div>
                 `;
@@ -6644,10 +6206,9 @@
       if (!lead) return;
 
       const colors = BRAND_COLORS[lead.company] || ['#a29bfe', '#fff'];
-      const initials = safeHtml(getInitials(lead.company));
       const logoHtml = lead.domain
-        ? `<img src="${safeHtml(lead.domain)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" style="width:100%;height:100%;object-fit:cover;"><div style="width:100%;height:100%;background:${colors[0]};color:${colors[1]};display:none;align-items:center;justify-content:center;font-weight:700;font-size:20px;">${initials}</div>`
-        : `<div style="width:100%;height:100%;background:${colors[0]};color:${colors[1]};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;">${initials}</div>`;
+        ? `<img src="${lead.domain}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'width:100%;height:100%;background:${colors[0]};display:flex;align-items:center;justify-content:center;\\'>` + getInitials(lead.company) + `</div>'">`
+        : `<div style="width:100%;height:100%;background:${colors[0]};color:${colors[1]};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;">${getInitials(lead.company)}</div>`;
 
       // Find related emails
       const relatedEmails = INBOX_EMAILS.filter(e =>
@@ -6660,8 +6221,8 @@
             const statusColor = e.status === 'overdue' ? '#ff6b6b' : e.status === 'replied' ? '#00b894' : '#fdcb6e';
             return `
               <div class="related-email-item" onclick="switchSection('inbox')">
-                <div class="related-email-contact">${safeHtml(e.contact)}</div>
-                <div class="related-email-subject">${safeHtml(e.subject)}</div>
+                <div class="related-email-contact">${e.contact}</div>
+                <div class="related-email-subject">${e.subject}</div>
                 <div class="related-email-date"><span class="detail-status-dot" style="background:${statusColor}"></span>${e.sentDate}</div>
               </div>
             `;
@@ -6676,24 +6237,24 @@
             return `
               <div style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg-tertiary);border-radius:6px;font-size:13px;">
                 <input type="checkbox" ${t.status === 'done' ? 'checked' : ''} onclick="toggleTaskDone(${t.id})" style="cursor:pointer;">
-                <span style="${t.status === 'done' ? 'text-decoration:line-through;color:var(--text-secondary);' : ''}flex:1;">${safeHtml(t.title)}</span>
+                <span style="${t.status === 'done' ? 'text-decoration:line-through;color:var(--text-secondary);' : ''}flex:1;">${t.title}</span>
                 <span style="width:8px;height:8px;border-radius:50%;background:${statusColor};flex-shrink:0;"></span>
               </div>
             `;
           }).join('')
         : '<div style="color:var(--text-secondary);font-size:13px;">No linked tasks</div>';
 
-      const today = getTodayDate();
+      const today = new Date().toISOString().split('T')[0];
       const isOverdue = lead.followUp && lead.followUp < today;
       const followUpDisplay = lead.followUp
-        ? `<div style="font-size:14px;color:${isOverdue ? 'var(--color-danger)' : 'var(--text-primary)'};">${isOverdue ? 'OVERDUE • ' : ''}${lead.followUp}</div>`
+        ? `<div style="font-size:14px;color:${isOverdue ? 'var(--color-danger)' : 'var(--text-primary)'};">${isOverdue ? 'OVERDUE â¢ ' : ''}${lead.followUp}</div>`
         : '<div style="color:var(--text-secondary);">No follow-up set</div>';
 
       const html = `
         <div class="detail-logo-large">
           ${logoHtml}
         </div>
-        <div class="detail-company-name">${safeHtml(lead.company)}</div>
+        <div class="detail-company-name">${lead.company}</div>
         <div class="detail-pills">
           <span class="bucket-pill bucket-${lead.bucket}">${BUCKET_LABELS[lead.bucket]}</span>
           <span class="stage-pill stage-${lead.stage}">${STAGE_LABELS[lead.stage]}</span>
@@ -6703,7 +6264,7 @@
           <div class="detail-section-title">Follow-Up</div>
           <div class="detail-followup">
             <div>${followUpDisplay}</div>
-            <button class="detail-action-btn" onclick="openFollowUpEditor(${lead.id})" aria-label="Set follow-up date">Set</button>
+            <button class="detail-action-btn" onclick="openFollowUpEditor(${lead.id})">Set</button>
           </div>
         </div>
 
@@ -6713,8 +6274,8 @@
             <div class="detail-contacts-list">
               ${lead.contacts.map(c => {
                 const parts = c.split('(');
-                const name = safeHtml(parts[0].trim());
-                const email = parts[1] ? safeHtml(parts[1].replace(')', '').trim()) : '';
+                const name = parts[0].trim();
+                const email = parts[1] ? parts[1].replace(')', '').trim() : '';
                 return `
                   <div class="detail-contact-item">
                     <div class="detail-contact-name">${name}</div>
@@ -6728,7 +6289,7 @@
 
         <div class="detail-section">
           <div class="detail-section-title">Context/Notes</div>
-          <div class="detail-notes">${safeHtml(lead.context) || '—'}</div>
+          <div class="detail-notes">${lead.context || 'â'}</div>
         </div>
 
         ${relatedEmails.length > 0 ? `
@@ -6875,7 +6436,7 @@
             html += `
               <div class="search-result-item" onclick="openDetailPanel(${lead.id})">
                 <div class="search-result-company">${lead.company}</div>
-                <div class="search-result-meta">${BUCKET_LABELS[lead.bucket]} • ${STAGE_LABELS[lead.stage]}</div>
+                <div class="search-result-meta">${BUCKET_LABELS[lead.bucket]} â¢ ${STAGE_LABELS[lead.stage]}</div>
               </div>
             `;
           });
@@ -6889,7 +6450,7 @@
             html += `
               <div class="search-result-item" onclick="switchSection('inbox')">
                 <div class="search-result-company">${email.company}</div>
-                <div class="search-result-meta">${email.contact} • ${email.subject.substring(0, 40)}</div>
+                <div class="search-result-meta">${email.contact} â¢ ${email.subject.substring(0, 40)}</div>
               </div>
             `;
           });
@@ -6932,30 +6493,6 @@
       if (!company || !bucket || !stage) {
         alert('Please fill in all required fields.');
         return;
-      }
-
-      // Validate follow-up date format
-      if (followUp && !/^\d{4}-\d{2}-\d{2}$/.test(followUp)) {
-        alert('Follow-up date must be in YYYY-MM-DD format.');
-        return;
-      }
-
-      // Validate logo URL
-      if (domain && !/^https?:\/\/.+/i.test(domain)) {
-        alert('Logo URL must start with http:// or https://');
-        return;
-      }
-
-      // Duplicate lead detection (skip if editing the same lead)
-      const duplicate = leads.find(l =>
-        l.company.toLowerCase() === company.toLowerCase() &&
-        l.bucket === bucket &&
-        l.id !== editingId
-      );
-      if (duplicate) {
-        if (!confirm(`A lead for "${duplicate.company}" already exists in the ${BUCKET_LABELS[bucket]} bucket. Add anyway?`)) {
-          return;
-        }
       }
 
       if (editingId) {
@@ -7016,7 +6553,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `leads-${getTodayDate()}.csv`;
+      a.download = `leads-${new Date().toISOString().split('T')[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
     }
@@ -7312,90 +6849,78 @@
     }
 
     function renderThreadList(sorted, container) {
-      const rows = [];
+      let html = '';
       sorted.forEach(thread => {
-        try {
-          const latest = thread.latest;
-          if (!latest || !latest.timestamp || latest.timestamp < 1000000000000) return;
-          if (!thread.email && !thread.contact) return;
+        const latest = thread.latest;
+        if (!latest || !latest.timestamp) return; // Skip empty threads
+        if (!thread.email && !thread.contact) return; // Skip threads with no contact info
+        const msgCount = thread.messages.length;
+        const displayName = cleanContactName(thread.contact, thread.email);
+        const initials = displayName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2) || '?';
 
-          const subject = safeDecode(latest.subject) || '';
-          const snippet = safeDecode(latest.snippet) || '';
-          if (!subject && !snippet) return;
+        // Find CRM lead for logo
+        const crmLead = findLeadForThread(thread.email);
+        const logoUrl = crmLead ? crmLead.domain : null;
 
-          const msgCount = thread.messages.length;
-          const displayName = cleanContactName(thread.contact, thread.email);
-          if (!displayName || displayName === '?' || displayName.trim().length === 0) return;
-          const initials = displayName.split(' ').filter(w => w.length > 0).map(w => w[0]).join('').toUpperCase().substring(0, 2) || '?';
+        const date = new Date(latest.timestamp);
+        const now = new Date();
+        const diffDays = Math.floor((now - date) / (1000*60*60*24));
+        let dateStr;
+        if (diffDays === 0) dateStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        else if (diffDays === 1) dateStr = 'Yesterday';
+        else if (diffDays < 7) dateStr = date.toLocaleDateString('en-US', { weekday: 'short' });
+        else dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
-          const crmLead = findLeadForThread(thread.email);
-          const logoUrl = crmLead ? crmLead.domain : null;
+        const latestReceived = thread.messages.find(m => !m.isSent);
+        const latestSent = thread.messages.find(m => m.isSent);
+        const ballInOurCourt = latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp);
+        const needsFollowUp = !ballInOurCourt && diffDays >= 4 && latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp);
 
-          const date = new Date(latest.timestamp);
-          if (isNaN(date.getTime())) return;
-          const now = new Date();
-          const diffDays = Math.floor((now - date) / (1000*60*60*24));
-          let dateStr;
-          if (diffDays === 0) dateStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-          else if (diffDays === 1) dateStr = 'Yesterday';
-          else if (diffDays < 7) dateStr = date.toLocaleDateString('en-US', { weekday: 'short' });
-          else dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        let statusDot = '';
+        if (ballInOurCourt) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#00b894;display:inline-block;margin-right:6px;" title="Needs response"></span>';
+        else if (needsFollowUp) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block;margin-right:6px;" title="Needs follow-up"></span>';
 
-          const latestReceived = thread.messages.find(m => !m.isSent);
-          const latestSent = thread.messages.find(m => m.isSent);
-          const ballInOurCourt = latestReceived && (!latestSent || latestReceived.timestamp > latestSent.timestamp);
-          const needsFollowUp = !ballInOurCourt && diffDays >= 4 && latestSent && (!latestReceived || latestSent.timestamp > latestReceived.timestamp);
+        const avatarBg = ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--bg-tertiary)';
+        const avatarColor = (ballInOurCourt || needsFollowUp) ? '#fff' : 'var(--text-secondary)';
 
-          let statusDot = '';
-          if (ballInOurCourt) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#00b894;display:inline-block;margin-right:6px;" title="Needs response"></span>';
-          else if (needsFollowUp) statusDot = '<span style="width:8px;height:8px;border-radius:50%;background:#ff6b6b;display:inline-block;margin-right:6px;" title="Needs follow-up"></span>';
-
-          const avatarBg = ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--bg-tertiary)';
-          const avatarColor = (ballInOurCourt || needsFollowUp) ? '#fff' : 'var(--text-secondary)';
-          const borderColor = ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--border)';
-
-          let avatarHtml;
-          if (logoUrl) {
-            avatarHtml = `<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid ${borderColor};background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;">
-              <img src="${logoUrl}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display='none';this.parentElement.textContent='${initials}';">
-            </div>`;
-          } else {
-            avatarHtml = `<div style="width:36px;height:36px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${avatarColor};flex-shrink:0;">${initials}</div>`;
-          }
-
-          const companyName = safeHtml(crmLead ? crmLead.company : (thread.company || ''));
-          const safeDisplayName = safeHtml(displayName);
-          const safeThreadId = (thread.threadId || '').replace(/'/g, "\\'");
-          const lastWasSent = latest.isSent;
-          const sentIndicator = lastWasSent ? '<span style="font-size:10px;color:var(--text-secondary);margin-right:2px;">↩</span>' : '';
-
-          rows.push(`<div onclick="openThreadView('${safeThreadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
-            ${avatarHtml}
-            <div style="flex:1;min-width:0;">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
-                <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;">
-                  ${statusDot}${sentIndicator}
-                  <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${safeDisplayName}</span>
-                  ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">(' + msgCount + ')</span>' : ''}
-                  ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">&bull; ' + companyName + '</span>' : ''}
-                </div>
-                <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;margin-left:8px;">${dateStr}</span>
-              </div>
-              <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${subject || '(no subject)'}</div>
-              <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${snippet}</div>
-            </div>
-          </div>`);
-        } catch(e) {
-          // Skip any thread that errors during rendering
+        // Avatar: show logo if available, otherwise initials
+        let avatarHtml;
+        if (logoUrl) {
+          avatarHtml = `<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:2px solid ${ballInOurCourt ? '#00b894' : needsFollowUp ? '#ff6b6b' : 'var(--border)'};background:var(--bg-tertiary);display:flex;align-items:center;justify-content:center;">
+            <img src="${logoUrl}" style="width:28px;height:28px;object-fit:contain;" onerror="this.parentElement.innerHTML='<span style=\\'font-size:12px;font-weight:700;color:${avatarColor}\\'>${initials}</span>'">
+          </div>`;
+        } else {
+          avatarHtml = `<div style="width:36px;height:36px;border-radius:50%;background:${avatarBg};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:${avatarColor};flex-shrink:0;">${initials}</div>`;
         }
+
+        // Company display name from CRM or thread
+        const companyName = crmLead ? crmLead.company : (thread.company || '');
+
+        const safeThreadId = (thread.threadId || '').replace(/'/g, "\\'");
+        const lastWasSent = latest.isSent;
+        const sentIndicator = lastWasSent ? '<span style="font-size:10px;color:var(--text-secondary);margin-right:2px;">â©</span>' : '';
+        html += `<div onclick="openThreadView('${safeThreadId}')" style="display:flex;align-items:center;gap:14px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;flex-shrink:0;" onmouseover="this.style.background='var(--bg-tertiary)'" onmouseout="this.style.background='transparent'">
+          ${avatarHtml}
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">
+              <div style="display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;">
+                ${statusDot}${sentIndicator}
+                <span style="font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${displayName}</span>
+                ${msgCount > 1 ? '<span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;">(' + msgCount + ')</span>' : ''}
+                ${companyName ? '<span style="font-size:11px;color:var(--accent);flex-shrink:0;margin-left:4px;">â¢ ' + companyName + '</span>' : ''}
+              </div>
+              <span style="font-size:11px;color:var(--text-secondary);flex-shrink:0;margin-left:8px;">${dateStr}</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${latest.subject || '(no subject)'}</div>
+            <div style="font-size:12px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;">${latest.snippet || ''}</div>
+          </div>
+        </div>`;
       });
 
-      container.innerHTML = rows.length > 0 ? rows.join('') : '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No threads found.</div>';
+      container.innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--text-secondary);">No threads found.</div>';
     }
 
     function categorizeEmail(item) {
-      // Manual override from drag-drop takes precedence
-      if (item.pipelineOverride) return item.pipelineOverride;
       // 1. Meeting scheduled (explicit category or note mentions meeting)
       if (item.category === 'meeting') return 'meeting';
       if (item.status === 'replied' && item.note && (item.note.toLowerCase().includes('meeting') || item.note.toLowerCase().includes('call week') || item.note.toLowerCase().includes('meeting confirmed') || item.note.toLowerCase().includes('scheduling call'))) return 'meeting';
@@ -7404,47 +6929,37 @@
       if (item.note && (item.note.includes('NEEDS REPLY') || item.note.includes('Ball in our court'))) return 'needs_response';
       if (item.status === 'replied' && item.daysSince <= 3) return 'needs_response';
 
-      // 3. Needs Response - they replied, ball in our court
-      if (item.status === 'replied') return 'needs_response';
-
-      // 4. Needs Follow-Up - we sent, 4+ days no reply
-      if (item.status === 'overdue') return 'needs_followup';
+      // 3. Needs Follow-Up - we sent, 4+ days no reply
+      if (item.status === 'overdue' && item.daysSince >= 4) return 'needs_followup';
       if (item.status === 'pending' && item.daysSince >= 4) return 'needs_followup';
 
-      // 5. Waiting on Response - we sent recently, < 4 days
+      // 4. Waiting on Response - we sent recently, < 4 days
       if (item.status === 'pending') return 'waiting';
       if (item.status === 'waiting') return 'waiting';
 
       // Fallback
+      if (item.status === 'overdue') return 'needs_followup';
+      if (item.status === 'replied') return 'needs_response';
       return 'waiting';
-    }
-
-    // Recompute daysSince and auto-escalate stale statuses for all inbox emails.
-    // Call this before any code reads INBOX_EMAILS to keep data fresh.
-    function refreshInboxDates() {
-      const today = new Date();
-      INBOX_EMAILS.forEach(e => {
-        if (!e || !e.sentDate) return;
-        const sent = new Date(e.sentDate + 'T00:00:00');
-        e.daysSince = Math.floor((today - sent) / (1000*60*60*24));
-        // Auto-escalate pending/waiting → overdue after 4 days with no reply
-        if ((e.status === 'pending' || e.status === 'waiting') && e.daysSince >= 4) {
-          e.status = 'overdue';
-        }
-      });
     }
 
     function renderInbox() {
       const inboxList = document.getElementById('inboxList');
 
-      // Refresh dates before rendering
-      refreshInboxDates();
-
-      // Load any saved overrides before categorizing
-      loadInboxOverrides();
+      // Auto-compute daysSince from sentDate
+      const today = new Date();
+      INBOX_EMAILS.forEach(e => {
+        if (!e || !e.sentDate) return;
+        const sent = new Date(e.sentDate + 'T00:00:00');
+        e.daysSince = Math.floor((today - sent) / (1000*60*60*24));
+        // Auto-mark pending items 4+ days as overdue (needs follow-up)
+        if (e.status === 'pending' && e.daysSince >= 4) {
+          e.status = 'overdue';
+        }
+      });
 
       // Categorize all emails using the pipeline logic
-      const recentAll = INBOX_EMAILS.filter(e => e && e.daysSince <= 60 && !e.dismissed);
+      const recentAll = INBOX_EMAILS.filter(e => e && e.daysSince <= 60);
       const waitingEmails = recentAll.filter(e => categorizeEmail(e) === 'waiting');
       const needsFollowup = recentAll.filter(e => categorizeEmail(e) === 'needs_followup');
       const needsResponse = recentAll.filter(e => categorizeEmail(e) === 'needs_response');
@@ -7453,7 +6968,7 @@
       document.getElementById('inboxPending').textContent = waitingEmails.length;
       document.getElementById('inboxOverdue').textContent = needsFollowup.length;
       document.getElementById('inboxReplied').textContent = needsResponse.length;
-      // Meeting count updated after meetings are injected into kanban (below)
+      document.getElementById('inboxMeetings').textContent = meetingEmails.length;
 
       // Keep these for the list view
       const overdue = INBOX_EMAILS.filter(e => e && e.status === 'overdue');
@@ -7485,77 +7000,39 @@
       };
 
       // Only show recent/relevant items in kanban (last 60 days)
-      const recentEmails = INBOX_EMAILS.filter(e => e && e.daysSince <= 60 && !e.dismissed);
+      const recentEmails = INBOX_EMAILS.filter(e => e.daysSince <= 60);
       recentEmails.forEach(e => {
         const cat = categorizeEmail(e);
         if (kanbanCols[cat]) kanbanCols[cat].items.push(e);
       });
 
-      // Also inject upcoming meetings from the meetings array into Meeting Scheduled column
-      const todayStr = getTodayDate();
-      const upcomingMeetings = meetings.filter(m => m.date >= todayStr && m.status !== 'completed');
-      upcomingMeetings.forEach(m => {
-        // Check if this meeting is already in the column (from INBOX_EMAILS)
-        const alreadyIn = kanbanCols.meeting.items.some(e =>
-          e.company && m.company && e.company.toLowerCase() === m.company.toLowerCase() && e.category === 'meeting'
-        );
-        if (!alreadyIn) {
-          const meetDate = new Date(m.date + 'T00:00:00');
-          const daysSince = Math.floor((new Date() - meetDate) / (1000*60*60*24));
-          kanbanCols.meeting.items.push({
-            contact: m.contact || m.attendees?.[0] || '',
-            company: m.company || '',
-            email: '',
-            subject: m.title || (m.company + ' Meeting'),
-            sentDate: m.date,
-            daysSince: Math.abs(daysSince),
-            status: 'meeting',
-            category: 'meeting',
-            note: (m.time || '') + (m.location ? ' - ' + m.location : ''),
-            isMeeting: true,
-            meetingId: m.id
-          });
-        }
-      });
-
-      // Update meeting count now that calendar meetings are included
-      document.getElementById('inboxMeetings').textContent = kanbanCols.meeting.items.length;
-
       let kanbanHtml = '';
       Object.entries(kanbanCols).forEach(([key, col]) => {
         col.items.sort((a, b) => a.daysSince - b.daysSince);
-        kanbanHtml += `<div class="kanban-col ${col.cls}" data-category="${key}" ondrop="handleInboxDrop(event)" ondragover="handleInboxDragOver(event)" ondragleave="handleInboxDragLeave(event)">
+        kanbanHtml += `<div class="kanban-col ${col.cls}">
           <div class="kanban-col-header">
             <span class="kanban-col-title">${col.title}</span>
             <span class="kanban-col-count">${col.items.length}</span>
-          </div>
-          <div class="kanban-col-body">`;
+          </div>`;
         col.items.forEach(item => {
           const lead = findLead(item.company);
           const dc = daysClass(item.daysSince);
-          const safeEmail = (item.email || '').replace(/'/g, "\\'");
-          const safeThreadId = (item.threadId || '').replace(/'/g, "\\'");
-          const clickAction = item.threadId
-            ? `onclick="openThreadView('${safeThreadId}')"`
-            : (lead ? `onclick="editLead(${lead.id})"` : '');
-          kanbanHtml += `<div class="kanban-card" draggable="true" data-email="${safeHtml(item.email || '')}" ${clickAction} ondragstart="handleInboxDragStart(event)" ondragend="handleInboxDragEnd(event)">
-            <button class="kanban-card-dismiss" onclick="event.stopPropagation(); dismissInboxCard('${safeEmail}')" title="Remove from pipeline">&times;</button>
-            <div class="kanban-card-name">${safeHtml(item.contact)}</div>
-            <div class="kanban-card-company">${safeHtml(item.company)}</div>
-            <div class="kanban-card-subject">${safeDecode(item.subject)}</div>
+          kanbanHtml += `<div class="kanban-card" ${lead ? `onclick="editLead(${lead.id})"` : ''}>
+            <div class="kanban-card-name">${item.contact}</div>
+            <div class="kanban-card-company">${item.company}</div>
+            <div class="kanban-card-subject">${item.subject}</div>
             <div class="kanban-card-footer">
               <span class="kanban-card-days ${dc}">${daysText(item.daysSince)}</span>
               <span style="font-size:10px;color:var(--text-secondary);">${new Date(item.sentDate+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span>
             </div>
-            ${item.note ? `<div class="kanban-card-note">${safeHtml(item.note)}</div>` : ''}
+            ${item.note ? `<div class="kanban-card-note">${item.note}</div>` : ''}
           </div>`;
         });
-        kanbanHtml += '</div></div>';
+        kanbanHtml += '</div>';
       });
       document.getElementById('inboxKanban').innerHTML = kanbanHtml;
 
       // ===== TIMELINE VIEW =====
-
       const timelineSorted = [...recentEmails].sort((a, b) => a.daysSince - b.daysSince);
       let timelineHtml = `<table class="inbox-timeline">
         <thead><tr>
@@ -7589,8 +7066,7 @@
         const lead = findLead(item.company);
         let logoHtml = '';
         if (lead && lead.domain) {
-          const inboxInitials = safeHtml(item.company.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase());
-          logoHtml = `<div class="inbox-item-logo"><img src="${safeHtml(lead.domain)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div class="inbox-item-initials" style="background:#a29bfe;color:#fff;display:none;">${inboxInitials}</div></div>`;
+          logoHtml = `<div class="inbox-item-logo"><img src="${lead.domain}" onerror="this.parentElement.innerHTML='<div class=\\'inbox-item-initials\\' style=\\'background:#a29bfe;color:#fff\\'>${item.company.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}</div>'"></div>`;
         } else {
           const colors = (lead && BRAND_COLORS[lead.company]) ? BRAND_COLORS[lead.company] : ['#a29bfe', '#fff'];
           logoHtml = `<div class="inbox-item-initials" style="background:${colors[0]};color:${colors[1]}">${item.company.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase()}</div>`;
@@ -7607,7 +7083,7 @@
             <div class="inbox-item-content">
               <div class="inbox-item-top">
                 <span class="inbox-item-company">${item.company}</span>
-                <span class="inbox-item-contact">— ${item.contact}</span>
+                <span class="inbox-item-contact">â ${item.contact}</span>
               </div>
               <div class="inbox-item-subject">${item.subject}</div>
               ${stageLabel ? `<span class="inbox-item-stage">${stageLabel}</span>` : ''}
@@ -7642,327 +7118,118 @@
       inboxList.innerHTML = html;
     }
 
-    // ===== KANBAN DRAG-DROP HANDLERS =====
-    let draggedInboxCard = null;
-
-    window.handleInboxDragStart = function(e) {
-      draggedInboxCard = e.target.closest('.kanban-card');
-      if (draggedInboxCard) {
-        draggedInboxCard.classList.add('dragging');
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', draggedInboxCard.dataset.email || '');
-      }
-    };
-
-    window.handleInboxDragEnd = function(e) {
-      if (draggedInboxCard) draggedInboxCard.classList.remove('dragging');
-      document.querySelectorAll('.kanban-col').forEach(col => col.classList.remove('drag-over'));
-      draggedInboxCard = null;
-    };
-
-    window.handleInboxDragOver = function(e) {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      const col = e.target.closest('.kanban-col');
-      if (col && draggedInboxCard) col.classList.add('drag-over');
-    };
-
-    window.handleInboxDragLeave = function(e) {
-      const col = e.target.closest('.kanban-col');
-      if (col) col.classList.remove('drag-over');
-    };
-
-    window.handleInboxDrop = function(e) {
-      e.preventDefault();
-      const targetCol = e.target.closest('.kanban-col');
-      if (!draggedInboxCard || !targetCol) return;
-      const newCategory = targetCol.dataset.category;
-      const email = draggedInboxCard.dataset.email;
-      if (!email || !newCategory) return;
-      const entry = INBOX_EMAILS.find(en => en && en.email && en.email.toLowerCase() === email.toLowerCase());
-      if (entry && categorizeEmail(entry) !== newCategory) {
-        entry.pipelineOverride = newCategory;
-        saveInboxOverrides();
-        renderInbox();
-      }
-      targetCol.classList.remove('drag-over');
-    };
-
-    // ===== DISMISS KANBAN CARDS =====
-    window.dismissInboxCard = function(email) {
-      const entry = INBOX_EMAILS.find(e => e && e.email && e.email.toLowerCase() === email.toLowerCase());
-      if (entry) {
-        entry.dismissed = true;
-        saveInboxOverrides();
-        renderInbox();
-      }
-    };
-
-    // ===== PERSIST INBOX OVERRIDES TO LOCALSTORAGE =====
-    function saveInboxOverrides() {
-      const overrides = {};
-      INBOX_EMAILS.forEach(e => {
-        if (e && e.email && (e.pipelineOverride || e.dismissed)) {
-          overrides[e.email.toLowerCase()] = {};
-          if (e.pipelineOverride) overrides[e.email.toLowerCase()].pipelineOverride = e.pipelineOverride;
-          if (e.dismissed) overrides[e.email.toLowerCase()].dismissed = true;
-        }
-      });
-      try { localStorage.setItem('inbox_overrides', JSON.stringify(overrides)); } catch(e) {}
-    }
-
-    function loadInboxOverrides() {
-      try {
-        const overrides = JSON.parse(localStorage.getItem('inbox_overrides') || '{}');
-        INBOX_EMAILS.forEach(e => {
-          if (e && e.email) {
-            const o = overrides[e.email.toLowerCase()];
-            if (o) {
-              if (o.pipelineOverride) e.pipelineOverride = o.pipelineOverride;
-              if (o.dismissed) e.dismissed = true;
-            }
-          }
-        });
-      } catch(e) {}
-    }
-
-    // ===== Daily Briefing (replaces the old dashboard) =====
-    // Single landing surface that aggregates from leads + CRM + meetings +
-    // tasks + inbox so missed follow-ups, unanswered emails, and overdue
-    // tasks all surface in one place.
-
-    const BR_STATE = { followUpsExpanded: false };
-
-    // Days from `today` (YYYY-MM-DD) to `target` (YYYY-MM-DD).
-    // Positive when target is in the future; negative when overdue.
-    function briefingDaysBetween(today, target) {
-      if (!today || !target) return 0;
-      const t0 = new Date(today + 'T00:00:00');
-      const t1 = new Date(target + 'T00:00:00');
-      return Math.round((t1 - t0) / (1000 * 60 * 60 * 24));
-    }
-
-    function getTodayMeetings(today) {
-      return (meetings || [])
-        .filter(m => m && m.date === today)
-        .sort((a, b) => (a.time || '').localeCompare(b.time || ''));
-    }
-
-    function getOverdueFollowUps(today) {
-      const fromLeads = (leads || [])
-        .filter(l => l && l.followUp && l.followUp < today && l.stage !== 'client')
-        .map(l => ({
-          kind: 'lead',
-          name: l.company,
-          sub: BUCKET_LABELS[l.bucket] || l.bucket,
-          date: l.followUp,
-          daysOverdue: -briefingDaysBetween(today, l.followUp),
-          leadId: l.id
-        }));
-      const fromCrms = (window.jabaCustom && typeof window.jabaCustom.getCrmFollowUps === 'function')
-        ? window.jabaCustom.getCrmFollowUps()
-            .filter(f => f.daysFromToday < 0)
-            .map(f => ({
-              kind: 'crm',
-              name: f.name,
-              sub: f.source + (f.relationship ? ' \u00b7 ' + f.relationship : ''),
-              date: f.date,
-              daysOverdue: -f.daysFromToday,
-              dataKey: f.dataKey,
-              itemId: f.itemId
-            }))
-        : [];
-      return fromLeads.concat(fromCrms).sort((a, b) => b.daysOverdue - a.daysOverdue);
-    }
-
-    function getNeedsResponseEmails() {
-      if (typeof INBOX_EMAILS === 'undefined' || !Array.isArray(INBOX_EMAILS)) return [];
-      return INBOX_EMAILS
-        .filter(e => e && !e.dismissed && categorizeEmail(e) === 'needs_response')
-        .sort((a, b) => (b.daysSince || 0) - (a.daysSince || 0));
-    }
-
-    function getDueOrOverdueTasks(today) {
-      return (tasks || [])
-        .filter(t => t && t.status !== 'done' && t.dueDate && t.dueDate <= today)
-        .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''));
-    }
-
-    function renderBriefingMeetings(items) {
-      const list = document.getElementById('brMeetingsList');
-      const count = document.getElementById('brMeetingsCount');
-      const footer = document.getElementById('brMeetingsFooter');
-      if (!list) return;
-      count.textContent = items.length;
-      if (items.length === 0) {
-        list.innerHTML = '<div class="briefing-empty">No meetings today.</div>';
-        footer.innerHTML = '';
-        return;
-      }
-      const shown = items.slice(0, 5);
-      list.innerHTML = shown.map(m => {
-        const checklist = m.prepChecklist || [];
-        const done = checklist.filter(c => c.done).length;
-        const total = checklist.length;
-        const prepStatus = total > 0 ? done + '/' + total + ' prep' : 'no prep checklist';
-        const time = m.time ? safeHtml(m.time) : '(no time)';
-        const attendees = (m.attendees || []).slice(0, 2).join(', ');
-        return '<div class="briefing-item" onclick="openMeetingDetail(' + m.id + ')">' +
-          '<div class="briefing-item-main">' +
-            '<div class="briefing-item-title">' + safeHtml(m.company || '(no company)') +
-              (attendees ? ' \u00b7 ' + safeHtml(attendees) : '') + '</div>' +
-            '<div class="briefing-item-sub">' + time + ' \u00b7 ' + prepStatus + '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-      footer.innerHTML = items.length > 5
-        ? '<a onclick="switchSection(\'meetings\')">Show all ' + items.length + ' in Meetings &rarr;</a>'
-        : '';
-    }
-
-    function renderBriefingFollowUps(items) {
-      const list = document.getElementById('brFollowUpsList');
-      const count = document.getElementById('brFollowUpsCount');
-      const footer = document.getElementById('brFollowUpsFooter');
-      if (!list) return;
-      count.textContent = items.length;
-      count.classList.toggle('urgent', items.length > 0);
-      if (items.length === 0) {
-        list.innerHTML = '<div class="briefing-empty">No overdue follow-ups. Caught up.</div>';
-        footer.innerHTML = '';
-        return;
-      }
-      const limit = BR_STATE.followUpsExpanded ? items.length : 5;
-      const shown = items.slice(0, limit);
-      list.innerHTML = shown.map(f => {
-        const overdueLabel = f.daysOverdue + 'd overdue';
-        const click = f.kind === 'lead'
-          ? 'openDetailPanel(' + f.leadId + ')'
-          : 'window.jabaCustom && window.jabaCustom.openRecord(\'' + f.dataKey + '\',\'' + f.itemId + '\')';
-        return '<div class="briefing-item overdue" onclick="' + click + '">' +
-          '<div class="briefing-item-main">' +
-            '<div class="briefing-item-title">' + safeHtml(f.name || '') + '</div>' +
-            '<div class="briefing-item-sub">' + safeHtml(f.sub || '') + '</div>' +
-          '</div>' +
-          '<div class="briefing-item-meta overdue">' + overdueLabel + '</div>' +
-        '</div>';
-      }).join('');
-      if (items.length > 5) {
-        footer.innerHTML = BR_STATE.followUpsExpanded
-          ? '<a onclick="toggleBriefingFollowUpsExpand()">Show less &uarr;</a>'
-          : '<a onclick="toggleBriefingFollowUpsExpand()">Show all ' + items.length + ' &darr;</a>';
-      } else {
-        footer.innerHTML = '';
-      }
-    }
-
-    window.toggleBriefingFollowUpsExpand = function() {
-      BR_STATE.followUpsExpanded = !BR_STATE.followUpsExpanded;
-      renderBriefingFollowUps(getOverdueFollowUps(getTodayDate()));
-    };
-
-    function renderBriefingEmails(items) {
-      const list = document.getElementById('brEmailsList');
-      const count = document.getElementById('brEmailsCount');
-      const footer = document.getElementById('brEmailsFooter');
-      if (!list) return;
-      count.textContent = items.length;
-      if (items.length === 0) {
-        list.innerHTML = '<div class="briefing-empty">No emails awaiting your reply.</div>';
-        footer.innerHTML = '';
-        return;
-      }
-      const shown = items.slice(0, 5);
-      list.innerHTML = shown.map(e => {
-        const days = e.daysSince ? e.daysSince + 'd waiting' : '';
-        const sender = e.company || e.contact || '(unknown)';
-        return '<div class="briefing-item" onclick="switchSection(\'inbox\')">' +
-          '<div class="briefing-item-main">' +
-            '<div class="briefing-item-title">' + safeHtml(sender) + '</div>' +
-            '<div class="briefing-item-sub">' + safeHtml(e.subject || '') + '</div>' +
-          '</div>' +
-          '<div class="briefing-item-meta">' + days + '</div>' +
-        '</div>';
-      }).join('');
-      footer.innerHTML = items.length > 5
-        ? '<a onclick="switchSection(\'inbox\')">Show all ' + items.length + ' in Inbox &rarr;</a>'
-        : '';
-    }
-
-    function renderBriefingTasks(items, today) {
-      const list = document.getElementById('brTasksList');
-      const count = document.getElementById('brTasksCount');
-      const footer = document.getElementById('brTasksFooter');
-      if (!list) return;
-      count.textContent = items.length;
-      if (items.length === 0) {
-        list.innerHTML = '<div class="briefing-empty">No tasks due today or overdue.</div>';
-        footer.innerHTML = '';
-        return;
-      }
-      const shown = items.slice(0, 5);
-      list.innerHTML = shown.map(t => {
-        const isOverdue = t.dueDate < today;
-        const itemClass = isOverdue ? 'overdue' : 'soon';
-        const dateLabel = isOverdue ? 'OVERDUE \u00b7 ' + t.dueDate : 'Due today';
-        const priorityColor = t.priority === 'high'
-          ? 'var(--color-danger)'
-          : t.priority === 'medium' ? 'var(--color-warning)' : 'var(--color-success)';
-        const sub = dateLabel + (t.notes ? ' \u00b7 ' + safeHtml(String(t.notes).slice(0, 60)) : '');
-        return '<div class="briefing-item ' + itemClass + '" onclick="switchSection(\'tasks\')">' +
-          '<div class="briefing-item-main">' +
-            '<div class="briefing-item-title">' + safeHtml(t.title || '') + '</div>' +
-            '<div class="briefing-item-sub">' + sub + '</div>' +
-          '</div>' +
-          '<span style="width:10px;height:10px;border-radius:50%;background:' + priorityColor + ';flex-shrink:0;"></span>' +
-        '</div>';
-      }).join('');
-      footer.innerHTML = items.length > 5
-        ? '<a onclick="switchSection(\'tasks\')">Show all ' + items.length + ' in Tasks &rarr;</a>'
-        : '';
-    }
-
+    // Render Dashboard
     function renderDashboard() {
-      if (typeof refreshInboxDates === 'function') refreshInboxDates();
-      const today = getTodayDate();
-      const now = new Date();
+      const today = new Date().toISOString().split('T')[0];
+      const totalLeads = leads.length;
+      const clients = leads.filter(l => l.stage === 'client').length;
+      const activeDeals = leads.filter(l => !['lead', 'onhold', 'client'].includes(l.stage)).length;
+      const overdue = leads.filter(l => l.followUp && l.followUp < today && l.stage !== 'client').length;
+      const convRate = totalLeads > 0 ? Math.round((clients / totalLeads) * 100) : 0;
 
-      const hour = now.getHours();
-      const greeting = hour < 12 ? 'Good Morning' : (hour < 18 ? 'Good Afternoon' : 'Good Evening');
-      const greetingEl = document.getElementById('briefingGreeting');
-      const dateEl = document.getElementById('briefingDate');
-      if (greetingEl) greetingEl.textContent = greeting + ', Jordon';
-      if (dateEl) {
-        dateEl.textContent = now.toLocaleDateString('en-US', {
-          weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
-        });
+      document.getElementById('dashTotalLeads').textContent = totalLeads;
+      document.getElementById('dashActiveDeals').textContent = activeDeals;
+      document.getElementById('dashClients').textContent = clients;
+      document.getElementById('dashOverdue').textContent = overdue;
+      document.getElementById('dashConversion').textContent = convRate + '%';
+
+      // Update action required banner
+      const banner = document.getElementById('actionRequiredBanner');
+      if (overdue > 0) {
+        document.getElementById('actionRequiredText').textContent = overdue + (overdue === 1 ? ' overdue follow-up' : ' overdue follow-ups') + ' need' + (overdue === 1 ? 's' : '') + ' your attention';
+        banner.classList.add('active');
+      } else {
+        banner.classList.remove('active');
       }
 
-      const todayMeetings = getTodayMeetings(today);
-      const overdueFollowUps = getOverdueFollowUps(today);
-      const needsResponse = getNeedsResponseEmails();
-      const dueTasks = getDueOrOverdueTasks(today);
+      // Pipeline funnel
+      const stageOrder = ['lead','contacted','meeting_scheduled','scrape','building','auditing','ready','meeting_complete','report_sent','contract_sent','client','onhold'];
+      const stageColors = {lead:'#a29bfe',contacted:'#74b9ff',meeting_scheduled:'#81ecec',scrape:'#ffeaa7',building:'#fab1a0',auditing:'#d6c5ff',ready:'#55efc4',meeting_complete:'#00b894',report_sent:'#74b9ff',contract_sent:'#fd79a8',client:'#E2F500',onhold:'#a8a8a8'};
+      const maxCount = Math.max(...stageOrder.map(s => leads.filter(l => l.stage === s).length), 1);
+      const funnelHtml = stageOrder.map(s => {
+        const count = leads.filter(l => l.stage === s).length;
+        if (count === 0) return '';
+        const pct = Math.max((count / maxCount) * 100, 8);
+        return '<div style="display:flex;align-items:center;gap:12px;"><div style="width:140px;font-size:12px;color:var(--text-secondary);text-align:right;font-family:\'Saira Extra Condensed\',sans-serif;text-transform:uppercase;">' + (STAGE_LABELS[s]||s) + '</div><div style="flex:1;background:var(--bg-tertiary);border-radius:6px;height:28px;overflow:hidden;"><div style="width:'+pct+'%;background:'+stageColors[s]+';height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-size:13px;font-weight:700;color:#000;font-family:\'DM Sans\',sans-serif;">'+count+'</div></div></div>';
+      }).filter(Boolean).join('');
+      document.getElementById('pipelineFunnel').innerHTML = funnelHtml;
 
-      const sumOver = document.getElementById('brSummaryOverdue');
-      const sumEm = document.getElementById('brSummaryEmails');
-      const sumTk = document.getElementById('brSummaryTasks');
-      if (sumOver) sumOver.textContent = overdueFollowUps.length;
-      if (sumEm) sumEm.textContent = needsResponse.length;
-      if (sumTk) sumTk.textContent = dueTasks.filter(t => t.dueDate === today).length;
+      // Upcoming follow-ups
+      const upcoming = leads
+        .filter(l => l.stage !== 'client')
+        .sort((a, b) => {
+          const aDate = a.followUp || '9999-12-31';
+          const bDate = b.followUp || '9999-12-31';
+          return aDate.localeCompare(bDate);
+        })
+        .slice(0, 8);
+      const followupHtml = upcoming.map(l => {
+        const isOverdue = l.followUp && l.followUp < today;
+        const dateColor = isOverdue ? 'var(--color-danger)' : l.followUp === today ? 'var(--color-warning)' : 'var(--text-primary)';
+        const pulse = isOverdue ? '<span style="display:inline-block;width:8px;height:8px;background:var(--color-danger);border-radius:50%;animation:pulse 2s infinite;margin-right:6px;"></span>' : '';
+        const dateDisplay = l.followUp ? (isOverdue?'OVERDUE â¢ ':'') + l.followUp : 'No date';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div style="display:flex;align-items:center;gap:10px;flex:1;"><span style="font-weight:600;font-size:13px;">'+l.company+'</span><span class="bucket-pill bucket-'+l.bucket+'" style="font-size:10px;">'+BUCKET_LABELS[l.bucket]+'</span></div><div style="display:flex;align-items:center;gap:8px;color:'+dateColor+';font-size:12px;font-weight:600;">'+pulse+'<span>'+dateDisplay+'</span></div></div>';
+      }).join('');
+      document.getElementById('upcomingFollowups').innerHTML = followupHtml || '<div style="color:var(--text-secondary);font-size:13px;">No leads to follow up on</div>';
 
-      renderBriefingMeetings(todayMeetings);
-      renderBriefingFollowUps(overdueFollowUps);
-      renderBriefingEmails(needsResponse);
-      renderBriefingTasks(dueTasks, today);
+      // Today's tasks
+      const todayDate = getTodayDate();
+      const todaysTasks = tasks
+        .filter(t => t.dueDate === todayDate && t.status !== 'done')
+        .slice(0, 5);
+      const tasksHtml = todaysTasks.map(t => {
+        const lead = t.linkedLeadId ? leads.find(l => l.id === t.linkedLeadId) : null;
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div style="display:flex;align-items:center;gap:10px;flex:1;"><input type="checkbox" onclick="toggleTaskDone('+t.id+')" style="cursor:pointer;"><span style="font-weight:600;font-size:13px;">'+t.title+'</span></div><div style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:'+(t.priority === 'high' ? '#ff6b6b' : t.priority === 'medium' ? '#fdcb6e' : '#00b894')+';display:inline-block;"></span>'+(lead ? '<span style="font-size:10px;background:'+BUCKET_COLORS[lead.bucket]+';color:#000;padding:2px 6px;border-radius:4px;font-weight:600;">'+lead.company+'</span>' : '')+'</div></div>';
+      }).join('');
+      document.getElementById('dashboardTodaysTasks').innerHTML = tasksHtml || '<div style="color:var(--text-secondary);font-size:13px;">No tasks due today</div>';
+
+      // This week's meetings
+      if (!currentWeekStart) initWeekStart();
+      const weekEnd = new Date(currentWeekStart);
+      weekEnd.setDate(weekEnd.getDate() + 4);
+      const weekMeetings = meetings
+        .filter(m => {
+          const mDate = new Date(m.date);
+          return mDate >= currentWeekStart && mDate <= weekEnd;
+        })
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 5);
+      const meetingsHtml = weekMeetings.map(m => {
+        const statusDot = m.prepStatus === 'ready' ? 'ð¢' : m.prepStatus === 'in_progress' ? 'ð¡' : 'ð´';
+        const dateObj = new Date(m.date);
+        const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;cursor:pointer;" onclick="switchSection(\'meetings\')"><div style="display:flex;align-items:center;gap:10px;flex:1;"><span style="font-weight:600;font-size:13px;">'+m.company+'</span><span class="bucket-pill" style="font-size:10px;background:rgba(226, 245, 0, 0.15);color:var(--accent);">'+getMeetingTypeLabel(m.type)+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+dateStr+'</span><span>'+statusDot+'</span></div></div>';
+      }).join('');
+      document.getElementById('dashboardThisWeekMeetings').innerHTML = meetingsHtml || '<div style="color:var(--text-secondary);font-size:13px;">No meetings this week</div>';
+
+      // Recent activity (from inbox emails)
+      const recentEmails = INBOX_EMAILS.slice(0, 8);
+      const activityHtml = recentEmails.map(e => {
+        const statusColor = e.status === 'overdue' ? 'var(--color-danger)' : e.status === 'replied' ? 'var(--color-success)' : 'var(--color-warning)';
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg-tertiary);border-radius:8px;"><div><span style="font-weight:600;font-size:13px;">'+e.company+'</span> <span style="color:var(--text-secondary);font-size:12px;">â '+e.subject+'</span></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-secondary);">'+e.sentDate+'</span><span style="width:8px;height:8px;border-radius:50%;background:'+statusColor+';display:inline-block;"></span></div></div>';
+      }).join('');
+      document.getElementById('recentActivity').innerHTML = activityHtml;
+
+      // Bucket breakdown
+      const buckets = ['schools','teams','athlete','agencies','brands'];
+      const breakdownHtml = buckets.map(b => {
+        const count = leads.filter(l => l.bucket === b).length;
+        const clientCount = leads.filter(l => l.bucket === b && l.stage === 'client').length;
+        return '<div style="text-align:center;padding:16px;background:var(--bg-tertiary);border-radius:10px;border-left:3px solid '+BUCKET_COLORS[b]+';"><div style="font-family:\'Anton\',sans-serif;font-size:28px;color:'+BUCKET_COLORS[b]+';">'+count+'</div><div style="font-family:\'Saira Extra Condensed\',sans-serif;font-size:13px;color:var(--text-secondary);text-transform:uppercase;">'+BUCKET_LABELS[b]+'</div><div style="font-size:11px;color:var(--color-success);margin-top:4px;">'+clientCount+' clients</div></div>';
+      }).join('');
+      document.getElementById('bucketBreakdown').innerHTML = breakdownHtml;
     }
 
-    // ── Schools Board ──────────────────────────────────────────────────
+    // ââ Schools Board ââââââââââââââââââââââââââââââââââââââââââââââââââ
 
-    // escapeHtml is an alias for safeHtml (deduplicated)
-    const escapeHtml = safeHtml;
-    window.escapeHtml = escapeHtml;
-    window.safeHtml = safeHtml;
-    window.getStageStyle = getStageStyle;
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
 
     const SCHOOL_ALIASES = {
       'asu': 'Arizona State',
@@ -8155,7 +7422,7 @@
         return record.isUnworked ? 'No CRM activity yet' : 'CRM record active';
       }
 
-      if (upcomingMeeting) return `Meeting ${upcomingMeeting.date}${upcomingMeeting.time ? ' • ' + upcomingMeeting.time : ''}`;
+      if (upcomingMeeting) return `Meeting ${upcomingMeeting.date}${upcomingMeeting.time ? ' â¢ ' + upcomingMeeting.time : ''}`;
       if (record.lead?.context) return record.lead.context.split('|')[0].trim().slice(0, 90);
       if (record.emailItems.length) return `${record.emailItems.length} related email${record.emailItems.length === 1 ? '' : 's'} tracked`;
       return record.isUnworked ? 'No activity yet' : 'Open school record';
@@ -8231,14 +7498,14 @@
                   <div class="school-card-header">
                     <div class="school-logo">
                       ${logo
-                        ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(record.schoolName)} logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;">${getSchoolInitials(record.schoolName)}</span>`
+                        ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(record.schoolName)} logo" onerror="this.parentElement.innerHTML='${getSchoolInitials(record.schoolName)}'">`
                         : getSchoolInitials(record.schoolName)}
                     </div>
                     <span class="school-conference-pill">${escapeHtml(record.conference)}</span>
                   </div>
                   <div class="school-name">${escapeHtml(record.schoolName)}</div>
                   <span class="school-heat ${record.heat.key}">
-                    <span class="school-heat-dot" style="background:${record.heat.key === 'green' ? '#00b894' : record.heat.key === 'yellow' ? '#fdcb6e' : '#ff6b6b'}" role="img" aria-label="Heat: ${record.heat.key}"></span>
+                    <span class="school-heat-dot" style="background:${record.heat.key === 'green' ? '#00b894' : record.heat.key === 'yellow' ? '#fdcb6e' : '#ff6b6b'}"></span>
                     ${escapeHtml(record.heat.label)}
                   </span>
                   <span class="school-status ${statusClass}" style="${getStageStyle(record.stage, record.isUnworked)}">${escapeHtml(record.displayStatus)}</span>
@@ -8322,7 +7589,7 @@
           <div class="schools-group">
             <div class="schools-group-header">
               <div class="schools-group-title">${group}</div>
-              <div class="schools-group-meta">${grouped.length} schools • ${groupStats.active} active • ${groupStats.clients} clients</div>
+              <div class="schools-group-meta">${grouped.length} schools â¢ ${groupStats.active} active â¢ ${groupStats.clients} clients</div>
             </div>
             ${conferenceList.map(conference => renderConferenceSection(conference, grouped.filter(record => record.conference === conference))).join('')}
           </div>
@@ -8351,7 +7618,7 @@
         : '<div style="color:var(--text-secondary);font-size:13px;">No related inbox activity</div>';
 
       const meetingsHtml = relatedMeetings.length
-        ? relatedMeetings.map(meeting => `<div style="padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;"><div style="font-weight:600;color:var(--text-primary);">${escapeHtml(meeting.company)}</div><div style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(meeting.date || '')}${meeting.time ? ' • ' + escapeHtml(meeting.time) : ''}</div></div>`).join('')
+        ? relatedMeetings.map(meeting => `<div style="padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:12px;"><div style="font-weight:600;color:var(--text-primary);">${escapeHtml(meeting.company)}</div><div style="color:var(--text-secondary);margin-top:4px;">${escapeHtml(meeting.date || '')}${meeting.time ? ' â¢ ' + escapeHtml(meeting.time) : ''}</div></div>`).join('')
         : '<div style="color:var(--text-secondary);font-size:13px;">No meetings scheduled</div>';
 
       const tasksHtml = relatedTasks.length
@@ -8373,7 +7640,7 @@
       const html = `
         <div class="detail-logo-large">
           ${logo
-            ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(record.schoolName)} logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"><div style="display:none;align-items:center;justify-content:center;height:100%;font-size:28px;font-weight:700;">${getSchoolInitials(record.schoolName)}</div>`
+            ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(record.schoolName)} logo" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;font-size:28px;font-weight:700;\\'>${getSchoolInitials(record.schoolName)}</div>'">`
             : `<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px;font-weight:700;">${getSchoolInitials(record.schoolName)}</div>`}
         </div>
         <div class="detail-company-name">${escapeHtml(record.schoolName)}</div>
@@ -8381,7 +7648,7 @@
           <span class="bucket-pill bucket-schools">Schools</span>
           <span class="school-heat ${record.heat.key}">
             <span class="school-heat-dot" style="background:${record.heat.key === 'green' ? '#00b894' : record.heat.key === 'yellow' ? '#fdcb6e' : '#ff6b6b'}"></span>
-            ${escapeHtml(record.heat.label)} • ${escapeHtml(record.heat.reason)}
+            ${escapeHtml(record.heat.label)} â¢ ${escapeHtml(record.heat.reason)}
           </span>
           <span class="stage-pill ${record.isUnworked ? '' : `stage-${record.stage}`}" style="${getStageStyle(record.stage, record.isUnworked)}">${escapeHtml(record.displayStatus)}</span>
           <span class="bucket-pill" style="background:rgba(226,245,0,0.12);color:var(--accent);">${escapeHtml(record.conference)}</span>
