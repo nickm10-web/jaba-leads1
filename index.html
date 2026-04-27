@@ -3548,11 +3548,7 @@
         </div>
       </div>
       <!-- Auto-generated tasks banner -->
-      <div id="autoTasksBanner" style="display:none;background:rgba(226,245,0,0.08);border:1px solid rgba(226,245,0,0.2);border-radius:8px;padding:12px 16px;margin-bottom:16px;align-items:center;gap:12px;">
-        <span style="font-size:16px;">⚡</span>
-        <span style="font-size:13px;color:var(--text-primary);" id="autoTasksText">Auto-tasks generated based on your activity</span>
-        <button class="btn btn-secondary" onclick="document.getElementById('autoTasksBanner').style.display='none'" style="margin-left:auto;padding:4px 8px;font-size:11px;">Dismiss</button>
-      </div>
+      <!-- Auto-tasks banner removed: tasks are now manual-entry only -->
 
       <!-- Stats Bar -->
       <div class="task-stats-bar">
@@ -3880,6 +3876,9 @@
           mergeCachedGmailIntoInbox();
           renderInbox();
           if (currentInboxView === 'gmail') renderGmailInbox();
+          // Also refresh the Daily Briefing if it's the active surface,
+          // so its "Needs Response" card reflects new/replied emails.
+          if (currentSection === 'dashboard') renderDashboard();
 
           const threadCount = Object.keys(gmailThreadCache).length;
           const lastSync = data.lastSync ? new Date(data.lastSync) : null;
@@ -3919,6 +3918,7 @@
           mergeCachedGmailIntoInbox();
           renderInbox();
           if (currentInboxView === 'gmail') renderGmailInbox();
+          if (currentSection === 'dashboard') renderDashboard();
           statusEl.style.color = '#00b894';
           statusEl.textContent = Object.keys(gmailThreadCache).length + ' threads refreshed';
         }
@@ -4105,6 +4105,7 @@
         document.getElementById('gmailStatus').textContent = 'Synced ' + Object.keys(cacheForFirebase).length + ' threads • ' + new Date().toLocaleTimeString();
 
         renderInbox();
+        if (currentSection === 'dashboard') renderDashboard();
 
       } catch (err) {
         console.error('Gmail fetch error:', err);
@@ -4840,9 +4841,7 @@
         tasksBadge.style.display = 'none';
       }
 
-      // Generate auto-tasks from email + meeting activity
-      const autoCount = generateAutoTasks();
-      console.log('Auto-generated', autoCount, 'tasks');
+      // Auto-task generation removed at user request — tasks are manual-entry only.
 
       // Render the active section
       switchSection(currentSection);
@@ -5335,111 +5334,8 @@
       return target.toISOString().split('T')[0];
     }
 
-    // ===== AUTO-TASK GENERATION =====
-    // Rules:
-    // 1. After a meeting date passes -> "Create report for [Company]"
-    // 2. When an email comes in (they replied) -> "Respond to [Contact]"
-    // 3. 4 days after we send an email with no reply -> "Follow up with [Contact]"
-
-    function generateAutoTasks() {
-      refreshInboxDates();
-      const today = getTodayDate();
-      const existingTitles = tasks.map(t => t.title.toLowerCase());
-      let newAutoTasks = [];
-      const newId = () => tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 + newAutoTasks.length : 1 + newAutoTasks.length;
-
-      // RULE 1: Past meetings -> Create report
-      // Check meetings that already happened (date <= today) and no "report" task exists
-      if (typeof meetings !== 'undefined') {
-        meetings.forEach(mtg => {
-          if (mtg.date <= today) {
-            const reportTitle = 'create report for ' + (mtg.company || mtg.title || '').toLowerCase();
-            const prepTitle = 'prep report for ' + (mtg.company || mtg.title || '').toLowerCase();
-            const hasReport = existingTitles.some(t =>
-              (t.includes('report') || t.includes('recap')) &&
-              t.includes((mtg.company || '').toLowerCase().split(' ')[0])
-            );
-            if (!hasReport && mtg.company) {
-              const lead = leads.find(l => l.company.toLowerCase().includes((mtg.company || '').toLowerCase()));
-              newAutoTasks.push({
-                id: newId(),
-                title: 'Create report for ' + mtg.company + ' (post-meeting)',
-                dueDate: getFutureDate(1),
-                priority: 'high',
-                status: 'todo',
-                linkedLeadId: lead ? lead.id : null,
-                notes: 'Auto-generated: Meeting with ' + (mtg.contact || mtg.company) + ' already happened. Build/send report.',
-                createdDate: today,
-                auto: true
-              });
-            }
-          }
-        });
-      }
-
-      // RULE 2: Emails where they replied (ball in our court) -> Respond
-      INBOX_EMAILS.forEach(e => {
-        if (e.status === 'overdue' && e.note && (e.note.includes('NEEDS REPLY') || e.note.includes('Ball in our court'))) {
-          const respondTitle = 'respond to ' + e.contact.toLowerCase();
-          const hasRespond = existingTitles.some(t =>
-            (t.includes('respond') || t.includes('reply') || t.includes('follow up')) &&
-            e.contact.toLowerCase().split(' ').some(n => n.length > 3 && t.includes(n))
-          );
-          if (!hasRespond) {
-            const lead = leads.find(l => l.company.toLowerCase().includes(e.company.toLowerCase().split(' ')[0]) || e.company.toLowerCase().includes(l.company.toLowerCase()));
-            newAutoTasks.push({
-              id: newId(),
-              title: 'Respond to ' + e.contact + ' (' + e.company + ')',
-              dueDate: today,
-              priority: 'high',
-              status: 'todo',
-              linkedLeadId: lead ? lead.id : null,
-              notes: 'Auto-generated: They replied. ' + (e.note || ''),
-              createdDate: today,
-              auto: true
-            });
-          }
-        }
-      });
-
-      // RULE 3: 4+ days no reply after we sent -> Follow up
-      INBOX_EMAILS.forEach(e => {
-        if (e.status === 'overdue' && e.daysSince >= 4 && e.note && e.note.includes('NEEDS FOLLOW UP')) {
-          const followTitle = 'follow up with ' + e.contact.toLowerCase();
-          const hasFollow = existingTitles.some(t =>
-            t.includes('follow up') &&
-            e.contact.toLowerCase().split(' ').some(n => n.length > 3 && t.includes(n))
-          );
-          if (!hasFollow) {
-            const lead = leads.find(l => l.company.toLowerCase().includes(e.company.toLowerCase().split(' ')[0]) || e.company.toLowerCase().includes(l.company.toLowerCase()));
-            newAutoTasks.push({
-              id: newId(),
-              title: 'Follow up with ' + e.contact + ' (' + e.company + ')',
-              dueDate: today,
-              priority: e.daysSince >= 7 ? 'high' : 'medium',
-              status: 'todo',
-              linkedLeadId: lead ? lead.id : null,
-              notes: 'Auto-generated: Sent ' + e.daysSince + ' days ago, no reply. ' + (e.note || ''),
-              createdDate: today,
-              auto: true
-            });
-          }
-        }
-      });
-
-      if (newAutoTasks.length > 0) {
-        tasks.push(...newAutoTasks);
-        saveTasks();
-        // Show banner
-        const banner = document.getElementById('autoTasksBanner');
-        if (banner) {
-          banner.style.display = 'flex';
-          document.getElementById('autoTasksText').textContent = newAutoTasks.length + ' auto-task' + (newAutoTasks.length > 1 ? 's' : '') + ' generated from your email activity and meetings';
-        }
-      }
-
-      return newAutoTasks.length;
-    }
+    // ===== AUTO-TASK GENERATION REMOVED =====
+    // The user opted out of auto-generated tasks. Tasks are manual-entry only.
 
     function updateTaskBadge() {
       const overdueCount = tasks.filter(t => t.status !== 'done' && t.dueDate && t.dueDate < getTodayDate()).length;
@@ -5602,7 +5498,7 @@
               ${task.status === 'done' ? '✓' : ''}
             </div>
             <div class="task-content" style="flex:1;">
-              <div class="task-title">${task.title}${task.auto ? ' <span style="font-size:10px;background:rgba(226,245,0,0.15);color:var(--accent);padding:2px 6px;border-radius:4px;margin-left:6px;font-weight:600;">AUTO</span>' : ''}</div>
+              <div class="task-title">${task.title}</div>
               <div class="task-meta">
                 <span class="task-due-date ${dueDateClass}">${dueDateText}</span>
                 <span class="task-priority" style="background:${task.priority === 'high' ? '#ff6b6b' : task.priority === 'medium' ? '#fdcb6e' : '#00b894'};"></span>

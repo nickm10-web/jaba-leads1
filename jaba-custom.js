@@ -498,6 +498,15 @@
         display: flex; justify-content: space-between; align-items: center;
         gap: 6px; margin-top: auto; font-size: 10px; color: var(--text-secondary, #8b949e);
       }
+      .opp-card-footer .last-contact-tag { display: inline-flex; gap: 4px; align-items: center; }
+      .opp-card-note-btn {
+        background: rgba(226, 245, 0, 0.1); color: var(--accent, #E2F500);
+        border: 1px solid rgba(226, 245, 0, 0.3);
+        padding: 3px 8px; border-radius: 999px;
+        font-size: 10px; font-weight: 600; cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .opp-card-note-btn:hover { background: rgba(226, 245, 0, 0.22); transform: translateY(-1px); }
       .opp-empty {
         padding: 24px; border-radius: 14px; background: rgba(255,255,255,0.03);
         border: 1px dashed rgba(255,255,255,0.08); color: var(--text-secondary, #8b949e);
@@ -1061,6 +1070,9 @@
       shortCategory = shortMap[categoryLabel] || categoryLabel.split(' ')[0];
     }
 
+    var lastContactRaw = getLastContactDate(lead);
+    var lastContactText = 'Last: ' + formatLastContact(lastContactRaw);
+
     return '<div class="opp-card ' + cardClass + '" onclick="openDetailPanel(' + lead.id + ')">' +
       '<div class="opp-card-header">' +
         '<div class="opp-card-logo">' + logoHtml + '</div>' +
@@ -1076,8 +1088,8 @@
       '</div>' +
       '<div class="opp-card-context">' + escapeHtml(lead.context || '') + '</div>' +
       '<div class="opp-card-footer">' +
-        '<span>' + followUpText + '</span>' +
-        '<span>' + contactCount + ' contact' + (contactCount !== 1 ? 's' : '') + '</span>' +
+        '<span>' + followUpText + ' \u00b7 <span class="last-contact-tag">' + lastContactText + '</span></span>' +
+        '<button class="opp-card-note-btn" onclick="jabaCustom.addQuickNoteToLead(' + lead.id + ', event)" title="Add a quick note">+ Note</button>' +
       '</div>' +
     '</div>';
   }
@@ -1121,7 +1133,19 @@
     var jordonSection = document.createElement('div');
     jordonSection.id = 'jordonCRMSection';
     jordonSection.className = 'jaba-custom-section';
-    jordonSection.innerHTML = createTableSectionHTML('Jordon CRM', 'jordonCRM', RELATIONSHIP_COLUMNS);
+    // Banner at the top with a one-click importer for the Notion CSV export.
+    // The handler is idempotent (skips records already imported), so clicking
+    // it twice is safe.
+    var jordonImportBanner =
+      '<div id="jordonImportBanner" style="background:rgba(226,245,0,0.08);border:1px solid rgba(226,245,0,0.25);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
+        '<div style="font-size:13px;color:var(--text-primary, #e6edf3);">' +
+          '<strong>One-time import:</strong> 120 contacts from Jordon\'s Notion CRM export are ready to load.' +
+        '</div>' +
+        '<button id="jordonImportBtn" class="jaba-btn jaba-btn-add" style="margin-bottom:0;" onclick="jabaCustom.importJordonCrmFromFile()">' +
+          'Import 120 Contacts' +
+        '</button>' +
+      '</div>';
+    jordonSection.innerHTML = jordonImportBanner + createTableSectionHTML('Jordon CRM', 'jordonCRM', RELATIONSHIP_COLUMNS);
     container.appendChild(jordonSection);
 
     // Damar CRM Section
@@ -1276,7 +1300,13 @@
       });
 
       var actionsTd = document.createElement('td');
-      actionsTd.innerHTML = '<button class="jaba-btn jaba-btn-edit" onclick="jabaCustom.handleEdit(\'' + dataKey + '\', \'' + item.id + '\')">Edit</button>' +
+      // Show + Note button on the relationship-tracking CRMs only.
+      var isCrmRelationship = (dataKey === 'jordonCRM' || dataKey === 'damarCRM');
+      var noteBtn = isCrmRelationship
+        ? '<button class="jaba-btn jaba-btn-edit" style="background:rgba(226,245,0,0.18);color:#000;" onclick="jabaCustom.addQuickNoteToCrm(\'' + dataKey + '\', \'' + item.id + '\')">+ Note</button>'
+        : '';
+      actionsTd.innerHTML = noteBtn +
+                            '<button class="jaba-btn jaba-btn-edit" onclick="jabaCustom.handleEdit(\'' + dataKey + '\', \'' + item.id + '\')">Edit</button>' +
                             '<button class="jaba-btn jaba-btn-delete" onclick="jabaCustom.handleDelete(\'' + dataKey + '\', \'' + item.id + '\')">Delete</button>';
       tr.appendChild(actionsTd);
       tbody.appendChild(tr);
@@ -1509,6 +1539,285 @@
       if (error) { alert('Error deleting: ' + error.message); return; }
       finalize();
     });
+  };
+
+  // ===== QUICK NOTE SYSTEM =====
+  // One-line timestamped notes that prepend to a record's `context` field.
+  // Last Contact is computed live as max(lastNoteAt, latest matching email
+  // in INBOX_EMAILS) so it auto-updates when Gmail data flows in.
+
+  var MONTH_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  // "Apr 26" style stamp used to prefix quick notes inside the context blob.
+  var formatNoteDateStamp = function(d) {
+    return MONTH_ABBR[d.getMonth()] + ' ' + d.getDate();
+  };
+
+  // Normalize any of (ISO datetime / YYYY-MM-DD / null) to YYYY-MM-DD or null.
+  // Used to compare disparate date fields against each other.
+  var toDateOnly = function(s) {
+    if (!s) return null;
+    var str = String(s);
+    return str.length >= 10 ? str.substring(0, 10) : null;
+  };
+
+  // Returns the most recent "we were in touch" date for a lead, derived from:
+  //   - lead.lastNoteAt (set by addQuickNoteToLead)
+  //   - sentDate of any INBOX_EMAILS entry whose company matches the lead
+  // Returns YYYY-MM-DD or null when no signal exists.
+  var getLastContactDate = function(lead) {
+    if (!lead) return null;
+    var candidates = [];
+    var n = toDateOnly(lead.lastNoteAt);
+    if (n) candidates.push(n);
+    if (typeof window.INBOX_EMAILS !== 'undefined' && Array.isArray(window.INBOX_EMAILS)) {
+      var company = (lead.company || '').toLowerCase();
+      if (company) {
+        window.INBOX_EMAILS.forEach(function(e) {
+          if (!e || !e.company || !e.sentDate) return;
+          if (e.company.toLowerCase() !== company) return;
+          var d = toDateOnly(e.sentDate);
+          if (d) candidates.push(d);
+        });
+      }
+    }
+    if (!candidates.length) return null;
+    return candidates.reduce(function(max, x) { return x > max ? x : max; });
+  };
+
+  // Friendly relative-time display: "today", "3d ago", "Apr 24", "never".
+  var formatLastContact = function(dateStr) {
+    if (!dateStr) return 'never';
+    var parts = String(dateStr).split('-');
+    if (parts.length < 3) return 'never';
+    var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    if (isNaN(d.getTime())) return 'never';
+    var now = new Date();
+    var t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    var days = Math.round((t0 - d) / (1000 * 60 * 60 * 24));
+    if (days < 0) return 'in ' + (-days) + 'd';
+    if (days === 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 14) return days + 'd ago';
+    return formatNoteDateStamp(d);
+  };
+
+  // Lightweight modal reused for all Quick Note flows. State lives in the
+  // closure below; only one note is in flight at a time.
+  var quickNoteState = { onSave: null };
+
+  var ensureQuickNoteModal = function() {
+    if (document.getElementById('quickNoteModal')) return;
+    var modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'quickNoteModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML =
+      '<div class="modal-content" style="max-width:440px;">' +
+        '<div class="modal-header">' +
+          '<h2 id="quickNoteTitle">Quick Note</h2>' +
+          '<button class="modal-close" type="button" data-qn-action="close" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<div class="form-group">' +
+            '<label for="quickNoteInput">Adds a date-stamped line to the top of context.</label>' +
+            '<textarea id="quickNoteInput" rows="3" placeholder="e.g. Joe replied, sending the dashboard Friday"></textarea>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--text-secondary, #8b949e);margin-top:-8px;">' +
+            'Tip: hit Enter to save, Shift+Enter for a new line.' +
+          '</div>' +
+        '</div>' +
+        '<div class="modal-footer">' +
+          '<button type="button" class="btn btn-secondary" data-qn-action="close">Cancel</button>' +
+          '<button type="button" class="btn btn-primary" id="quickNoteSave">Add Note</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e) {
+      var t = e.target;
+      if (t === modal) { modal.classList.remove('active'); return; }
+      if (t.dataset && t.dataset.qnAction === 'close') { modal.classList.remove('active'); }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+      }
+    });
+    document.getElementById('quickNoteSave').addEventListener('click', function() {
+      var text = document.getElementById('quickNoteInput').value.trim();
+      if (!text) { alert('Type a note first.'); return; }
+      if (typeof quickNoteState.onSave === 'function') quickNoteState.onSave(text);
+      modal.classList.remove('active');
+    });
+    document.getElementById('quickNoteInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('quickNoteSave').click();
+      }
+    });
+  };
+
+  var openQuickNote = function(title, onSave) {
+    ensureQuickNoteModal();
+    document.getElementById('quickNoteTitle').textContent = title || 'Quick Note';
+    document.getElementById('quickNoteInput').value = '';
+    quickNoteState.onSave = onSave;
+    document.getElementById('quickNoteModal').classList.add('active');
+    setTimeout(function() {
+      var input = document.getElementById('quickNoteInput');
+      if (input) input.focus();
+    }, 50);
+  };
+
+  // Prepend "[Apr 26] text" to context. Notes are newest-first, one per line.
+  var prependNoteToContext = function(existing, text) {
+    var line = '[' + formatNoteDateStamp(new Date()) + '] ' + text;
+    if (!existing) return line;
+    return line + '\n' + existing;
+  };
+
+  // ----- Lead-side quick note (opp cards) -----
+  jabaCustom.addQuickNoteToLead = function(leadId, event) {
+    if (event) {
+      event.stopPropagation && event.stopPropagation();
+      event.preventDefault && event.preventDefault();
+    }
+    var leads = getLeadsArray();
+    var lead = leads.find(function(l) { return l.id === leadId; });
+    if (!lead) return;
+    openQuickNote('Quick Note: ' + (lead.company || 'lead'), function(text) {
+      lead.context = prependNoteToContext(lead.context, text);
+      lead.lastNoteAt = new Date().toISOString();
+      if (typeof window.saveleads === 'function') window.saveleads();
+      // Re-render whichever card grids are visible
+      if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+      if (typeof renderBrandBoard === 'function') renderBrandBoard();
+      if (typeof renderTeamBoard === 'function') renderTeamBoard();
+    });
+  };
+
+  // ----- CRM-side quick note (Jordon CRM, Damar CRM table rows) -----
+  jabaCustom.addQuickNoteToCrm = function(dataKey, itemId) {
+    var item = dataCache[dataKey] && dataCache[dataKey][itemId];
+    if (!item) return;
+    openQuickNote('Quick Note: ' + (item.name || ''), function(text) {
+      var updated = {};
+      for (var k in item) { if (item.hasOwnProperty(k)) updated[k] = item[k]; }
+      updated.context = prependNoteToContext(item.context, text);
+      // Auto-bump Last Contact when the user logs a touch via Quick Note.
+      updated.lastContact = todayISO();
+      updated.updated = new Date().toISOString();
+      var path = CONFIG.firebasePaths[getFirebasePath(dataKey)];
+      var finalize = function() {
+        dataCache[dataKey][itemId] = updated;
+        renderTableData(dataKey, '');
+      };
+      if (typeof firebase === 'undefined') { finalize(); return; }
+      firebase.database().ref(path + '/' + itemId).set(updated, function(err) {
+        if (err) { alert('Error saving note: ' + err.message); return; }
+        finalize();
+      });
+    });
+  };
+
+  // Expose the lead-side last-contact helper so renderOppCard can call it.
+  jabaCustom.getLastContactDate = getLastContactDate;
+  jabaCustom.formatLastContact = formatLastContact;
+
+  // ===== ONE-CLICK IMPORTER FOR JORDON CRM (Notion CSV export) =====
+  // Reads /jordon-crm-import.json (saved alongside index.html) and pushes
+  // each record to Firebase under jordonCRM. Skips duplicates by name +
+  // importSource so re-clicking is safe.
+  jabaCustom.importJordonCrmFromFile = function() {
+    var btn = document.getElementById('jordonImportBtn');
+    var banner = document.getElementById('jordonImportBanner');
+    var setStatus = function(text, isError) {
+      if (!btn) return;
+      btn.textContent = text;
+      btn.disabled = !!isError ? false : true;
+      btn.style.opacity = isError ? '1' : '0.7';
+      if (isError) btn.style.background = '#ff6b6b';
+    };
+
+    if (typeof firebase === 'undefined' || !firebase.database) {
+      alert('Firebase not loaded. Refresh the page and try again.');
+      return;
+    }
+
+    // Wraps a promise with a hard timeout so a Firebase outage doesn't leave
+    // the button hanging forever.
+    var withTimeout = function(promise, ms, label) {
+      return Promise.race([
+        promise,
+        new Promise(function(_, reject) {
+          setTimeout(function() {
+            reject(new Error(label + ' timed out (' + Math.round(ms / 1000) + 's). Firebase may be down — check the Firebase Console.'));
+          }, ms);
+        })
+      ]);
+    };
+
+    setStatus('Loading file...');
+    fetch('/jordon-crm-import.json')
+      .then(function(res) {
+        if (!res.ok) throw new Error('jordon-crm-import.json not found (HTTP ' + res.status + ')');
+        return res.json();
+      })
+      .then(function(records) {
+        setStatus('Checking for duplicates...');
+        return withTimeout(
+          firebase.database().ref('jordonCRM').once('value'),
+          10000,
+          'Firebase read'
+        ).then(function(snap) {
+          var existing = snap.val() || {};
+          var existingKeys = new Set(Object.values(existing).map(function(it) {
+            return (it.importSource || '') + '::' + ((it.name || '').toLowerCase());
+          }));
+          return { records: records, existingKeys: existingKeys };
+        });
+      })
+      .then(function(ctx) {
+        var pending = ctx.records.filter(function(r) {
+          return !ctx.existingKeys.has((r.importSource || '') + '::' + ((r.name || '').toLowerCase()));
+        });
+        if (pending.length === 0) {
+          setStatus('Already imported \u2713');
+          if (banner) banner.style.background = 'rgba(0,184,148,0.08)';
+          return;
+        }
+        setStatus('Importing 0 / ' + pending.length + '...');
+        var ref = firebase.database().ref('jordonCRM');
+        // Push records in sequence so we can show progress.
+        var i = 0;
+        var pushNext = function() {
+          if (i >= pending.length) {
+            setStatus('Imported ' + pending.length + ' \u2713');
+            if (banner) banner.style.background = 'rgba(0,184,148,0.08)';
+            // Trigger a fresh sync so the table updates.
+            if (typeof syncFirebaseData === 'function') syncFirebaseData();
+            setTimeout(function() { renderTableData('jordonCRM', ''); }, 800);
+            return;
+          }
+          ref.push().set(pending[i], function(err) {
+            if (err) {
+              setStatus('Error at ' + i + ': ' + err.message, true);
+              return;
+            }
+            i++;
+            setStatus('Importing ' + i + ' / ' + pending.length + '...');
+            // Yield to the event loop so the UI updates between writes.
+            setTimeout(pushNext, 10);
+          });
+        };
+        pushNext();
+      })
+      .catch(function(err) {
+        console.error('Jordon CRM import failed:', err);
+        setStatus('Import failed: ' + err.message, true);
+      });
   };
 
   // ===== CRUD OPERATIONS =====
