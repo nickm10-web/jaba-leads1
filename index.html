@@ -8426,17 +8426,35 @@
 <script src="jaba-custom.js"></script>
 <script src="jaba-crm-mvp.js"></script>
 <script>
-  /* Inbox sync client — calls the backend /api/sync-inbox endpoint and
-   * updates the header status pill. The actual Gmail call happens
-   * server-side; this script only triggers the sync and renders status.
+  /* Inbox sync client — triggers a sync and renders status in the header.
    *
-   * No localStorage / sessionStorage / IndexedDB — recent-sync gating uses
-   * an in-memory module variable plus the server's own throttle.
+   * Two sync transports are supported, in this priority order:
+   *
+   *  1. Webhook (production-safe): a Google Apps Script Web App URL
+   *     configured via `window.JABA_INBOX_SYNC_WEBHOOK_URL` (set in a
+   *     <script> tag before this file loads) OR persisted by the user in
+   *     localStorage at `jaba.inboxSyncWebhookUrl`. The Apps Script reads
+   *     Gmail with the script owner's OAuth and writes directly to the
+   *     same Firebase RTDB paths the SPA reads. The browser only POSTs;
+   *     no Gmail credentials live on Vercel.
+   *
+   *  2. Backend endpoint `/api/sync-inbox` (local/preview only): the
+   *     Node server in server.js calls the external-tool CLI. On Vercel
+   *     this endpoint does not exist and the platform returns an HTML
+   *     404 ("The page could not be found"); we detect that, surface a
+   *     setup hint instead of a JSON parse error, and keep the SPA's
+   *     existing Firebase data visible.
+   *
+   * Existing Firebase data continues to load regardless — this script
+   * only manages the Sync button and status pill, never the dashboard
+   * data flow itself.
    */
   (function () {
     'use strict';
     var lastClientRun = 0;
     var inFlight = false;
+
+    var WEBHOOK_LS_KEY = 'jaba.inboxSyncWebhookUrl';
 
     // Resolve the backend base URL.
     //
@@ -8445,12 +8463,10 @@
     // requests to the locally-running Node server on port 5000. If the
     // placeholder is never rewritten (e.g. running `npm start` locally
     // where the same Node process serves both the static files and the
-    // /api routes) we strip it and fall back to a relative path so the
-    // browser hits the same origin.
+    // /api routes, OR the static-only Vercel deploy) we strip it and fall
+    // back to a relative path so the browser hits the same origin.
     function apiBase() {
       var raw = '__PORT_5000__';
-      // Detect un-rewritten placeholder. We split it across concatenation
-      // so this comparison string itself isn't rewritten by the harness.
       var sentinel = '__' + 'PORT_5000__';
       if (raw === sentinel) return '';
       return raw.replace(/\/+$/, '');
@@ -8458,6 +8474,42 @@
 
     function apiUrl(path) {
       return apiBase() + path;
+    }
+
+    // Returns the configured Apps Script webhook URL, if any.
+    // Order: window global (set by deploy-time config) > localStorage
+    // (set by the user via the setup prompt). Both are optional.
+    function getWebhookUrl() {
+      try {
+        if (typeof window.JABA_INBOX_SYNC_WEBHOOK_URL === 'string' &&
+            window.JABA_INBOX_SYNC_WEBHOOK_URL.indexOf('http') === 0) {
+          return window.JABA_INBOX_SYNC_WEBHOOK_URL.trim();
+        }
+      } catch (_) { /* ignore */ }
+      try {
+        var ls = window.localStorage && window.localStorage.getItem(WEBHOOK_LS_KEY);
+        if (ls && ls.indexOf('http') === 0) return ls.trim();
+      } catch (_) { /* ignore */ }
+      return '';
+    }
+
+    function setWebhookUrl(url) {
+      try {
+        if (!url) {
+          window.localStorage.removeItem(WEBHOOK_LS_KEY);
+        } else {
+          window.localStorage.setItem(WEBHOOK_LS_KEY, String(url).trim());
+        }
+        return true;
+      } catch (_) { return false; }
+    }
+
+    // True if we appear to be running on a Vercel-style static deploy
+    // (no backend rewrite). Used to skip noisy auto-sync attempts.
+    function isStaticDeploy() {
+      return apiBase() === '' &&
+        location.hostname !== 'localhost' &&
+        location.hostname !== '127.0.0.1';
     }
 
     function $(id) { return document.getElementById(id); }
@@ -8492,6 +8544,115 @@
         (c.tasksCreated || 0) + ' tasks';
     }
 
+    // Parse a fetch Response as JSON without throwing on HTML/empty
+    // bodies. Returns { ok, status, data, raw, isJson }. The Vercel 404
+    // page begins with "The page c..." which is what produced the scary
+    // "Unexpected token 'T'" error in the original implementation.
+    async function readMaybeJson(r) {
+      var raw = '';
+      try { raw = await r.text(); } catch (_) { raw = ''; }
+      var data = null;
+      var isJson = false;
+      var ct = (r.headers && r.headers.get && r.headers.get('content-type')) || '';
+      if (raw && (ct.indexOf('application/json') >= 0 || /^[\s]*[\{\[]/.test(raw))) {
+        try { data = JSON.parse(raw); isJson = true; } catch (_) { isJson = false; }
+      }
+      return { ok: r.ok, status: r.status, data: data, raw: raw, isJson: isJson };
+    }
+
+    function promptForWebhook() {
+      var current = getWebhookUrl();
+      var msg = 'Paste your Google Apps Script Web App URL.\n\n' +
+        'See INBOX_SYNC_SETUP.md in the repo for the full Apps Script ' +
+        'recipe — it reads Gmail with your account and writes to the ' +
+        'same Firebase RTDB paths this dashboard reads.\n\n' +
+        'Leave blank to clear.';
+      var next = window.prompt(msg, current || '');
+      if (next === null) return false; // cancelled
+      setWebhookUrl(next.trim());
+      return true;
+    }
+
+    // Ask the Apps Script Web App to run a sync. The script is
+    // expected to return JSON of shape { ok, counts?, finishedAt?,
+    // error? }, but we tolerate plain text responses too.
+    async function runViaWebhook(webhookUrl, opts) {
+      // Apps Script doPost reads e.postData.contents; we send JSON.
+      // We use mode 'cors' — the user's Apps Script must be deployed
+      // with "Anyone" access for this to succeed cross-origin.
+      var r;
+      try {
+        r = await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(opts || {})
+        });
+      } catch (e) {
+        return {
+          ok: false,
+          error: 'webhook unreachable (' + (e && e.message ? e.message : 'network') + ')',
+          transport: 'webhook'
+        };
+      }
+      var parsed = await readMaybeJson(r);
+      if (!parsed.ok) {
+        return {
+          ok: false,
+          error: 'webhook HTTP ' + parsed.status,
+          transport: 'webhook'
+        };
+      }
+      if (parsed.isJson && parsed.data) {
+        parsed.data.transport = 'webhook';
+        if (!parsed.data.finishedAt) parsed.data.finishedAt = new Date().toISOString();
+        return parsed.data;
+      }
+      // Apps Script returned a non-JSON 200 — treat as success with no
+      // counts so we still show a friendly "synced" pill.
+      return {
+        ok: true,
+        finishedAt: new Date().toISOString(),
+        counts: {},
+        transport: 'webhook',
+        note: 'webhook returned non-JSON body'
+      };
+    }
+
+    async function runViaBackend(opts) {
+      var r;
+      try {
+        r = await fetch(apiUrl('/api/sync-inbox'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(opts || {})
+        });
+      } catch (e) {
+        return {
+          ok: false,
+          error: 'backend unreachable (' + (e && e.message ? e.message : 'network') + ')',
+          transport: 'backend'
+        };
+      }
+      var parsed = await readMaybeJson(r);
+      if (!parsed.isJson) {
+        // Vercel 404 / Cloudflare error / static host fallthrough.
+        return {
+          ok: false,
+          error: 'backend not deployed',
+          transport: 'backend',
+          notDeployed: true,
+          httpStatus: parsed.status
+        };
+      }
+      var data = parsed.data || {};
+      data.transport = 'backend';
+      if (!parsed.ok || !data.ok) {
+        if (!data.error) data.error = 'HTTP ' + parsed.status;
+        data.ok = false;
+      }
+      return data;
+    }
+
     async function run(opts) {
       if (inFlight) return;
       inFlight = true;
@@ -8499,21 +8660,41 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Syncing…'; }
       setStatus('Inbox: syncing…', '#fdcb6e');
       try {
-        var r = await fetch(apiUrl('/api/sync-inbox'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(opts || {})
-        });
-        var data = await r.json();
-        if (!r.ok || !data.ok) {
-          setStatus('Inbox sync error: ' + ((data && data.error) || r.status), '#ff6b6b');
+        var webhookUrl = getWebhookUrl();
+        var data;
+        if (webhookUrl) {
+          data = await runViaWebhook(webhookUrl, opts);
+        } else {
+          data = await runViaBackend(opts);
+          if (data && data.notDeployed) {
+            // Production-safe fallback: don't show a JSON parse error.
+            // Tell the user how to wire up the webhook and stop here.
+            setStatus('Inbox sync not configured — click to set up', '#fdcb6e');
+            var pill = $('inboxSyncStatus');
+            if (pill && !pill._jabaSetupBound) {
+              pill.style.cursor = 'pointer';
+              pill.title = 'Click to configure the Apps Script webhook URL';
+              pill.addEventListener('click', function () {
+                if (promptForWebhook() && getWebhookUrl()) run();
+              });
+              pill._jabaSetupBound = true;
+            }
+            return data;
+          }
+        }
+        if (!data || !data.ok) {
+          var msg = (data && data.error) || 'unknown error';
+          setStatus('Inbox sync error: ' + msg, '#ff6b6b');
           return data;
         }
         lastClientRun = Date.now();
         setStatus(summarize(data), '#bbb');
         return data;
       } catch (e) {
-        setStatus('Inbox sync error: ' + (e && e.message ? e.message : 'network'), '#ff6b6b');
+        // Should be unreachable — runViaWebhook/runViaBackend swallow
+        // their own throws — but keep a guard so we never surface a raw
+        // SyntaxError to the user again.
+        setStatus('Inbox sync error: ' + (e && e.message ? e.message : 'unexpected'), '#ff6b6b');
       } finally {
         inFlight = false;
         if (btn) { btn.disabled = false; btn.textContent = 'Sync Inbox'; }
@@ -8521,17 +8702,39 @@
     }
 
     async function loadStatus() {
+      // Webhook deployments have no separate status endpoint — leave
+      // the pill at its default until the user runs a sync.
+      if (getWebhookUrl()) {
+        setStatus('Inbox: webhook ready', '#bbb');
+        return null;
+      }
+      // Static deploys: skip the call entirely so we don't briefly
+      // render an HTML 404 in the network tab on every load.
+      if (isStaticDeploy()) {
+        setStatus('Inbox sync not configured — click to set up', '#fdcb6e');
+        var pill = $('inboxSyncStatus');
+        if (pill && !pill._jabaSetupBound) {
+          pill.style.cursor = 'pointer';
+          pill.title = 'Click to configure the Apps Script webhook URL';
+          pill.addEventListener('click', function () {
+            if (promptForWebhook() && getWebhookUrl()) run();
+          });
+          pill._jabaSetupBound = true;
+        }
+        return null;
+      }
       try {
         var r = await fetch(apiUrl('/api/sync-inbox/status'));
-        var data = await r.json();
-        if (data && data.ok && data.meta && data.meta.lastSync) {
+        var parsed = await readMaybeJson(r);
+        if (parsed.isJson && parsed.data && parsed.data.ok &&
+            parsed.data.meta && parsed.data.meta.lastSync) {
           setStatus(summarize({
             ok: true,
             skipped: false,
-            finishedAt: data.meta.lastSync,
-            counts: (data.meta.lastResult && data.meta.lastResult.counts) || {}
+            finishedAt: parsed.data.meta.lastSync,
+            counts: (parsed.data.meta.lastResult && parsed.data.meta.lastResult.counts) || {}
           }), '#bbb');
-          return data.meta;
+          return parsed.data.meta;
         }
         setStatus('Inbox: never synced', '#bbb');
       } catch (e) {
@@ -8542,6 +8745,9 @@
 
     async function maybeAutoSync() {
       var meta = await loadStatus();
+      // Don't auto-sync on a static deploy with no webhook — there's
+      // nothing to call, and we already showed the setup hint.
+      if (!getWebhookUrl() && isStaticDeploy()) return;
       var ageMs = meta && meta.lastSync ? (Date.now() - Date.parse(meta.lastSync)) : Infinity;
       // If we haven't synced in the last 30 minutes, run one sync on load.
       // The server also has its own 5-minute throttle as a backstop.
@@ -8550,7 +8756,13 @@
       }
     }
 
-    window.jabaInboxSync = { run: run, loadStatus: loadStatus };
+    window.jabaInboxSync = {
+      run: run,
+      loadStatus: loadStatus,
+      getWebhookUrl: getWebhookUrl,
+      setWebhookUrl: setWebhookUrl,
+      promptForWebhook: promptForWebhook
+    };
 
     // Defer auto-sync until after the page settles.
     if (document.readyState === 'complete') {
