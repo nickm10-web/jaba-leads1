@@ -1,0 +1,15 @@
+{
+  "name": "jaba-leads",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JABA leads/CRM SPA with Gmail inbox sync backend",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "preview": "python3 serve.py",
+    "test": "node test/inbox-sync.test.js"
+  }
+}

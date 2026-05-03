@@ -19,6 +19,7 @@
       --bg-tertiary: #232733;
       --text-primary: #e6edf3;
       --text-secondary: #8b949e;
+      --text-meta: #b8c0ca;
       --border: #30363d;
       --color-schools: #00b894;
       --color-teams: #0984e3;
@@ -40,7 +41,10 @@
       background: var(--bg-primary);
       color: var(--text-primary);
       line-height: 1.5;
+      overflow-x: hidden;
+      min-width: 0;
     }
+    html { overflow-x: hidden; }
 
     /* Screen-reader only (visually hidden but accessible) */
     .sr-only {
@@ -59,6 +63,9 @@
       max-width: 1400px;
       margin: 0 auto;
       padding: 24px;
+      padding-left: max(24px, env(safe-area-inset-left, 24px));
+      padding-right: max(24px, env(safe-area-inset-right, 24px));
+      box-sizing: border-box;
     }
 
     /* Header */
@@ -201,7 +208,12 @@
       gap: 0;
       border-bottom: 1px solid var(--border);
       margin-bottom: 20px;
+      flex-wrap: wrap;
+      overflow-x: auto;
+      scrollbar-width: thin;
     }
+    .top-tabs::-webkit-scrollbar { height: 4px; }
+    .top-tab { flex-shrink: 0; }
     .top-tab {
       padding: 10px 24px;
       border: none;
@@ -2273,103 +2285,6 @@
       }
     }
 
-    /* Global Search Bar */
-    .global-search-wrapper {
-      position: relative;
-      flex: 1;
-      max-width: 400px;
-    }
-
-    .global-search-input {
-      width: 100%;
-      padding: 10px 14px 10px 36px;
-      background: var(--glass-bg);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      color: var(--text-primary);
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .global-search-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(226, 245, 0, 0.1);
-    }
-
-    .global-search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-      pointer-events: none;
-      font-size: 16px;
-    }
-
-    .global-search-dropdown {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      right: 0;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      max-height: 400px;
-      overflow-y: auto;
-      z-index: 2000;
-      display: none;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-
-    .global-search-dropdown.active {
-      display: block;
-    }
-
-    .search-result-section {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .search-result-section:last-child {
-      border-bottom: none;
-    }
-
-    .search-result-label {
-      padding: 8px 12px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-secondary);
-      font-weight: 600;
-    }
-
-    .search-result-item {
-      padding: 10px 12px;
-      cursor: pointer;
-      transition: all 0.15s;
-      border-left: 3px solid transparent;
-    }
-
-    .search-result-item:hover {
-      background: var(--bg-tertiary);
-      border-left-color: var(--accent);
-    }
-
-    .search-result-company {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 2px;
-    }
-
-    .search-result-meta {
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
-
     /* Detail Panel */
     .detail-panel {
       position: fixed;
@@ -2664,26 +2579,42 @@
     }
     .briefing-summary {
       display: flex;
-      gap: 28px;
+      gap: 12px;
       flex-wrap: wrap;
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;
-      color: var(--text-secondary);
-      align-items: baseline;
+      color: var(--text-primary);
+      align-items: center;
     }
-    .briefing-summary span {
+    .briefing-summary > span {
       display: inline-flex;
-      align-items: baseline;
-      gap: 8px;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px 6px 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-primary);
     }
     .briefing-summary strong {
-      font-family: 'Anton', sans-serif;
-      font-size: 26px;
+      font-family: 'Anton', 'DM Sans', sans-serif;
+      font-size: 18px;
+      line-height: 1;
       letter-spacing: 0.02em;
+      min-width: 32px;
+      height: 32px;
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      color: #0f1117;
+      background: var(--text-secondary);
+      font-weight: 700;
     }
-    .briefing-summary .br-stat-overdue strong { color: var(--color-danger); }
-    .briefing-summary .br-stat-emails strong { color: var(--color-warning); }
-    .briefing-summary .br-stat-tasks strong { color: var(--accent); }
+    .briefing-summary .br-stat-overdue strong { background: var(--color-danger); color: #1a0606; }
+    .briefing-summary .br-stat-emails strong { background: var(--color-warning); color: #2a1d00; }
+    .briefing-summary .br-stat-tasks strong { background: var(--accent); color: #1a1d00; }
 
     .briefing-card {
       background: var(--glass-bg, rgba(26, 29, 39, 0.8));
@@ -2730,10 +2661,11 @@
     }
     .briefing-item {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
+      align-items: flex-start;
+      gap: 10px 12px;
+      padding: 12px 14px;
       background: var(--bg-tertiary);
       border-radius: 8px;
       cursor: pointer;
@@ -2749,32 +2681,38 @@
     .briefing-item-main {
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      flex: 1;
+      gap: 3px;
+      flex: 1 1 240px;
       min-width: 0;
     }
     .briefing-item-title {
       font-weight: 600;
       font-size: 13px;
       color: var(--text-primary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: normal;
+      hyphens: none;
+      line-height: 1.35;
     }
     .briefing-item-sub {
-      font-size: 11px;
-      color: var(--text-secondary);
+      font-size: 12px;
+      color: var(--text-meta);
       font-family: 'DM Sans', sans-serif;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      overflow-wrap: break-word;
+      word-break: normal;
+      hyphens: none;
+      line-height: 1.45;
     }
     .briefing-item-meta {
-      font-size: 11px;
-      color: var(--text-secondary);
+      font-size: 12px;
+      color: var(--text-meta);
       white-space: nowrap;
       font-weight: 700;
       font-family: 'DM Sans', sans-serif;
+      flex: 0 0 auto;
+      align-self: flex-start;
     }
     .briefing-item-meta.overdue { color: var(--color-danger); }
     .briefing-item-meta.soon { color: var(--color-warning); }
@@ -2791,6 +2729,87 @@
       margin-top: 12px;
       text-align: right;
     }
+    /* ==== MVP Daily Command Center ==== */
+    .cmd-h2 { margin: 24px 0 8px; font-size: 20px; font-weight: 600; }
+    .cmd-quickadd { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 540px) {
+      .cmd-grid { grid-template-columns: 1fr; }
+    }
+    .briefing-item-action {
+      display: flex;
+      gap: 6px;
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-self: flex-start;
+    }
+    .briefing-item-action .btn { white-space: nowrap; }
+    @container briefing-list (max-width: 360px) {
+      .briefing-item-action {
+        flex-basis: 100%;
+        justify-content: flex-start;
+      }
+    }
+    .briefing-list { container-type: inline-size; container-name: briefing-list; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; }
+    .cmd-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #000;
+    }
+
+    /* MVP Modal */
+    .mvp-modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .mvp-modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: min(540px, 92vw);
+      max-height: 86vh;
+      overflow: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .mvp-modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .mvp-modal-header h3 { margin: 0; font-size: 16px; font-weight: 600; }
+    .mvp-modal-body { padding: 16px 20px; }
+    .mvp-form { display: flex; flex-direction: column; gap: 12px; }
+    .mvp-field { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-secondary); }
+    .mvp-field input, .mvp-field select, .mvp-field textarea {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+    .mvp-field input:focus, .mvp-field select:focus, .mvp-field textarea:focus {
+      outline: none; border-color: var(--color-info);
+    }
+    .mvp-table {
+      width: 100%; border-collapse: collapse; font-size: 13px;
+    }
+    .mvp-table th, .mvp-table td {
+      text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border);
+    }
+    .mvp-table th { color: var(--text-secondary); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+
     .briefing-footer a {
       color: var(--accent);
       text-decoration: none;
@@ -3230,10 +3249,6 @@
         width: 100%;
       }
 
-      .global-search-wrapper {
-        max-width: 250px;
-      }
-
       .schools-header,
       .schools-control-bar,
       .conference-section-header {
@@ -3258,14 +3273,15 @@
           <div style="font-size:12px;color:var(--text-secondary);">Built Different — Business Development</div>
         </div>
       </div>
-      <!-- Global Search Bar -->
-      <div class="global-search-wrapper">
-        <span class="global-search-icon">ð</span>
-        <input type="text" class="global-search-input" id="globalSearch" placeholder="Search leads & emails...">
-        <div class="global-search-dropdown" id="globalSearchDropdown"></div>
-      </div>
       <div class="header-actions">
+        <span id="mvpPersistenceStatus" role="status" aria-live="polite" aria-label="CRM sync status" title="CRM sync status" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600;background:rgba(255,255,255,0.06);color:#999;border:1px solid rgba(255,255,255,0.08);"><span id="mvpPersistenceDot" aria-hidden="true" style="width:8px;height:8px;border-radius:50%;background:#999;display:inline-block;flex-shrink:0;"></span><span id="mvpPersistenceLabel">Connecting…</span></span>
+        <span id="inboxSyncStatus" role="status" aria-live="polite" title="Inbox sync status" style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:500;background:rgba(255,255,255,0.04);color:#bbb;border:1px solid rgba(255,255,255,0.06);">Inbox: never synced</span>
+        <button class="btn btn-secondary" id="inboxSyncBtn" onclick="window.jabaInboxSync && window.jabaInboxSync.run()">Sync Inbox</button>
         <button class="btn btn-secondary" onclick="exportData()">Export</button>
+        <button class="btn btn-secondary" onclick="jabaMvp.openSlackLeadForm()">+ Slack/Text Lead</button>
+        <button class="btn btn-secondary" onclick="jabaMvp.openSmartleadForm()">+ Smartlead Reply</button>
+        <button class="btn btn-secondary" onclick="jabaMvp.openMeetingNoteForm()">+ Meeting Note</button>
+        <button class="btn btn-secondary" onclick="jabaMvp.openFollowUpForm()">+ Follow-up</button>
         <button class="btn" style="background:var(--accent);color:#000;font-weight:600;" onclick="showAddModal()">+ Add Lead</button>
       </div>
     </div>
@@ -3278,6 +3294,7 @@
       <button class="top-tab" data-section="inbox" onclick="switchSection('inbox')">Inbox <span class="tab-badge" id="inboxBadge">0</span></button>
       <button class="top-tab" data-section="meetings" onclick="switchSection('meetings')">Meetings <span class="tab-badge" id="meetingsBadge">0</span></button>
       <button class="top-tab" data-section="tasks" onclick="switchSection('tasks')">Tasks <span class="tab-badge" id="tasksBadge">0</span></button>
+      <button class="top-tab" data-section="crmMvp" onclick="switchSection('crmMvp')">CRM</button>
       <button class="top-tab" data-section="playbooks" onclick="switchSection('playbooks')">Playbooks</button>
     </div>
 
@@ -3288,11 +3305,63 @@
         <h1 class="briefing-greeting" id="briefingGreeting">Good Morning</h1>
         <div class="briefing-date" id="briefingDate"></div>
         <div class="briefing-summary">
-          <span class="br-stat-overdue"><strong id="brSummaryOverdue">0</strong>overdue</span>
-          <span class="br-stat-emails"><strong id="brSummaryEmails">0</strong>need a reply</span>
-          <span class="br-stat-tasks"><strong id="brSummaryTasks">0</strong>due today</span>
+          <span class="br-stat-overdue"><strong id="brSummaryOverdue">0</strong>overdue tasks</span>
+          <span class="br-stat-emails"><strong id="brSummaryEmails">0</strong>replies required</span>
+          <span class="br-stat-tasks"><strong id="brSummaryTasks">0</strong>follow-ups due</span>
         </div>
       </div>
+
+      <!-- ============== DAILY COMMAND CENTER (MVP) ============== -->
+      <h2 class="cmd-h2">Daily Command Center</h2>
+      <div class="cmd-quickadd">
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openSlackLeadForm()">+ Slack/Text Lead</button>
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openSmartleadForm()">+ Smartlead Reply</button>
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openMeetingNoteForm()">+ Meeting Note</button>
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openFollowUpForm()">+ Follow-up</button>
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openAddAccountForm()">+ Account</button>
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openAddContactForm()">+ Contact</button>
+        <button class="btn btn-secondary btn-sm" onclick="jabaMvp.openAddOpportunityForm()">+ Opportunity</button>
+      </div>
+
+      <div class="cmd-grid">
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Reply Required</h3><span class="briefing-count" id="cmdReplyRequiredCount">0</span></div>
+          <div class="briefing-list" id="cmdReplyRequired"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Follow-up Due</h3><span class="briefing-count" id="cmdFollowUpDueCount">0</span></div>
+          <div class="briefing-list" id="cmdFollowUpDue"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>New Lead Intake</h3><span class="briefing-count" id="cmdLeadIntakeCount">0</span></div>
+          <div class="briefing-list" id="cmdLeadIntake"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Smartlead Replies to Review</h3><span class="briefing-count" id="cmdSmartleadCount">0</span></div>
+          <div class="briefing-list" id="cmdSmartlead"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Meetings Today</h3><span class="briefing-count" id="cmdMeetingsTodayCount">0</span></div>
+          <div class="briefing-list" id="cmdMeetingsToday"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Post-Meeting Recaps Due</h3><span class="briefing-count" id="cmdRecapsDueCount">0</span></div>
+          <div class="briefing-list" id="cmdRecapsDue"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Current Client Touches</h3><span class="briefing-count" id="cmdClientTouchesCount">0</span></div>
+          <div class="briefing-list" id="cmdClientTouches"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Overdue Tasks</h3><span class="briefing-count" id="cmdOverdueTasksCount">0</span></div>
+          <div class="briefing-list" id="cmdOverdueTasks"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>No-Next-Step Exceptions</h3><span class="briefing-count" id="cmdNoNextStepCount">0</span></div>
+          <div class="briefing-list" id="cmdNoNextStep"></div>
+        </div>
+      </div>
+      <!-- ============== /DAILY COMMAND CENTER ============== -->
 
       <!-- Today's Meetings -->
       <div class="briefing-card">
@@ -3402,7 +3471,7 @@
         <tbody id="tableBody">
           <tr>
             <td colspan="7" class="empty-state">
-              <div class="empty-state-icon">ð</div>
+              <div class="empty-state-icon" aria-hidden="true">&#128203;</div>
               <p>No leads found. Click "+ Add Lead" to get started.</p>
             </td>
           </tr>
@@ -3598,6 +3667,9 @@
 
       <div id="playbooksGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:24px;"></div>
     </div><!-- /playbooksSection -->
+
+    <!-- CRM MVP SECTION -->
+    <div id="crmMvpSection" style="display:none;"></div>
   </div>
 
   <!-- Detail Panel -->
@@ -3685,6 +3757,26 @@
     </div>
   </div>
 
+  <script>
+    // ===== Safe Storage Shim (preview-iframe compatible) =====
+    // The preview iframe blocks browser persistence APIs, so we use an
+    // in-memory store. All previous persistence calls go through __memStore.
+    (function () {
+      function makeMemStore() {
+        var data = {};
+        return {
+          getItem: function (k) { return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+          setItem: function (k, v) { data[k] = String(v); },
+          removeItem: function (k) { delete data[k]; },
+          clear: function () { data = {}; },
+          key: function (i) { var keys = Object.keys(data); return i < keys.length ? keys[i] : null; },
+          get length() { return Object.keys(data).length; }
+        };
+      }
+      window.__memStore = makeMemStore();
+      window.__memSession = makeMemStore();
+    })();
+  </script>
   <script src="./schools-data.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -3702,6 +3794,11 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
+    // Expose db on window so additive modules (jaba-crm-mvp.js) can reach it.
+    // Top-level `const` in a classic script does NOT create a window property,
+    // so without this assignment window.db is undefined and the MVP module
+    // would silently fall back to in-memory only.
+    window.db = db;
 
     // ===== GMAIL OAUTH INTEGRATION =====
     const GMAIL_CLIENT_ID = '1002377544484-5m7rr10scdn320uh9puq9gg6h4h3gip2.apps.googleusercontent.com';
@@ -3732,8 +3829,8 @@
         document.getElementById('gmailStatus').textContent = 'Syncing...';
 
         // Save token
-        localStorage.setItem('gmail_access_token', response.access_token);
-        localStorage.setItem('gmail_token_expiry', Date.now() + expiresIn);
+        __memStore.setItem('gmail_access_token', response.access_token);
+        __memStore.setItem('gmail_token_expiry', Date.now() + expiresIn);
 
         // Schedule silent refresh 5 minutes before expiry
         if (gmailRefreshTimer) clearTimeout(gmailRefreshTimer);
@@ -3788,8 +3885,8 @@
       });
 
       // Check for saved token
-      const savedToken = localStorage.getItem('gmail_access_token');
-      const expiry = localStorage.getItem('gmail_token_expiry');
+      const savedToken = __memStore.getItem('gmail_access_token');
+      const expiry = __memStore.getItem('gmail_token_expiry');
       if (savedToken && expiry) {
         const timeLeft = parseInt(expiry) - Date.now();
         if (timeLeft > 60000) {
@@ -4004,7 +4101,7 @@
         if (sentRes.status === 401 || inboxRes.status === 401) {
           console.log('Gmail 401 - attempting silent refresh...');
           gmailAccessToken = null;
-          localStorage.removeItem('gmail_access_token');
+          __memStore.removeItem('gmail_access_token');
           document.getElementById('gmailStatus').style.color = '#fdcb6e';
           document.getElementById('gmailStatus').textContent = 'Refreshing token...';
           silentRefreshGmail();
@@ -4790,7 +4887,6 @@
       console.log('Loaded', tasks.length, 'tasks');
       refreshInboxDates(); // Recompute daysSince and auto-escalate stale statuses on load
       setupEventListeners();
-      setupGlobalSearch();
       populateLeadLinker();
       loadViewPreference();
 
@@ -4807,7 +4903,7 @@
       document.getElementById('detailPanelClose').addEventListener('click', closeDetailPanel);
 
       // Set default to dashboard if no preference saved
-      if (!localStorage.getItem('bd_leads_section')) {
+      if (!__memStore.getItem('bd_leads_section')) {
         currentSection = 'dashboard';
       }
 
@@ -4848,7 +4944,7 @@
       console.log('CRM v23 render complete');
     }
 
-    // Load from Firebase (with localStorage fallback)
+    // Load from Firebase (with __memStore fallback)
     function loadLeads() {
       leads = defaultLeads();
       db.ref('leads').once('value').then(snapshot => {
@@ -4856,8 +4952,8 @@
         if (savedLeads && Array.isArray(savedLeads)) {
           mergeLeads(savedLeads);
         } else {
-          // Fallback: check localStorage for migration
-          const stored = localStorage.getItem(STORAGE_KEY);
+          // Fallback: check __memStore for migration
+          const stored = __memStore.getItem(STORAGE_KEY);
           if (stored) {
             mergeLeads(JSON.parse(stored));
           }
@@ -4866,7 +4962,7 @@
         renderAll();
       }).catch(() => {
         // Offline fallback
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const stored = __memStore.getItem(STORAGE_KEY);
         if (stored) mergeLeads(JSON.parse(stored));
         saveleads();
         renderAll();
@@ -4905,9 +5001,9 @@
       });
     }
 
-    // Save to Firebase + localStorage backup
+    // Save to Firebase + __memStore backup
     function saveleads() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(leads));
+      __memStore.setItem(STORAGE_KEY, JSON.stringify(leads));
       db.ref('leads').set(leads).catch(err => console.warn('Firebase save error:', err));
     }
 
@@ -5059,13 +5155,13 @@
         if (saved && Array.isArray(saved)) {
           mergeMeetings(saved);
         } else {
-          const stored = localStorage.getItem(MEETINGS_STORAGE_KEY);
+          const stored = __memStore.getItem(MEETINGS_STORAGE_KEY);
           if (stored) mergeMeetings(JSON.parse(stored));
         }
         saveMeetings();
         renderAll();
       }).catch(() => {
-        const stored = localStorage.getItem(MEETINGS_STORAGE_KEY);
+        const stored = __memStore.getItem(MEETINGS_STORAGE_KEY);
         if (stored) mergeMeetings(JSON.parse(stored));
         saveMeetings();
       });
@@ -5187,7 +5283,7 @@
     }
 
     function saveMeetings() {
-      localStorage.setItem(MEETINGS_STORAGE_KEY, JSON.stringify(meetings));
+      __memStore.setItem(MEETINGS_STORAGE_KEY, JSON.stringify(meetings));
       db.ref('meetings').set(meetings).catch(err => console.warn('Firebase save error:', err));
     }
 
@@ -5200,7 +5296,7 @@
           saveTasks();
           renderAll();
         } else {
-          const stored = localStorage.getItem(TASK_STORAGE_KEY);
+          const stored = __memStore.getItem(TASK_STORAGE_KEY);
           if (stored) {
             tasks = JSON.parse(stored);
             saveTasks();
@@ -5210,7 +5306,7 @@
           loadDefaultTasks();
         }
       }).catch(() => {
-        const stored = localStorage.getItem(TASK_STORAGE_KEY);
+        const stored = __memStore.getItem(TASK_STORAGE_KEY);
         if (stored) { tasks = JSON.parse(stored); }
         else { loadDefaultTasks(); }
       });
@@ -5232,7 +5328,7 @@
     }
 
     function saveTasks() {
-      localStorage.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));
+      __memStore.setItem(TASK_STORAGE_KEY, JSON.stringify(tasks));
       db.ref('tasks').set(tasks).catch(err => console.warn('Firebase save error:', err));
       updateTaskBadge();
     }
@@ -6206,7 +6302,7 @@
       const tbody = document.getElementById('tableBody');
 
       if (displayed.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon">ð</div><p>No leads found. Try adjusting your filters or search.</p></td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><div class="empty-state-icon" aria-hidden="true">&#128203;</div><p>No leads found. Try adjusting your filters or search.</p></td></tr>';
         return;
       }
 
@@ -6317,13 +6413,13 @@
     let currentSchoolView = 'call';
     let currentSchoolQuery = '';
 
-    // Load preferences from localStorage
+    // Load preferences from __memStore
     function loadViewPreference() {
-      const savedView = localStorage.getItem('bd_leads_view');
+      const savedView = __memStore.getItem('bd_leads_view');
       if (savedView === 'pipeline') {
         currentViewMode = 'pipeline';
       }
-      const savedSection = localStorage.getItem('bd_leads_section');
+      const savedSection = __memStore.getItem('bd_leads_section');
       if (savedSection === 'inbox') {
         currentSection = 'inbox';
       }
@@ -6337,7 +6433,7 @@
 
     window.switchSection = function(section) {
       currentSection = section;
-      localStorage.setItem('bd_leads_section', section);
+      __memStore.setItem('bd_leads_section', section);
 
       // Always enter Leads in table view. The pipeline toggle is still
       // available within the section, but we don't carry a previously
@@ -6366,12 +6462,16 @@
       document.getElementById('tasksSection').style.display = section === 'tasks' ? 'block' : 'none';
       document.getElementById('schoolsSection').style.display = section === 'schools' ? 'block' : 'none';
       document.getElementById('playbooksSection').style.display = section === 'playbooks' ? 'block' : 'none';
+      var crmEl = document.getElementById('crmMvpSection');
+      if (crmEl) crmEl.style.display = section === 'crmMvp' ? 'block' : 'none';
 
-      // Show/hide header actions (only relevant for Leads)
-      document.querySelector('.header-actions').style.display = section === 'leads' ? 'flex' : 'none';
+      // Show/hide header actions (visible on Leads, Dashboard, and CRM)
+      document.querySelector('.header-actions').style.display =
+        (section === 'leads' || section === 'dashboard' || section === 'crmMvp') ? 'flex' : 'none';
 
       if (section === 'dashboard') {
         renderDashboard();
+        if (window.jabaMvp && window.jabaMvp.renderDashboardSections) window.jabaMvp.renderDashboardSections();
       } else if (section === 'inbox') {
         renderInbox();
         if (currentInboxView === 'gmail') renderGmailInbox();
@@ -6383,6 +6483,8 @@
         renderSchools();
       } else if (section === 'playbooks') {
         renderPlaybooks();
+      } else if (section === 'crmMvp') {
+        if (window.jabaMvp && window.jabaMvp.renderCrmSection) window.jabaMvp.renderCrmSection();
       } else {
         renderView();
       }
@@ -6391,7 +6493,7 @@
     // Toggle between table and pipeline view (within Leads)
     window.toggleView = function(mode) {
       currentViewMode = mode;
-      localStorage.setItem('bd_leads_view', mode);
+      __memStore.setItem('bd_leads_view', mode);
 
       document.querySelectorAll('.view-toggle-btn').forEach(btn => {
         btn.classList.remove('active');
@@ -6734,83 +6836,6 @@
         renderView();
       }
     };
-
-    // Global search functionality
-    function setupGlobalSearch() {
-      const searchInput = document.getElementById('globalSearch');
-      const dropdown = document.getElementById('globalSearchDropdown');
-
-      searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase();
-
-        if (query.length < 2) {
-          dropdown.classList.remove('active');
-          return;
-        }
-
-        // Search leads
-        const leadResults = leads.filter(lead =>
-          lead.company.toLowerCase().includes(query) ||
-          lead.contacts.some(c => c.toLowerCase().includes(query)) ||
-          lead.context.toLowerCase().includes(query)
-        ).slice(0, 5);
-
-        // Search emails
-        const emailResults = INBOX_EMAILS.filter(email =>
-          email.company.toLowerCase().includes(query) ||
-          email.contact.toLowerCase().includes(query) ||
-          email.subject.toLowerCase().includes(query)
-        ).slice(0, 5);
-
-        // Build dropdown HTML
-        let html = '';
-        if (leadResults.length > 0) {
-          html += '<div class="search-result-section">';
-          html += '<div class="search-result-label">Leads</div>';
-          leadResults.forEach(lead => {
-            html += `
-              <div class="search-result-item" onclick="openDetailPanel(${lead.id})">
-                <div class="search-result-company">${lead.company}</div>
-                <div class="search-result-meta">${BUCKET_LABELS[lead.bucket]} • ${STAGE_LABELS[lead.stage]}</div>
-              </div>
-            `;
-          });
-          html += '</div>';
-        }
-
-        if (emailResults.length > 0) {
-          html += '<div class="search-result-section">';
-          html += '<div class="search-result-label">Emails</div>';
-          emailResults.forEach(email => {
-            html += `
-              <div class="search-result-item" onclick="switchSection('inbox')">
-                <div class="search-result-company">${email.company}</div>
-                <div class="search-result-meta">${email.contact} • ${email.subject.substring(0, 40)}</div>
-              </div>
-            `;
-          });
-          html += '</div>';
-        }
-
-        if (leadResults.length === 0 && emailResults.length === 0) {
-          html = '<div style="padding:16px;text-align:center;color:var(--text-secondary);font-size:13px;">No results found</div>';
-        }
-
-        dropdown.innerHTML = html;
-        dropdown.classList.add('active');
-      });
-
-      searchInput.addEventListener('blur', () => {
-        setTimeout(() => dropdown.classList.remove('active'), 200);
-      });
-
-      searchInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          dropdown.classList.remove('active');
-          searchInput.value = '';
-        }
-      });
-    }
 
     // Save lead
     function saveLead() {
@@ -7604,12 +7629,12 @@
           if (e.dismissed) overrides[e.email.toLowerCase()].dismissed = true;
         }
       });
-      try { localStorage.setItem('inbox_overrides', JSON.stringify(overrides)); } catch(e) {}
+      try { __memStore.setItem('inbox_overrides', JSON.stringify(overrides)); } catch(e) {}
     }
 
     function loadInboxOverrides() {
       try {
-        const overrides = JSON.parse(localStorage.getItem('inbox_overrides') || '{}');
+        const overrides = JSON.parse(__memStore.getItem('inbox_overrides') || '{}');
         INBOX_EMAILS.forEach(e => {
           if (e && e.email) {
             const o = overrides[e.email.toLowerCase()];
@@ -7839,17 +7864,28 @@
       const needsResponse = getNeedsResponseEmails();
       const dueTasks = getDueOrOverdueTasks(today);
 
-      const sumOver = document.getElementById('brSummaryOverdue');
-      const sumEm = document.getElementById('brSummaryEmails');
-      const sumTk = document.getElementById('brSummaryTasks');
-      if (sumOver) sumOver.textContent = overdueFollowUps.length;
-      if (sumEm) sumEm.textContent = needsResponse.length;
-      if (sumTk) sumTk.textContent = dueTasks.filter(t => t.dueDate === today).length;
-
       renderBriefingMeetings(todayMeetings);
       renderBriefingFollowUps(overdueFollowUps);
       renderBriefingEmails(needsResponse);
       renderBriefingTasks(dueTasks, today);
+
+      if (window.jabaMvp && window.jabaMvp.renderDashboardSections) {
+        window.jabaMvp.renderDashboardSections();
+      }
+
+      // Hero strip mirrors the MVP Daily Command Center counts so the summary
+      // stays consistent with the cards below. Empty MVP store → 0/0/0.
+      const sumOver = document.getElementById('brSummaryOverdue');
+      const sumEm = document.getElementById('brSummaryEmails');
+      const sumTk = document.getElementById('brSummaryTasks');
+      const cmdCount = function (id) {
+        const el = document.getElementById(id);
+        const n = el ? parseInt(el.textContent, 10) : 0;
+        return isNaN(n) ? 0 : n;
+      };
+      if (sumOver) sumOver.textContent = cmdCount('cmdOverdueTasksCount');
+      if (sumEm) sumEm.textContent = cmdCount('cmdReplyRequiredCount');
+      if (sumTk) sumTk.textContent = cmdCount('cmdFollowUpDueCount');
     }
 
     // ── Schools Board ──────────────────────────────────────────────────
@@ -8388,5 +8424,141 @@
     init();
   </script>
 <script src="jaba-custom.js"></script>
+<script src="jaba-crm-mvp.js"></script>
+<script>
+  /* Inbox sync client — calls the backend /api/sync-inbox endpoint and
+   * updates the header status pill. The actual Gmail call happens
+   * server-side; this script only triggers the sync and renders status.
+   *
+   * No localStorage / sessionStorage / IndexedDB — recent-sync gating uses
+   * an in-memory module variable plus the server's own throttle.
+   */
+  (function () {
+    'use strict';
+    var lastClientRun = 0;
+    var inFlight = false;
+
+    // Resolve the backend base URL.
+    //
+    // In a deployed preview the website-building harness rewrites the
+    // literal string `__PORT_5000__` to a backend-proxy path that forwards
+    // requests to the locally-running Node server on port 5000. If the
+    // placeholder is never rewritten (e.g. running `npm start` locally
+    // where the same Node process serves both the static files and the
+    // /api routes) we strip it and fall back to a relative path so the
+    // browser hits the same origin.
+    function apiBase() {
+      var raw = '__PORT_5000__';
+      // Detect un-rewritten placeholder. We split it across concatenation
+      // so this comparison string itself isn't rewritten by the harness.
+      var sentinel = '__' + 'PORT_5000__';
+      if (raw === sentinel) return '';
+      return raw.replace(/\/+$/, '');
+    }
+
+    function apiUrl(path) {
+      return apiBase() + path;
+    }
+
+    function $(id) { return document.getElementById(id); }
+
+    function fmtTime(iso) {
+      if (!iso) return '';
+      try {
+        var d = new Date(iso);
+        var hh = String(d.getHours()).padStart(2, '0');
+        var mm = String(d.getMinutes()).padStart(2, '0');
+        return hh + ':' + mm;
+      } catch (e) { return ''; }
+    }
+
+    function setStatus(text, color) {
+      var el = $('inboxSyncStatus');
+      if (!el) return;
+      el.textContent = text || '';
+      if (color) el.style.color = color;
+      // Hide the pill entirely when there's no status to show, so the
+      // header doesn't render an empty rounded chip in the deployed view.
+      el.style.display = text ? 'inline-flex' : 'none';
+    }
+
+    function summarize(result) {
+      if (!result || !result.ok) return 'Inbox sync failed';
+      if (result.skipped) return 'Inbox synced ' + fmtTime(result.lastSync) + ' (cached)';
+      var c = result.counts || {};
+      return 'Inbox synced ' + fmtTime(result.finishedAt) +
+        ' · ' + (c.imported || 0) + ' imported, ' +
+        (c.skipped || 0) + ' skipped, ' +
+        (c.tasksCreated || 0) + ' tasks';
+    }
+
+    async function run(opts) {
+      if (inFlight) return;
+      inFlight = true;
+      var btn = $('inboxSyncBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Syncing…'; }
+      setStatus('Inbox: syncing…', '#fdcb6e');
+      try {
+        var r = await fetch(apiUrl('/api/sync-inbox'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(opts || {})
+        });
+        var data = await r.json();
+        if (!r.ok || !data.ok) {
+          setStatus('Inbox sync error: ' + ((data && data.error) || r.status), '#ff6b6b');
+          return data;
+        }
+        lastClientRun = Date.now();
+        setStatus(summarize(data), '#bbb');
+        return data;
+      } catch (e) {
+        setStatus('Inbox sync error: ' + (e && e.message ? e.message : 'network'), '#ff6b6b');
+      } finally {
+        inFlight = false;
+        if (btn) { btn.disabled = false; btn.textContent = 'Sync Inbox'; }
+      }
+    }
+
+    async function loadStatus() {
+      try {
+        var r = await fetch(apiUrl('/api/sync-inbox/status'));
+        var data = await r.json();
+        if (data && data.ok && data.meta && data.meta.lastSync) {
+          setStatus(summarize({
+            ok: true,
+            skipped: false,
+            finishedAt: data.meta.lastSync,
+            counts: (data.meta.lastResult && data.meta.lastResult.counts) || {}
+          }), '#bbb');
+          return data.meta;
+        }
+        setStatus('Inbox: never synced', '#bbb');
+      } catch (e) {
+        // Backend likely not running — leave default text.
+      }
+      return null;
+    }
+
+    async function maybeAutoSync() {
+      var meta = await loadStatus();
+      var ageMs = meta && meta.lastSync ? (Date.now() - Date.parse(meta.lastSync)) : Infinity;
+      // If we haven't synced in the last 30 minutes, run one sync on load.
+      // The server also has its own 5-minute throttle as a backstop.
+      if (ageMs > 30 * 60 * 1000 && !inFlight) {
+        run();
+      }
+    }
+
+    window.jabaInboxSync = { run: run, loadStatus: loadStatus };
+
+    // Defer auto-sync until after the page settles.
+    if (document.readyState === 'complete') {
+      setTimeout(maybeAutoSync, 1500);
+    } else {
+      window.addEventListener('load', function () { setTimeout(maybeAutoSync, 1500); });
+    }
+  })();
+</script>
 </body>
 </html>

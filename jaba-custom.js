@@ -77,7 +77,7 @@
       return window.__leads;
     }
     try {
-      var stored = JSON.parse(localStorage.getItem('bd_leads_v26') || '[]');
+      var stored = JSON.parse(__memStore.getItem('bd_leads_v26') || '[]');
       if (stored.length > 0) return stored;
     } catch(e) {}
     return [];
@@ -1879,7 +1879,7 @@
       return;
     }
     try {
-      var stored = JSON.parse(localStorage.getItem('bd_leads_v26') || '[]');
+      var stored = JSON.parse(__memStore.getItem('bd_leads_v26') || '[]');
       if (stored.length > 0) {
         window.__leads = stored;
         updateCardGridBadges();
