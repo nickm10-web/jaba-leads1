@@ -655,6 +655,7 @@
         label: null,
         items: [
           { name: 'Inbox', id: 'inbox', section: 'inboxSection', type: 'builtin', badge: true },
+          { name: 'Unibox', id: 'unibox', section: 'uniboxSection', type: 'builtin', badge: true },
           { name: 'Meetings', id: 'meetings', section: 'meetingsSection', type: 'builtin', badge: true },
           { name: 'Tasks', id: 'tasks', section: 'tasksSection', type: 'builtin', badge: true },
           { name: 'Playbooks', id: 'playbooks', section: 'playbooksSection', type: 'builtin' }
@@ -728,7 +729,7 @@
     } else {
       var builtinSections = [
         'dashboardSection', 'leadsSection', 'schoolsSection',
-        'inboxSection', 'meetingsSection', 'tasksSection', 'playbooksSection'
+        'inboxSection', 'uniboxSection', 'meetingsSection', 'tasksSection', 'playbooksSection'
       ];
       builtinSections.forEach(function(sectionId) {
         var el = document.getElementById(sectionId);
