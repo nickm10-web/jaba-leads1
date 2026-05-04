@@ -514,19 +514,68 @@
       }
 
       /* Table styles for Firebase sections */
-      .jaba-table {
-        width: 100%; border-collapse: collapse;
+      .jaba-table-wrap {
+        width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
+        border-radius: 8px; border: 1px solid var(--border, #30363d);
         background: var(--glass-bg, rgba(26, 29, 39, 0.8));
-        border: 1px solid var(--border, #30363d); border-radius: 8px; overflow: hidden;
+      }
+      .jaba-table {
+        width: 100%; border-collapse: collapse; table-layout: fixed;
+        background: transparent; border: none; border-radius: 0; min-width: 980px;
       }
       .jaba-table thead { background: var(--bg-secondary, #1a1d27); border-bottom: 1px solid var(--border, #30363d); }
       .jaba-table th {
         padding: 12px; text-align: left; font-size: 12px; font-weight: 600;
         color: var(--text-secondary, #8b949e); text-transform: uppercase; letter-spacing: 0.5px;
+        white-space: nowrap;
       }
-      .jaba-table td { padding: 12px; border-bottom: 1px solid var(--border, #30363d); font-size: 13px; color: var(--text-primary, #e6edf3); }
+      .jaba-table td {
+        padding: 12px; border-bottom: 1px solid var(--border, #30363d);
+        font-size: 13px; color: var(--text-primary, #e6edf3);
+        vertical-align: top; line-height: 1.5; word-wrap: break-word; overflow-wrap: break-word;
+      }
       .jaba-table tbody tr:hover { background: rgba(226, 245, 0, 0.03); }
       .jaba-table tbody tr:last-child td { border-bottom: none; }
+
+      /* Per-column widths for the Jordon/Damar relationship schema.
+         Order: name, relationship, org, lastContact, nextFollowUp, context, actions */
+      .jaba-table.jaba-table-relationship th:nth-child(1),
+      .jaba-table.jaba-table-relationship td:nth-child(1) { width: 14%; }
+      .jaba-table.jaba-table-relationship th:nth-child(2),
+      .jaba-table.jaba-table-relationship td:nth-child(2) { width: 13%; }
+      .jaba-table.jaba-table-relationship th:nth-child(3),
+      .jaba-table.jaba-table-relationship td:nth-child(3) { width: 14%; }
+      .jaba-table.jaba-table-relationship th:nth-child(4),
+      .jaba-table.jaba-table-relationship td:nth-child(4) { width: 10%; white-space: nowrap; }
+      .jaba-table.jaba-table-relationship th:nth-child(5),
+      .jaba-table.jaba-table-relationship td:nth-child(5) { width: 11%; white-space: nowrap; }
+      .jaba-table.jaba-table-relationship th:nth-child(6),
+      .jaba-table.jaba-table-relationship td:nth-child(6) { width: 24%; }
+      .jaba-table.jaba-table-relationship th:nth-child(7),
+      .jaba-table.jaba-table-relationship td:nth-child(7) { width: 14%; white-space: nowrap; }
+
+      .jaba-cell-name { font-weight: 600; color: var(--text-primary, #e6edf3); }
+      .jaba-cell-context {
+        white-space: pre-wrap; color: var(--text-secondary, #c9d1d9);
+        max-height: 5.4em; overflow: hidden; text-overflow: ellipsis;
+        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+      }
+      .jaba-cell-empty { color: var(--text-secondary, #8b949e); opacity: 0.5; }
+      .jaba-meta-pill {
+        display: inline-block; padding: 2px 8px; margin: 0 4px 4px 0;
+        font-size: 11px; font-weight: 600; border-radius: 10px;
+        background: rgba(226, 245, 0, 0.1); color: var(--accent, #E2F500);
+        border: 1px solid rgba(226, 245, 0, 0.25);
+      }
+      .jaba-meta-pill.jaba-meta-pipeline { background: rgba(9, 132, 227, 0.15); color: #6cb6ff; border-color: rgba(9, 132, 227, 0.35); }
+      .jaba-meta-pill.jaba-meta-intro { background: rgba(253, 203, 110, 0.15); color: #fdcb6e; border-color: rgba(253, 203, 110, 0.35); }
+      .jaba-meta-pill.jaba-meta-category { background: rgba(162, 155, 254, 0.15); color: #c4b5fd; border-color: rgba(162, 155, 254, 0.35); }
+      .jaba-cell-meta-row { margin-bottom: 6px; }
+
+      .jaba-actions-cell { white-space: nowrap; }
+      .jaba-actions-cell .jaba-btn {
+        display: inline-block; margin: 2px 2px;
+      }
 
       .jaba-status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: capitalize; }
       .jaba-status-unworked { background: var(--text-secondary, #8b949e); color: white; }
@@ -1251,7 +1300,10 @@
     html += '<div class="jaba-stats-container">';
     html += '<div class="jaba-stat-card"><div class="jaba-stat-number" id="stat-' + dataKey + '">0</div><div class="jaba-stat-label">Total</div></div>';
     html += '</div>';
-    html += '<table class="jaba-table" id="table-' + dataKey + '">';
+    var isRelationshipTable = (dataKey === 'jordonCRM' || dataKey === 'damarCRM');
+    var tableClass = 'jaba-table' + (isRelationshipTable ? ' jaba-table-relationship' : '');
+    html += '<div class="jaba-table-wrap">';
+    html += '<table class="' + tableClass + '" id="table-' + dataKey + '">';
     html += '<thead><tr>';
     columns.forEach(function(col) {
       html += '<th>' + formatColumnHeader(col) + '</th>';
@@ -1259,6 +1311,7 @@
     html += '<th>Actions</th></tr></thead>';
     html += '<tbody id="tbody-' + dataKey + '"></tbody>';
     html += '</table>';
+    html += '</div>';
     return html;
   };
 
@@ -1311,9 +1364,16 @@
         item.id = key;
         if (searchTerm) {
           var matches = false;
-          for (var ci = 0; ci < columns.length; ci++) {
-            var sval = item[columns[ci]];
-            if (sval && sval.toString().toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1) {
+          var searchFields = columns.slice();
+          // Damar legacy fields aren't in the visible column list but are
+          // surfaced in the rendered row, so they must also be searchable.
+          if (isCrmRelationshipDataKey(dataKey)) {
+            searchFields = searchFields.concat(['category', 'pipeline', 'introStatus', 'notes']);
+          }
+          var needle = searchTerm.toLowerCase();
+          for (var ci = 0; ci < searchFields.length; ci++) {
+            var sval = item[searchFields[ci]];
+            if (sval && sval.toString().toLowerCase().indexOf(needle) !== -1) {
               matches = true;
               break;
             }
@@ -1347,7 +1407,16 @@
 
       columns.forEach(function(col) {
         var td = document.createElement('td');
-        var val = item[col] || '';
+        // Damar legacy schema fallback: when a relationship-table column is
+        // empty, fall back to the analogous Damar field so both CRMs render
+        // consistently against the same headers.
+        var val = item[col];
+        if (!val && isCrmRelationshipDataKey(dataKey)) {
+          if (col === 'relationship' && item.category) val = item.category;
+          else if (col === 'context' && item.notes) val = item.notes;
+        }
+        val = val || '';
+
         if (col === 'status') {
           var statusClass = 'jaba-status-' + (val.toLowerCase() || 'unworked');
           td.innerHTML = '<span class="jaba-status-badge ' + statusClass + '">' + val + '</span>';
@@ -1369,20 +1438,47 @@
           } else {
             td.textContent = val;
           }
+        } else if (col === 'name') {
+          td.textContent = val || '\u2014';
+          td.classList.add('jaba-cell-name');
+        } else if (col === 'context' && isCrmRelationshipDataKey(dataKey)) {
+          // Render Damar legacy meta as pills above the body text so
+          // pipeline / introStatus / category remain visible without their
+          // own columns. Body text wraps with a 3-line clamp.
+          var pillsHtml = '';
+          if (item.pipeline) pillsHtml += '<span class="jaba-meta-pill jaba-meta-pipeline">' + escapeAttr(item.pipeline) + '</span>';
+          if (item.introStatus) pillsHtml += '<span class="jaba-meta-pill jaba-meta-intro">' + escapeAttr(item.introStatus) + '</span>';
+          // Only show category pill when it didn't already become the relationship value.
+          if (item.category && item.relationship) pillsHtml += '<span class="jaba-meta-pill jaba-meta-category">' + escapeAttr(item.category) + '</span>';
+          var bodyHtml = val
+            ? '<div class="jaba-cell-context">' + escapeAttr(val) + '</div>'
+            : (pillsHtml ? '' : '<span class="jaba-cell-empty">\u2014</span>');
+          td.innerHTML = (pillsHtml ? '<div class="jaba-cell-meta-row">' + pillsHtml + '</div>' : '') + bodyHtml;
+        } else if (col === 'context' || col === 'notes') {
+          if (!val) {
+            td.innerHTML = '<span class="jaba-cell-empty">\u2014</span>';
+          } else {
+            var ctxDiv = document.createElement('div');
+            ctxDiv.className = 'jaba-cell-context';
+            ctxDiv.textContent = val;
+            td.appendChild(ctxDiv);
+          }
         } else {
-          td.textContent = val;
+          td.textContent = val || '\u2014';
+          if (!val) td.classList.add('jaba-cell-empty');
         }
         tr.appendChild(td);
       });
 
       var actionsTd = document.createElement('td');
+      actionsTd.className = 'jaba-actions-cell';
       // Show + Note button on the relationship-tracking CRMs only.
-      var isCrmRelationship = (dataKey === 'jordonCRM' || dataKey === 'damarCRM');
+      var isCrmRelationship = isCrmRelationshipDataKey(dataKey);
       var noteBtn = isCrmRelationship
-        ? '<button class="jaba-btn jaba-btn-edit" style="background:rgba(226,245,0,0.18);color:#000;" onclick="jabaCustom.addQuickNoteToCrm(\'' + dataKey + '\', \'' + item.id + '\')">+ Note</button>'
+        ? '<button class="jaba-btn jaba-btn-edit" style="background:rgba(226,245,0,0.18);color:#000;" onclick="jabaCustom.addQuickNoteToCrm(\'' + dataKey + '\', \'' + item.id + '\')">+ Note</button> '
         : '';
       actionsTd.innerHTML = noteBtn +
-                            '<button class="jaba-btn jaba-btn-edit" onclick="jabaCustom.handleEdit(\'' + dataKey + '\', \'' + item.id + '\')">Edit</button>' +
+                            '<button class="jaba-btn jaba-btn-edit" onclick="jabaCustom.handleEdit(\'' + dataKey + '\', \'' + item.id + '\')">Edit</button> ' +
                             '<button class="jaba-btn jaba-btn-delete" onclick="jabaCustom.handleDelete(\'' + dataKey + '\', \'' + item.id + '\')">Delete</button>';
       tr.appendChild(actionsTd);
       tbody.appendChild(tr);
@@ -1400,6 +1496,10 @@
 
   // Both Jordon CRM and Damar CRM use the same relationship-tracking schema.
   var RELATIONSHIP_COLUMNS = ['name', 'relationship', 'org', 'lastContact', 'nextFollowUp', 'context'];
+
+  var isCrmRelationshipDataKey = function(dataKey) {
+    return dataKey === 'jordonCRM' || dataKey === 'damarCRM';
+  };
 
   var getColumnsForDataKey = function(dataKey) {
     var columnsMap = {
