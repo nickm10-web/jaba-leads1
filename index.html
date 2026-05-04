@@ -1312,6 +1312,182 @@
       }
     }
 
+    /* Unibox (unified inbox across multiple mailboxes) */
+    .unibox-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .unibox-stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .unibox-stat {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--text-secondary);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      min-width: 130px;
+    }
+    .unibox-stat-warning { border-left-color: #fdcb6e; }
+    .unibox-stat-num { font-size: 22px; font-weight: 700; line-height: 1.1; }
+    .unibox-stat-warning .unibox-stat-num { color: #fdcb6e; }
+    .unibox-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+    .unibox-controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .unibox-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .unibox-filter-btn {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .unibox-filter-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+    .unibox-search {
+      flex: 1 1 240px;
+      max-width: 320px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    .unibox-list {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .unibox-row {
+      display: grid;
+      grid-template-columns: 150px 1fr 110px 110px;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .unibox-row:last-child { border-bottom: none; }
+    .unibox-row:hover { background: var(--bg-tertiary); }
+    .unibox-row.needs-reply { border-left: 3px solid #fdcb6e; }
+    .unibox-row.done { opacity: 0.55; }
+
+    .unibox-source {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .unibox-source-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      width: fit-content;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .unibox-source-pill.jaba { background: rgba(0, 184, 148, 0.15); color: #00b894; }
+    .unibox-source-pill.jaster { background: rgba(116, 185, 255, 0.15); color: #74b9ff; }
+    .unibox-source-pill.legacy { background: rgba(253, 203, 110, 0.15); color: #fdcb6e; }
+    .unibox-row-owner {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .unibox-main { min-width: 0; }
+    .unibox-person {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .unibox-person .unibox-account {
+      color: var(--text-secondary);
+      font-weight: 500;
+      margin-left: 6px;
+    }
+    .unibox-subject {
+      font-size: 12px;
+      color: var(--text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      margin-top: 2px;
+    }
+    .unibox-status {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .unibox-status .needs-reply-tag {
+      color: #fdcb6e;
+      font-weight: 600;
+    }
+    .unibox-status .done-tag { color: #00b894; font-weight: 600; }
+    .unibox-date {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .unibox-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .unibox-empty {
+      padding: 32px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    @media (max-width: 800px) {
+      .unibox-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      .unibox-actions { justify-content: flex-start; }
+    }
+
     /* Tasks View */
     .task-quick-add {
       display: grid;
@@ -3292,6 +3468,7 @@
       <button class="top-tab" data-section="leads" onclick="switchSection('leads')">Leads <span class="tab-badge" id="leadsBadge" style="background:var(--accent);color:#000;">0</span></button>
       <button class="top-tab" data-section="schools" onclick="switchSection('schools')">Schools</button>
       <button class="top-tab" data-section="inbox" onclick="switchSection('inbox')">Inbox <span class="tab-badge" id="inboxBadge">0</span></button>
+      <button class="top-tab" data-section="unibox" onclick="switchSection('unibox')">Unibox <span class="tab-badge" id="uniboxBadge">0</span></button>
       <button class="top-tab" data-section="meetings" onclick="switchSection('meetings')">Meetings <span class="tab-badge" id="meetingsBadge">0</span></button>
       <button class="top-tab" data-section="tasks" onclick="switchSection('tasks')">Tasks <span class="tab-badge" id="tasksBadge">0</span></button>
       <button class="top-tab" data-section="crmMvp" onclick="switchSection('crmMvp')">CRM</button>
@@ -3563,6 +3740,59 @@
       <!-- Thread Detail Panel (slides in from right) -->
       <div id="threadPanel" style="display:none;position:fixed;top:0;right:0;width:560px;max-width:90vw;height:100vh;background:var(--bg-primary);border-left:1px solid var(--border);z-index:1000;padding:24px;overflow-y:auto;box-shadow:-4px 0 24px rgba(0,0,0,0.3);transition:transform 0.2s ease;"></div>
     </div><!-- /inboxSection -->
+
+    <!-- UNIBOX SECTION (unified inbox across multiple Gmail accounts) -->
+    <div id="uniboxSection" style="display:none;">
+      <div class="unibox-header">
+        <div>
+          <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-size:24px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0;">Unibox</h2>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Unified view of synced Gmail across <span id="uniboxConfigured">all configured</span> mailboxes</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span id="uniboxLastSyncMeta" style="font-size:11px;color:var(--text-secondary);"></span>
+          <button class="btn btn-secondary btn-sm" onclick="window.jabaInboxSync && window.jabaInboxSync.run({force:true})">Sync Now</button>
+          <button class="btn btn-secondary btn-sm" onclick="window.jabaInboxSync && window.jabaInboxSync.promptForWebhooks()">Configure Webhooks</button>
+        </div>
+      </div>
+
+      <div class="unibox-stats">
+        <div class="unibox-stat unibox-stat-warning">
+          <span class="unibox-stat-num" id="uniboxNeedsReply">0</span>
+          <span class="unibox-stat-label">Needs Reply</span>
+        </div>
+        <div class="unibox-stat">
+          <span class="unibox-stat-num" id="uniboxJabaCount">0</span>
+          <span class="unibox-stat-label">jordon@jaba.ai</span>
+        </div>
+        <div class="unibox-stat">
+          <span class="unibox-stat-num" id="uniboxJasterCount">0</span>
+          <span class="unibox-stat-label">jordon@jastercreative.com</span>
+        </div>
+        <div class="unibox-stat">
+          <span class="unibox-stat-num" id="uniboxLegacyCount">0</span>
+          <span class="unibox-stat-label">Unknown / legacy</span>
+        </div>
+        <div class="unibox-stat" style="border-left:1px solid var(--border);padding-left:16px;">
+          <span class="unibox-stat-num" id="uniboxTotalCount">0</span>
+          <span class="unibox-stat-label">Total threads</span>
+        </div>
+      </div>
+
+      <div class="unibox-controls">
+        <div class="unibox-filters" role="toolbar" aria-label="Filter unified inbox">
+          <button class="unibox-filter-btn active" data-unibox-filter="all">All</button>
+          <button class="unibox-filter-btn" data-unibox-filter="needs-reply">Needs reply</button>
+          <button class="unibox-filter-btn" data-unibox-filter="jordon@jaba.ai">jordon@jaba.ai</button>
+          <button class="unibox-filter-btn" data-unibox-filter="jordon@jastercreative.com">jordon@jastercreative.com</button>
+          <button class="unibox-filter-btn" data-unibox-filter="legacy">Unknown / legacy</button>
+        </div>
+        <input id="uniboxSearch" class="unibox-search" type="search"
+               placeholder="Search person, account, or subject…"
+               aria-label="Search unified inbox">
+      </div>
+
+      <div id="uniboxList" class="unibox-list" role="list"></div>
+    </div><!-- /uniboxSection -->
 
     <!-- MEETINGS SECTION -->
     <div id="meetingsSection" style="display:none;">
@@ -6458,6 +6688,8 @@
       document.getElementById('dashboardSection').style.display = section === 'dashboard' ? 'block' : 'none';
       document.getElementById('leadsSection').style.display = section === 'leads' ? 'block' : 'none';
       document.getElementById('inboxSection').style.display = section === 'inbox' ? 'block' : 'none';
+      var uniboxEl = document.getElementById('uniboxSection');
+      if (uniboxEl) uniboxEl.style.display = section === 'unibox' ? 'block' : 'none';
       document.getElementById('meetingsSection').style.display = section === 'meetings' ? 'block' : 'none';
       document.getElementById('tasksSection').style.display = section === 'tasks' ? 'block' : 'none';
       document.getElementById('schoolsSection').style.display = section === 'schools' ? 'block' : 'none';
@@ -6475,6 +6707,8 @@
       } else if (section === 'inbox') {
         renderInbox();
         if (currentInboxView === 'gmail') renderGmailInbox();
+      } else if (section === 'unibox') {
+        if (window.jabaUnibox && window.jabaUnibox.render) window.jabaUnibox.render();
       } else if (section === 'meetings') {
         renderMeetings();
       } else if (section === 'tasks') {
@@ -8455,6 +8689,11 @@
     var inFlight = false;
 
     var WEBHOOK_LS_KEY = 'jaba.inboxSyncWebhookUrl';
+    // New multi-mailbox key. Stores a JSON array of objects:
+    //   [{ url:'https://script.google.com/.../exec', label:'jordon@jaba.ai' }, ...]
+    // Backward compatible: if this key is empty, we fall through to the
+    // legacy single-URL key above so existing setups keep working.
+    var WEBHOOK_LIST_LS_KEY = 'jaba.inboxSyncWebhookUrls';
 
     // Resolve the backend base URL.
     //
@@ -8490,7 +8729,60 @@
         var ls = window.localStorage && window.localStorage.getItem(WEBHOOK_LS_KEY);
         if (ls && ls.indexOf('http') === 0) return ls.trim();
       } catch (_) { /* ignore */ }
-      return '';
+      // Fall through to the multi-webhook list — pick the first URL so
+      // legacy callers that expect a single string still get something.
+      var list = getWebhookUrls();
+      return (list[0] && list[0].url) || '';
+    }
+
+    // Returns an array of {url,label} for every configured Apps Script
+    // deployment. Order:
+    //   1. window.JABA_INBOX_SYNC_WEBHOOK_URLS (array of strings or
+    //      {url,label} objects, set in a <script> tag for deploy-time
+    //      multi-mailbox config)
+    //   2. localStorage `jaba.inboxSyncWebhookUrls` (JSON array)
+    //   3. legacy single URL keys (window.JABA_INBOX_SYNC_WEBHOOK_URL or
+    //      localStorage `jaba.inboxSyncWebhookUrl`) — wrapped into an
+    //      array of length 1 for compatibility.
+    function getWebhookUrls() {
+      var out = [];
+      function pushNorm(v) {
+        if (!v) return;
+        if (typeof v === 'string' && v.indexOf('http') === 0) {
+          out.push({ url: v.trim(), label: '' });
+        } else if (v && typeof v === 'object' && typeof v.url === 'string' && v.url.indexOf('http') === 0) {
+          out.push({ url: v.url.trim(), label: String(v.label || '').trim() });
+        }
+      }
+      try {
+        var globalList = window.JABA_INBOX_SYNC_WEBHOOK_URLS;
+        if (Array.isArray(globalList)) globalList.forEach(pushNorm);
+      } catch (_) { /* ignore */ }
+      if (out.length === 0) {
+        try {
+          var raw = window.localStorage && window.localStorage.getItem(WEBHOOK_LIST_LS_KEY);
+          if (raw) {
+            var parsed = JSON.parse(raw);
+            if (Array.isArray(parsed)) parsed.forEach(pushNorm);
+          }
+        } catch (_) { /* ignore */ }
+      }
+      if (out.length === 0) {
+        // Legacy single-URL fallback.
+        try {
+          if (typeof window.JABA_INBOX_SYNC_WEBHOOK_URL === 'string' &&
+              window.JABA_INBOX_SYNC_WEBHOOK_URL.indexOf('http') === 0) {
+            out.push({ url: window.JABA_INBOX_SYNC_WEBHOOK_URL.trim(), label: '' });
+          }
+        } catch (_) { /* ignore */ }
+        try {
+          var ls = window.localStorage && window.localStorage.getItem(WEBHOOK_LS_KEY);
+          if (ls && ls.indexOf('http') === 0 && !out.some(function (x) { return x.url === ls.trim(); })) {
+            out.push({ url: ls.trim(), label: '' });
+          }
+        } catch (_) { /* ignore */ }
+      }
+      return out;
     }
 
     function setWebhookUrl(url) {
@@ -8499,6 +8791,22 @@
           window.localStorage.removeItem(WEBHOOK_LS_KEY);
         } else {
           window.localStorage.setItem(WEBHOOK_LS_KEY, String(url).trim());
+        }
+        return true;
+      } catch (_) { return false; }
+    }
+
+    function setWebhookUrls(list) {
+      try {
+        if (!Array.isArray(list) || list.length === 0) {
+          window.localStorage.removeItem(WEBHOOK_LIST_LS_KEY);
+        } else {
+          var clean = list.filter(function (x) {
+            return x && typeof x.url === 'string' && x.url.indexOf('http') === 0;
+          }).map(function (x) {
+            return { url: x.url.trim(), label: String(x.label || '').trim() };
+          });
+          window.localStorage.setItem(WEBHOOK_LIST_LS_KEY, JSON.stringify(clean));
         }
         return true;
       } catch (_) { return false; }
@@ -8570,6 +8878,37 @@
       var next = window.prompt(msg, current || '');
       if (next === null) return false; // cancelled
       setWebhookUrl(next.trim());
+      return true;
+    }
+
+    // Multi-mailbox prompt. Asks for one URL per mailbox label and
+    // stores them as a JSON array. Pass through promptForWebhook() if
+    // you only have one mailbox — that path is preserved.
+    function promptForWebhooks() {
+      var list = getWebhookUrls();
+      var labels = ['jordon@jaba.ai', 'jordon@jastercreative.com'];
+      var next = [];
+      for (var i = 0; i < labels.length; i++) {
+        var existing = '';
+        for (var j = 0; j < list.length; j++) {
+          if (list[j] && (list[j].label === labels[i] ||
+              (list[j].url && list[j].url.indexOf(labels[i].split('@')[1]) >= 0))) {
+            existing = list[j].url; break;
+          }
+          // Fall through to first unlabeled URL for the first slot
+          if (i === 0 && !existing && list[j] && !list[j].label) existing = list[j].url;
+        }
+        var ans = window.prompt(
+          'Apps Script Web App URL for ' + labels[i] + '\n\n' +
+          'Leave blank to skip this mailbox. Cancel to abort the whole prompt.',
+          existing || '');
+        if (ans === null) return false;
+        ans = ans.trim();
+        if (ans) next.push({ url: ans, label: labels[i] });
+      }
+      setWebhookUrls(next);
+      // Clear the legacy single-URL key so we don't shadow the list.
+      try { window.localStorage.removeItem(WEBHOOK_LS_KEY); } catch (_) {}
       return true;
     }
 
@@ -8653,6 +8992,40 @@
       return data;
     }
 
+    // Aggregates per-webhook responses into one summary so the header
+    // pill / Unibox status pill can render a single line for all
+    // mailboxes.
+    function aggregateResults(results) {
+      var c = { imported: 0, skipped: 0, tasksCreated: 0, fetched: 0, duplicates: 0 };
+      var anyOk = false, anyFail = false, errors = [], perInbox = [];
+      var latestFinishedAt = '';
+      for (var i = 0; i < results.length; i++) {
+        var r = results[i] || {};
+        if (r.ok) anyOk = true; else { anyFail = true; if (r.error) errors.push(r.error); }
+        if (r.counts) {
+          c.imported     += (r.counts.imported     || 0);
+          c.skipped      += (r.counts.skipped      || 0);
+          c.tasksCreated += (r.counts.tasksCreated || 0);
+          c.fetched      += (r.counts.fetched      || 0);
+          c.duplicates   += (r.counts.duplicates   || 0);
+        }
+        if (r.finishedAt && r.finishedAt > latestFinishedAt) latestFinishedAt = r.finishedAt;
+        perInbox.push({
+          sourceInbox: r.sourceInbox || r.mailboxOwner || (r._label || ''),
+          ok: !!r.ok, error: r.error || null,
+          counts: r.counts || null, skipped: !!r.skipped
+        });
+      }
+      return {
+        ok: !anyFail || (anyOk && !results.every(function (r) { return r && !r.ok; })),
+        partial: anyOk && anyFail,
+        counts: c, perInbox: perInbox,
+        finishedAt: latestFinishedAt || new Date().toISOString(),
+        error: errors.length ? errors.join('; ') : null,
+        transport: 'webhook'
+      };
+    }
+
     async function run(opts) {
       if (inFlight) return;
       inFlight = true;
@@ -8660,10 +9033,23 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Syncing…'; }
       setStatus('Inbox: syncing…', '#fdcb6e');
       try {
-        var webhookUrl = getWebhookUrl();
+        var webhooks = getWebhookUrls();
         var data;
-        if (webhookUrl) {
-          data = await runViaWebhook(webhookUrl, opts);
+        if (webhooks.length > 0) {
+          // Fan out in parallel across every configured Apps Script
+          // deployment. Each one writes into the same Firebase paths,
+          // partitioned by sourceInbox so the Unibox can show them
+          // side-by-side. We don't fail the whole run if one mailbox
+          // is offline — partial success is still useful.
+          var responses = await Promise.all(webhooks.map(function (w) {
+            return runViaWebhook(w.url, opts).then(function (r) {
+              r = r || {};
+              if (!r.sourceInbox && w.label) r.sourceInbox = w.label;
+              r._label = w.label || '';
+              return r;
+            });
+          }));
+          data = aggregateResults(responses);
         } else {
           data = await runViaBackend(opts);
           if (data && data.notDeployed) {
@@ -8688,7 +9074,10 @@
           return data;
         }
         lastClientRun = Date.now();
-        setStatus(summarize(data), '#bbb');
+        setStatus(summarize(data) + (data.partial ? ' (partial)' : ''), '#bbb');
+        try {
+          if (window.jabaUnibox && window.jabaUnibox.render) window.jabaUnibox.render();
+        } catch (_) {}
         return data;
       } catch (e) {
         // Should be unreachable — runViaWebhook/runViaBackend swallow
@@ -8761,7 +9150,10 @@
       loadStatus: loadStatus,
       getWebhookUrl: getWebhookUrl,
       setWebhookUrl: setWebhookUrl,
-      promptForWebhook: promptForWebhook
+      promptForWebhook: promptForWebhook,
+      getWebhookUrls: getWebhookUrls,
+      setWebhookUrls: setWebhookUrls,
+      promptForWebhooks: promptForWebhooks
     };
 
     // Defer auto-sync until after the page settles.
@@ -8770,6 +9162,453 @@
     } else {
       window.addEventListener('load', function () { setTimeout(maybeAutoSync, 1500); });
     }
+  })();
+</script>
+<script>
+  /* JABA Unibox — unified inbox view across multiple Gmail accounts.
+   *
+   * Reads the Firebase RTDB caches that the SPA already loads via
+   * jaba-crm-mvp.js: window.jabaMvp.data.activities (Gmail-sourced
+   * activity rows) and window.jabaMvp.data.mvpTasks (Reply Required
+   * tasks). Each Apps Script deployment stamps `sourceInbox` on the
+   * records it writes; legacy records that pre-date the multi-mailbox
+   * change are bucketed as "Unknown / legacy".
+   *
+   * The Unibox is a separate top-level section ("Unibox" tab). The
+   * existing "Inbox" tab is left untouched so its Pipeline/Timeline/
+   * Kanban views and Gmail OAuth flow keep working for the user's
+   * primary mailbox.
+   */
+  (function () {
+    'use strict';
+
+    // Filter state. 'all' | 'needs-reply' | 'jordon@jaba.ai' |
+    // 'jordon@jastercreative.com' | 'legacy'
+    var filter = 'all';
+    var query = '';
+
+    // Map a record's stored sourceInbox value into one of the four
+    // logical buckets the filter chips use. Anything that doesn't match
+    // a known mailbox falls into "legacy" so old records still show up.
+    function classifyInbox(srcRaw) {
+      var src = String(srcRaw || '').toLowerCase();
+      if (!src) return 'legacy';
+      if (src.indexOf('jaba.ai') >= 0) return 'jordon@jaba.ai';
+      if (src.indexOf('jastercreative.com') >= 0) return 'jordon@jastercreative.com';
+      // Friendly labels we let the user set in SOURCE_INBOX
+      if (src === 'jaba') return 'jordon@jaba.ai';
+      if (src === 'jaster') return 'jordon@jastercreative.com';
+      return 'legacy';
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function fmtDate(iso) {
+      if (!iso) return '';
+      try {
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return '';
+        var now = new Date();
+        var sameDay = d.toDateString() === now.toDateString();
+        if (sameDay) {
+          return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        var diffDays = Math.floor((now - d) / 86400000);
+        if (diffDays < 7) return d.toLocaleDateString([], { weekday: 'short' });
+        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      } catch (_) { return ''; }
+    }
+
+    // Pull the activity + task feeds from the live MVP cache.
+    // We dedup by threadId so a thread that produced both an activity
+    // AND a reply-required task only renders once (with the task's
+    // status visible). Threads missing a threadId fall back to sourceId.
+    function buildRows() {
+      var mvp = window.jabaMvp;
+      var activities = (mvp && mvp.data && Array.isArray(mvp.data.activities)) ? mvp.data.activities : [];
+      var tasks      = (mvp && mvp.data && Array.isArray(mvp.data.mvpTasks)) ? mvp.data.mvpTasks : [];
+
+      // Index Reply Required tasks by threadId/sourceId so we can join
+      // them onto the activity rows.
+      var taskByKey = {};
+      for (var i = 0; i < tasks.length; i++) {
+        var t = tasks[i];
+        if (!t || t.type !== 'Reply Required') continue;
+        var k1 = t.threadId || '';
+        var k2 = t.sourceId || '';
+        if (k1) taskByKey['t:' + k1] = t;
+        if (k2) taskByKey['m:' + k2] = t;
+      }
+
+      var rowsByKey = {};
+      var rowsOrder = [];
+      function upsertRow(key, row) {
+        if (!key) {
+          rowsOrder.push(row);
+          return;
+        }
+        var existing = rowsByKey[key];
+        if (!existing) {
+          rowsByKey[key] = row;
+          rowsOrder.push(row);
+          return;
+        }
+        // Keep the most recent activity per thread; merge needsReply.
+        if (row.timestamp && (!existing.timestamp || row.timestamp > existing.timestamp)) {
+          row.needsReply = row.needsReply || existing.needsReply;
+          row.task = row.task || existing.task;
+          rowsByKey[key] = row;
+          // replace in order
+          for (var i = 0; i < rowsOrder.length; i++) {
+            if (rowsOrder[i] === existing) { rowsOrder[i] = row; break; }
+          }
+        } else {
+          existing.needsReply = existing.needsReply || row.needsReply;
+          existing.task = existing.task || row.task;
+        }
+      }
+
+      // 1) Gmail-sourced activities.
+      for (var ai = 0; ai < activities.length; ai++) {
+        var a = activities[ai];
+        if (!a || a.sourceKind !== 'gmail') continue;
+        var key = a.threadId ? ('t:' + a.threadId) : (a.sourceId ? ('m:' + a.sourceId) : '');
+        var task = (key && taskByKey[key]) || null;
+        var row = {
+          id: a.id,
+          threadId: a.threadId || '',
+          sourceId: a.sourceId || '',
+          source: a.sourceInbox || a.mailboxOwner || '',
+          mailboxOwner: a.mailboxOwner || '',
+          inboxBucket: classifyInbox(a.sourceInbox || a.mailboxOwner),
+          person: a.person || a.personEmail || '',
+          personEmail: a.personEmail || '',
+          accountName: a.accountName || '',
+          subject: a.subject || (function () {
+            // Older records only stored the bracket-prefixed summary
+            // — try to pull the subject back out of "[Subject] body".
+            var m = String(a.summary || '').match(/^\[([^\]]+)\]/);
+            return m ? m[1] : '';
+          })(),
+          summary: a.summary || '',
+          owner: a.owner || '',
+          timestamp: a.timestamp || a.createdDate || '',
+          activityType: a.activityType || '',
+          isOutbound: a.activityType === 'Email sent',
+          needsReply: !!a.followUpRequired,
+          task: task
+        };
+        upsertRow(key, row);
+      }
+
+      // 2) Reply-required tasks that don't have a matching activity row
+      // (rare, but possible if activities were trimmed). Synthesize a
+      // row so the user still sees the work item.
+      for (var ti = 0; ti < tasks.length; ti++) {
+        var tk = tasks[ti];
+        if (!tk || tk.type !== 'Reply Required') continue;
+        var keyT = tk.threadId ? ('t:' + tk.threadId) : (tk.sourceId ? ('m:' + tk.sourceId) : '');
+        if (keyT && rowsByKey[keyT]) continue;
+        upsertRow(keyT, {
+          id: 'task-' + tk.id,
+          threadId: tk.threadId || '',
+          sourceId: tk.sourceId || '',
+          source: tk.sourceInbox || tk.mailboxOwner || '',
+          mailboxOwner: tk.mailboxOwner || '',
+          inboxBucket: classifyInbox(tk.sourceInbox || tk.mailboxOwner),
+          person: tk.person || tk.personEmail || '',
+          personEmail: tk.personEmail || '',
+          accountName: tk.accountName || '',
+          subject: tk.subject || (tk.title || '').replace(/^Reply:\s*/, ''),
+          summary: tk.title || '',
+          owner: tk.owner || '',
+          timestamp: tk.createdDate || '',
+          activityType: 'Reply Required',
+          isOutbound: false,
+          needsReply: tk.status !== 'done',
+          task: tk
+        });
+      }
+
+      rowsOrder.sort(function (a, b) {
+        return String(b.timestamp || '').localeCompare(String(a.timestamp || ''));
+      });
+      return rowsOrder;
+    }
+
+    function applyFilters(rows) {
+      var q = query.trim().toLowerCase();
+      var out = [];
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        if (filter === 'needs-reply') {
+          if (!r.needsReply) continue;
+          if (r.task && r.task.status === 'done') continue;
+        } else if (filter === 'jordon@jaba.ai' || filter === 'jordon@jastercreative.com' || filter === 'legacy') {
+          if (r.inboxBucket !== filter) continue;
+        }
+        if (q) {
+          var hay = (r.person + ' ' + r.personEmail + ' ' + r.accountName + ' ' + r.subject + ' ' + r.summary).toLowerCase();
+          if (hay.indexOf(q) < 0) continue;
+        }
+        out.push(r);
+      }
+      return out;
+    }
+
+    function pillClass(bucket) {
+      if (bucket === 'jordon@jaba.ai') return 'jaba';
+      if (bucket === 'jordon@jastercreative.com') return 'jaster';
+      return 'legacy';
+    }
+
+    function pillLabel(row) {
+      if (row.inboxBucket === 'jordon@jaba.ai') return 'jaba.ai';
+      if (row.inboxBucket === 'jordon@jastercreative.com') return 'jaster';
+      // Default legacy records (no sourceInbox) to the historical
+      // mailbox so the user sees a useful label rather than "Unknown".
+      return row.source ? row.source : 'Legacy sync';
+    }
+
+    function rowHtml(r) {
+      var taskDone = r.task && r.task.status === 'done';
+      var classes = ['unibox-row'];
+      if (r.needsReply && !taskDone) classes.push('needs-reply');
+      if (taskDone) classes.push('done');
+
+      var actionBtn = '';
+      if (r.task && r.task.id != null) {
+        if (taskDone) {
+          actionBtn = '<span class="unibox-status"><span class="done-tag">✓ Done</span></span>';
+        } else {
+          // jabaMvp.completeTask persists to Firebase via mvp/mvp_tasks_v1.
+          actionBtn = '<button class="btn btn-secondary btn-sm" ' +
+            'onclick="window.jabaUnibox.markTaskDone(' + r.task.id + ')">Mark replied</button>';
+        }
+      } else if (r.needsReply) {
+        // Activity flagged needsReply but no task object linked. Show a
+        // disabled-ish hint so the user sees state without us mutating
+        // anything risky. TODO: optionally synthesize a task here.
+        actionBtn = '<span class="unibox-status"><span class="needs-reply-tag">Needs reply</span></span>';
+      }
+
+      var subject = r.subject || (r.summary ? r.summary.slice(0, 100) : '');
+      var person = r.isOutbound
+        ? ('To: ' + (r.person || r.personEmail || ''))
+        : (r.person || r.personEmail || '');
+
+      return '<div class="' + classes.join(' ') + '" role="listitem">' +
+        '<div class="unibox-source">' +
+          '<span class="unibox-source-pill ' + pillClass(r.inboxBucket) + '" title="' +
+            escapeHtml(r.source || r.mailboxOwner || 'legacy sync') + '">' +
+            escapeHtml(pillLabel(r)) +
+          '</span>' +
+          (r.owner ? '<span class="unibox-row-owner">Owner: ' + escapeHtml(r.owner) + '</span>' : '') +
+        '</div>' +
+        '<div class="unibox-main">' +
+          '<div class="unibox-person">' +
+            escapeHtml(person || '(no sender)') +
+            (r.accountName ? '<span class="unibox-account">· ' + escapeHtml(r.accountName) + '</span>' : '') +
+          '</div>' +
+          '<div class="unibox-subject" title="' + escapeHtml(r.summary || '') + '">' +
+            escapeHtml(subject || '(no subject)') +
+          '</div>' +
+        '</div>' +
+        '<div class="unibox-date">' + escapeHtml(fmtDate(r.timestamp)) + '</div>' +
+        '<div class="unibox-actions">' + actionBtn + '</div>' +
+      '</div>';
+    }
+
+    function renderStats(allRows) {
+      var counts = {
+        needsReply: 0,
+        'jordon@jaba.ai': 0,
+        'jordon@jastercreative.com': 0,
+        legacy: 0,
+        total: allRows.length
+      };
+      for (var i = 0; i < allRows.length; i++) {
+        var r = allRows[i];
+        if (r.needsReply && !(r.task && r.task.status === 'done')) counts.needsReply++;
+        counts[r.inboxBucket] = (counts[r.inboxBucket] || 0) + 1;
+      }
+      var ids = {
+        uniboxNeedsReply: counts.needsReply,
+        uniboxJabaCount: counts['jordon@jaba.ai'],
+        uniboxJasterCount: counts['jordon@jastercreative.com'],
+        uniboxLegacyCount: counts.legacy,
+        uniboxTotalCount: counts.total
+      };
+      Object.keys(ids).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = ids[id];
+      });
+      var badge = document.getElementById('uniboxBadge');
+      if (badge) badge.textContent = counts.needsReply;
+
+      // Configured-mailboxes hint
+      var hint = document.getElementById('uniboxConfigured');
+      if (hint && window.jabaInboxSync && typeof window.jabaInboxSync.getWebhookUrls === 'function') {
+        var urls = window.jabaInboxSync.getWebhookUrls();
+        if (urls.length === 0) hint.textContent = 'no webhook configured';
+        else if (urls.length === 1) hint.textContent = (urls[0].label || '1 mailbox');
+        else hint.textContent = urls.length + ' mailboxes';
+      }
+
+      // Last-sync per-inbox blurb. Reads the metadata blob the Apps
+      // Script writes back at mvp/mvp_inbox_sync_v1.
+      var meta = (mvpReadCache_('mvp_inbox_sync_v1')) || null;
+      var lastEl = document.getElementById('uniboxLastSyncMeta');
+      if (lastEl) {
+        if (!meta) {
+          lastEl.textContent = '';
+        } else if (meta.byInbox && typeof meta.byInbox === 'object') {
+          var parts = [];
+          Object.keys(meta.byInbox).forEach(function (k) {
+            var slot = meta.byInbox[k];
+            if (!slot || !slot.lastSync) return;
+            var d = new Date(slot.lastSync);
+            parts.push(k + ': ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+          });
+          lastEl.textContent = parts.join(' · ');
+        } else if (meta.lastSync) {
+          var dd = new Date(meta.lastSync);
+          lastEl.textContent = 'last sync ' + dd.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+      }
+    }
+
+    // Read a cached MVP store from window.jabaMvp.data, by key suffix.
+    // We don't make a fresh Firebase round-trip here — the SPA's
+    // Firebase listener keeps these in sync. The metadata blob isn't
+    // an array store, so it isn't cached; we read directly via Firebase
+    // if available.
+    function mvpReadCache_(key) {
+      try {
+        if (key === 'mvp_inbox_sync_v1' && window.db && typeof window.db.ref === 'function') {
+          // Best effort: synchronous-ish lookup from a memoized handle.
+          if (mvpReadCache_._cache && mvpReadCache_._cache[key]) return mvpReadCache_._cache[key];
+        }
+      } catch (_) {}
+      return null;
+    }
+
+    // Subscribe to mvp/mvp_inbox_sync_v1 once so we have a fresh
+    // metadata blob to render. No-op if Firebase isn't initialized.
+    function subscribeMeta() {
+      try {
+        if (!window.db || typeof window.db.ref !== 'function') return;
+        if (subscribeMeta._bound) return;
+        subscribeMeta._bound = true;
+        window.db.ref('mvp/mvp_inbox_sync_v1').on('value', function (snap) {
+          var v = snap && snap.val ? snap.val() : null;
+          mvpReadCache_._cache = mvpReadCache_._cache || {};
+          mvpReadCache_._cache.mvp_inbox_sync_v1 = v;
+          if (currentSection() === 'unibox') renderInternal();
+        });
+      } catch (_) {}
+    }
+
+    function currentSection() {
+      try {
+        var active = document.querySelector('.top-tab.active');
+        return active ? active.dataset.section : '';
+      } catch (_) { return ''; }
+    }
+
+    function renderInternal() {
+      var listEl = document.getElementById('uniboxList');
+      if (!listEl) return;
+      var allRows = buildRows();
+      renderStats(allRows);
+      var rows = applyFilters(allRows);
+      if (rows.length === 0) {
+        listEl.innerHTML = '<div class="unibox-empty">No items match this filter. ' +
+          (allRows.length === 0
+            ? 'Run an inbox sync to populate the Unibox.'
+            : 'Try clearing the search or switching filter.') +
+          '</div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < rows.length; i++) html += rowHtml(rows[i]);
+      listEl.innerHTML = html;
+    }
+
+    // Public API.
+    window.jabaUnibox = {
+      render: function () {
+        subscribeMeta();
+        renderInternal();
+      },
+      setFilter: function (f) { filter = f || 'all'; renderInternal(); },
+      setQuery: function (q) { query = String(q || ''); renderInternal(); },
+      markTaskDone: function (id) {
+        if (window.jabaMvp && typeof window.jabaMvp.completeTask === 'function') {
+          window.jabaMvp.completeTask(id);
+          // jabaMvp.completeTask re-renders the dashboard; re-render here too.
+          setTimeout(renderInternal, 50);
+        }
+      }
+    };
+
+    // Wire up filter chips + search box once the DOM is ready.
+    function bindControls() {
+      var btns = document.querySelectorAll('.unibox-filter-btn');
+      btns.forEach(function (b) {
+        b.addEventListener('click', function () {
+          btns.forEach(function (x) { x.classList.remove('active'); });
+          b.classList.add('active');
+          filter = b.dataset.uniboxFilter || 'all';
+          renderInternal();
+        });
+      });
+      var search = document.getElementById('uniboxSearch');
+      if (search) {
+        search.addEventListener('input', function () {
+          query = search.value || '';
+          renderInternal();
+        });
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindControls);
+    } else {
+      bindControls();
+    }
+
+    // Re-render on Firebase real-time updates from jaba-crm-mvp.js.
+    // The MVP module re-renders the dashboard via renderDashboardSections
+    // when listeners fire; we hook a lightweight observer onto window.db
+    // for our two paths.
+    function subscribeMvp() {
+      try {
+        if (!window.db || typeof window.db.ref !== 'function') {
+          setTimeout(subscribeMvp, 1500);
+          return;
+        }
+        window.db.ref('mvp/mvp_activities_v1').on('value', function () {
+          if (currentSection() === 'unibox') renderInternal();
+          // also keep the badge fresh
+          var allRows = buildRows();
+          renderStats(allRows);
+        });
+        window.db.ref('mvp/mvp_tasks_v1').on('value', function () {
+          if (currentSection() === 'unibox') renderInternal();
+          var allRows = buildRows();
+          renderStats(allRows);
+        });
+      } catch (_) { /* non-fatal */ }
+    }
+    setTimeout(subscribeMvp, 2000);
   })();
 </script>
 </body>

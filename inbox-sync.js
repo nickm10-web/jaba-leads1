@@ -255,6 +255,10 @@ async function syncInbox(deps, opts) {
   // opts: { lookbackDays, includeSent, ownerEmail, force }
   opts = opts || {};
   const ownerEmail = (opts.ownerEmail || 'jordon@jaba.ai').toLowerCase();
+  // Stamp on every record so the SPA Unibox can group by mailbox.
+  // Defaults to ownerEmail; pass opts.sourceInbox to override with a
+  // friendly label.
+  const sourceInbox = String(opts.sourceInbox || ownerEmail || 'unknown');
 
   const startedAt = nowISO();
 
@@ -389,7 +393,9 @@ async function syncInbox(deps, opts) {
         source: 'Inbox sync',
         lastActivity: todayISO(),
         nextStep: '',
-        createdDate: nowISO()
+        createdDate: nowISO(),
+        sourceInbox: sourceInbox,
+        mailboxOwner: ownerEmail
       };
       contacts.push(contact);
       counts.contactsCreated++;
@@ -410,7 +416,9 @@ async function syncInbox(deps, opts) {
         createdDate: nowISO(),
         sourceKind: 'gmail',
         sourceId: e.email_id,
-        threadId: e.thread_id || ''
+        threadId: e.thread_id || '',
+        sourceInbox: sourceInbox,
+        mailboxOwner: ownerEmail
       };
       leadIntake.push(li);
       counts.leadIntakeCreated++;
@@ -431,12 +439,15 @@ async function syncInbox(deps, opts) {
       opportunityName: '',
       source: 'Gmail',
       timestamp: e.date || nowISO(),
+      subject: e.subject || '',
       summary: summary,
       owner: 'Jordon',
       followUpRequired: !!cls.needsReply && cls.kind === 'inbound',
       sourceKind: 'gmail',
       sourceId: e.email_id,
-      threadId: e.thread_id || ''
+      threadId: e.thread_id || '',
+      sourceInbox: sourceInbox,
+      mailboxOwner: ownerEmail
     };
     activities.push(activity);
     seenEmailIds.add(e.email_id);
@@ -449,11 +460,18 @@ async function syncInbox(deps, opts) {
     if (activity.followUpRequired) {
       const taskTitle = 'Reply: ' + (e.subject || person || personEmail);
       const dup = tasks.find(function (t) {
-        return t && t.status !== 'done' && t.type === 'Reply Required' && (
-          (t.threadId && e.thread_id && t.threadId === e.thread_id) ||
-          (t.sourceId && t.sourceId === e.email_id) ||
-          (t.title === taskTitle && (t.accountName || '') === (accountName || ''))
-        );
+        if (!t || t.status === 'done' || t.type !== 'Reply Required') return false;
+        if (t.threadId && e.thread_id && t.threadId === e.thread_id) return true;
+        if (t.sourceId && t.sourceId === e.email_id) return true;
+        // Title+account fallback only when the existing task is from
+        // the same source inbox — otherwise the same lead emailing
+        // both mailboxes silently swallows the second reply task.
+        if (t.title === taskTitle &&
+            (t.accountName || '') === (accountName || '') &&
+            (!t.sourceInbox || t.sourceInbox === sourceInbox)) {
+          return true;
+        }
+        return false;
       });
       if (!dup) {
         const t = {
@@ -471,7 +489,11 @@ async function syncInbox(deps, opts) {
           createdDate: nowISO(),
           sourceId: e.email_id,
           sourceKind: 'gmail',
-          threadId: e.thread_id || ''
+          threadId: e.thread_id || '',
+          sourceInbox: sourceInbox,
+          mailboxOwner: ownerEmail,
+          subject: e.subject || '',
+          personEmail: personEmail
         };
         tasks.push(t);
         counts.tasksCreated++;

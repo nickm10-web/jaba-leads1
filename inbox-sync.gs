@@ -21,9 +21,40 @@ var FIREBASE_DB_URL = 'https://jaba-leads-default-rtdb.firebaseio.com';
 // Or paste a database secret (legacy) / OAuth bearer token / ID token.
 var FIREBASE_AUTH_TOKEN = '';
 
-var OWNER_EMAIL = 'jordon@jaba.ai';
+// The Gmail account this script is reading.
+//
+// You may either hard-code OWNER_EMAIL (e.g. 'jordon@jaba.ai' or
+// 'jordon@jastercreative.com') OR leave it blank and the script will
+// fall back to Session.getActiveUser().getEmail() at runtime — that
+// returns the deployer's email when the script is "Execute as: Me",
+// which is the standard Apps Script deployment shape for this app.
+//
+// SOURCE_INBOX is the value stamped on every record this script writes.
+// It defaults to OWNER_EMAIL but can be overridden if you want a
+// friendly label (e.g. 'jaba' or 'jaster'). Keep it stable per
+// deployment — the Unibox in the SPA filters on this value.
+var OWNER_EMAIL = '';
+var SOURCE_INBOX = '';
 var DEFAULT_LOOKBACK_DAYS = 3;
 var MIN_RESYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 min
+
+function resolveOwnerEmail_() {
+  if (OWNER_EMAIL && /@/.test(OWNER_EMAIL)) return String(OWNER_EMAIL).toLowerCase();
+  try {
+    var who = Session.getActiveUser().getEmail();
+    if (who && /@/.test(who)) return String(who).toLowerCase();
+  } catch (_) { /* ignore */ }
+  try {
+    var eff = Session.getEffectiveUser().getEmail();
+    if (eff && /@/.test(eff)) return String(eff).toLowerCase();
+  } catch (_) { /* ignore */ }
+  return '';
+}
+
+function resolveSourceInbox_(ownerEmail) {
+  if (SOURCE_INBOX) return String(SOURCE_INBOX);
+  return ownerEmail || 'unknown';
+}
 
 var STORE = {
   activities:    'mvp/mvp_activities_v1',
@@ -83,13 +114,23 @@ function syncInbox(opts) {
   var lookbackDays = opts.lookbackDays || DEFAULT_LOOKBACK_DAYS;
   if (lookbackDays < 1 || lookbackDays > 14) lookbackDays = DEFAULT_LOOKBACK_DAYS;
 
+  var ownerEmail = resolveOwnerEmail_();
+  var sourceInbox = resolveSourceInbox_(ownerEmail);
+
   var syncMeta = fbRead(STORE.syncMeta) || {};
-  if (!opts.force && syncMeta.lastSync) {
-    var last = Date.parse(syncMeta.lastSync);
+  // Per-inbox throttle slot. We keep a top-level `lastSync` for legacy
+  // readers, plus a `byInbox[<sourceInbox>].lastSync` slot so two
+  // separate Apps Script deployments (jaba.ai, jastercreative.com)
+  // don't cross-throttle each other when they share this metadata blob.
+  var byInbox = (syncMeta && typeof syncMeta.byInbox === 'object' && syncMeta.byInbox) ? syncMeta.byInbox : {};
+  var inboxMeta = byInbox[sourceInbox] || {};
+  if (!opts.force && inboxMeta.lastSync) {
+    var last = Date.parse(inboxMeta.lastSync);
     if (!isNaN(last) && (Date.now() - last) < MIN_RESYNC_INTERVAL_MS) {
       return {
         ok: true, skipped: true, reason: 'recent-sync',
-        lastSync: syncMeta.lastSync, result: syncMeta.lastResult || null
+        sourceInbox: sourceInbox, mailboxOwner: ownerEmail,
+        lastSync: inboxMeta.lastSync, result: inboxMeta.lastResult || null
       };
     }
   }
@@ -128,7 +169,8 @@ function syncInbox(opts) {
         processMessage_(msgs[mi], threads[ti].getId(), {
           activities: activities, tasks: tasks, contacts: contacts,
           accounts: accounts, leadIntake: leadIntake,
-          seenEmailIds: seenEmailIds, counts: counts
+          seenEmailIds: seenEmailIds, counts: counts,
+          ownerEmail: ownerEmail, sourceInbox: sourceInbox
         });
       }
     }
@@ -154,12 +196,24 @@ function syncInbox(opts) {
   var result = {
     ok: writes.failed.length === 0,
     skipped: false,
+    sourceInbox: sourceInbox, mailboxOwner: ownerEmail,
     startedAt: startedAt, finishedAt: finishedAt,
     queries: queries, counts: counts, writes: writes
   };
 
   try {
-    fbWrite(STORE.syncMeta, { lastSync: finishedAt, lastResult: result });
+    // Re-read metadata before the write so we don't clobber the other
+    // inbox's slot if it ran concurrently. byInbox is keyed by
+    // sourceInbox and only this slot is replaced.
+    var freshMeta = fbRead(STORE.syncMeta) || {};
+    var freshByInbox = (freshMeta && typeof freshMeta.byInbox === 'object' && freshMeta.byInbox) ? freshMeta.byInbox : {};
+    freshByInbox[sourceInbox] = { lastSync: finishedAt, lastResult: result, mailboxOwner: ownerEmail };
+    fbWrite(STORE.syncMeta, {
+      lastSync: finishedAt,                       // legacy top-level pointer (last-writer-wins)
+      lastResult: result,                          // legacy mirror of the most recent run
+      lastSourceInbox: sourceInbox,
+      byInbox: freshByInbox
+    });
   } catch (err) {
     result.ok = false;
     result.metaWriteError = String(err && err.message ? err.message : err);
@@ -178,7 +232,9 @@ function processMessage_(msg, threadId, ctx) {
   var when = msg.getDate() ? msg.getDate().toISOString() : new Date().toISOString();
 
   var from = parseFromHeader_(fromRaw);
-  var isOutbound = from.email && from.email === OWNER_EMAIL.toLowerCase();
+  var ownerEmail = (ctx.ownerEmail || '').toLowerCase();
+  var sourceInbox = ctx.sourceInbox || ownerEmail || 'unknown';
+  var isOutbound = !!(from.email && ownerEmail && from.email === ownerEmail);
   var kind = isOutbound ? 'outbound' : 'inbound';
 
   // Skip filters
@@ -237,7 +293,8 @@ function processMessage_(msg, threadId, ctx) {
       title: '', email: personEmail, phone: '', linkedin: '',
       bucket: account ? account.bucket : 'brands',
       status: 'New', owner: 'Jordon', source: 'Inbox sync',
-      lastActivity: todayISO_(), nextStep: '', createdDate: new Date().toISOString()
+      lastActivity: todayISO_(), nextStep: '', createdDate: new Date().toISOString(),
+      sourceInbox: sourceInbox, mailboxOwner: ownerEmail
     };
     ctx.contacts.push(contact);
     ctx.counts.contactsCreated++;
@@ -250,7 +307,8 @@ function processMessage_(msg, threadId, ctx) {
       priority: needsReply ? 'high' : 'medium',
       dueDate: todayISO_(), source: 'Email', status: 'open',
       createdDate: new Date().toISOString(),
-      sourceKind: 'gmail', sourceId: emailId, threadId: threadId || ''
+      sourceKind: 'gmail', sourceId: emailId, threadId: threadId || '',
+      sourceInbox: sourceInbox, mailboxOwner: ownerEmail
     });
     ctx.counts.leadIntakeCreated++;
   }
@@ -260,10 +318,12 @@ function processMessage_(msg, threadId, ctx) {
     activityType: isOutbound ? 'Email sent' : 'Email received',
     person: person, personEmail: personEmail, accountName: accountName,
     opportunityName: '', source: 'Gmail', timestamp: when,
+    subject: subject,
     summary: (subject ? '[' + subject + '] ' : '') + snippet.slice(0, 280),
     owner: 'Jordon',
     followUpRequired: !!needsReply && !isOutbound,
-    sourceKind: 'gmail', sourceId: emailId, threadId: threadId || ''
+    sourceKind: 'gmail', sourceId: emailId, threadId: threadId || '',
+    sourceInbox: sourceInbox, mailboxOwner: ownerEmail
   };
   ctx.activities.push(activity);
   ctx.seenEmailIds[emailId] = true;
@@ -276,9 +336,16 @@ function processMessage_(msg, threadId, ctx) {
     for (var ti = 0; ti < ctx.tasks.length; ti++) {
       var t = ctx.tasks[ti];
       if (!t || t.status === 'done' || t.type !== 'Reply Required') continue;
+      // Globally-unique IDs first.
       if ((t.threadId && threadId && t.threadId === threadId) ||
-          (t.sourceId && t.sourceId === emailId) ||
-          (t.title === taskTitle && (t.accountName || '') === (accountName || ''))) {
+          (t.sourceId && t.sourceId === emailId)) { dup = true; break; }
+      // Title+account fallback only when the existing task is from the
+      // same source inbox — otherwise the same lead emailing both
+      // mailboxes would silently swallow the second reply-required task.
+      var tInbox = t.sourceInbox || '';
+      if (t.title === taskTitle &&
+          (t.accountName || '') === (accountName || '') &&
+          (!tInbox || tInbox === sourceInbox)) {
         dup = true; break;
       }
     }
@@ -289,7 +356,9 @@ function processMessage_(msg, threadId, ctx) {
         owner: 'Jordon', dueDate: todayISO_(), priority: 'high', status: 'todo',
         reason: 'Inbound email appears to need a response',
         createdDate: new Date().toISOString(),
-        sourceId: emailId, sourceKind: 'gmail', threadId: threadId || ''
+        sourceId: emailId, sourceKind: 'gmail', threadId: threadId || '',
+        sourceInbox: sourceInbox, mailboxOwner: ownerEmail,
+        subject: subject, personEmail: personEmail
       });
       ctx.counts.tasksCreated++;
     }
