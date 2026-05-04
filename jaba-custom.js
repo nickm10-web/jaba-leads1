@@ -703,10 +703,54 @@
         else if (item.id === 'brands') renderBrandBoard();
         else if (item.id === 'leagues_teams') renderTeamBoard();
       }
+
+      // Render Firebase-backed table sections so the table reflects the
+      // current dataCache the moment the section becomes visible.
+      var tableDataKey = TABLE_SECTION_DATAKEYS[item.id];
+      if (tableDataKey) {
+        renderTableData(tableDataKey, '');
+      }
     }
   };
 
+  // Sidebar item id -> dataKey for Firebase-backed table sections.
+  var TABLE_SECTION_DATAKEYS = {
+    'investors': 'investors',
+    'athlete_investors': 'athlete_investors',
+    'jordonCRM': 'jordonCRM',
+    'damarCRM': 'damarCRM'
+  };
+
   // ===== FIREBASE DATA LOADING (for non-card-grid sections) =====
+  // Normalizes Firebase values: arrays and dict/object snapshots are both
+  // converted to a plain object keyed by string ids. Falsy snapshot values
+  // become an empty object so callers can iterate safely.
+  var normalizeFirebaseValue = function(val) {
+    if (!val) return {};
+    if (Array.isArray(val)) {
+      var obj = {};
+      for (var i = 0; i < val.length; i++) {
+        if (val[i] != null) obj[String(i)] = val[i];
+      }
+      return obj;
+    }
+    if (typeof val === 'object') return val;
+    return {};
+  };
+
+  // Counts records ignoring array holes and falsy entries.
+  var countRecords = function(data) {
+    if (!data) return 0;
+    var n = 0;
+    for (var k in data) {
+      if (data.hasOwnProperty(k) && data[k] != null) n++;
+    }
+    return n;
+  };
+
+  // Subscribes to live updates at `path`. Each change re-runs `callback` with
+  // the normalized snapshot value. Falls back to .once() if the live API is
+  // unavailable for some reason.
   var loadFirebaseData = function(path, callback) {
     if (typeof firebase === 'undefined' || !firebase.database) {
       console.warn('Firebase not loaded yet');
@@ -714,31 +758,62 @@
       return;
     }
     var dbRef = firebase.database().ref(path);
-    dbRef.once('value', function(snapshot) {
-      var data = snapshot.val() || {};
-      callback(data);
-    }).catch(function(error) {
-      console.error('Error loading ' + path, error);
-    });
+    try {
+      dbRef.on('value', function(snapshot) {
+        callback(normalizeFirebaseValue(snapshot.val()));
+      }, function(error) {
+        console.error('Error subscribing to ' + path, error);
+      });
+    } catch (e) {
+      dbRef.once('value', function(snapshot) {
+        callback(normalizeFirebaseValue(snapshot.val()));
+      }).catch(function(error) {
+        console.error('Error loading ' + path, error);
+      });
+    }
+  };
+
+  // Re-renders a table if its tbody is in the DOM. Safe to call before the
+  // user has opened the section: the call is a no-op until the tbody exists.
+  var refreshTableIfPresent = function(dataKey) {
+    if (!document.getElementById('tbody-' + dataKey)) return;
+    // Preserve the current search box value so live updates don't blow away
+    // an in-progress filter.
+    var searchInput = document.querySelector('.jaba-section-search[data-search-for="' + dataKey + '"]');
+    var term = (searchInput && searchInput.value) ? searchInput.value : '';
+    renderTableData(dataKey, term);
   };
 
   var syncFirebaseData = function() {
     loadFirebaseData(CONFIG.firebasePaths.investors, function(data) {
       dataCache.investors = data;
-      updateBadge('investors', Object.keys(data).length);
+      updateBadge('investors', countRecords(data));
+      refreshTableIfPresent('investors');
     });
     loadFirebaseData(CONFIG.firebasePaths.athleteInvestors, function(data) {
       dataCache.athleteInvestors = data;
-      updateBadge('athlete_investors', Object.keys(data).length);
+      updateBadge('athlete_investors', countRecords(data));
+      refreshTableIfPresent('athlete_investors');
     });
     loadFirebaseData(CONFIG.firebasePaths.damarCRM, function(data) {
       dataCache.damarCRM = data;
-      updateBadge('damarCRM', Object.keys(data).length);
+      updateBadge('damarCRM', countRecords(data));
+      refreshTableIfPresent('damarCRM');
     });
     loadFirebaseData(CONFIG.firebasePaths.jordonCRM, function(data) {
       dataCache.jordonCRM = data;
-      updateBadge('jordonCRM', Object.keys(data).length);
+      updateBadge('jordonCRM', countRecords(data));
+      updateJordonImportBanner(countRecords(data));
+      refreshTableIfPresent('jordonCRM');
     });
+  };
+
+  // Hide the one-time import banner once Firebase already has records, so
+  // the user doesn't see "120 contacts ready to load" sitting above 120 rows.
+  var updateJordonImportBanner = function(count) {
+    var banner = document.getElementById('jordonImportBanner');
+    if (!banner) return;
+    banner.style.display = count > 0 ? 'none' : '';
   };
 
   var updateBadge = function(itemId, count) {
@@ -1232,6 +1307,7 @@
     for (var key in data) {
       if (data.hasOwnProperty(key)) {
         var item = data[key];
+        if (!item || typeof item !== 'object') continue;
         item.id = key;
         if (searchTerm) {
           var matches = false;
@@ -1796,9 +1872,8 @@
           if (i >= pending.length) {
             setStatus('Imported ' + pending.length + ' \u2713');
             if (banner) banner.style.background = 'rgba(0,184,148,0.08)';
-            // Trigger a fresh sync so the table updates.
-            if (typeof syncFirebaseData === 'function') syncFirebaseData();
-            setTimeout(function() { renderTableData('jordonCRM', ''); }, 800);
+            // Live .on('value') listener will pick up the new records and
+            // re-render the table automatically; nothing else needed here.
             return;
           }
           ref.push().set(pending[i], function(err) {
