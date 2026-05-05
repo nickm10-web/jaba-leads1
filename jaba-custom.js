@@ -637,6 +637,7 @@
         label: null,
         items: [
           { name: 'Dashboard', id: 'dashboard', section: 'dashboardSection', type: 'builtin' },
+          { name: 'Command Center', id: 'commandCenter', section: 'commandCenterSection', type: 'builtin' },
           { name: 'Leads', id: 'leads', section: 'leadsSection', type: 'builtin', badge: true }
         ]
       },
@@ -729,7 +730,7 @@
       }
     } else {
       var builtinSections = [
-        'dashboardSection', 'leadsSection', 'schoolsSection',
+        'dashboardSection', 'commandCenterSection', 'leadsSection', 'schoolsSection',
         'inboxSection', 'uniboxSection', 'meetingsSection', 'tasksSection', 'playbooksSection'
       ];
       builtinSections.forEach(function(sectionId) {
