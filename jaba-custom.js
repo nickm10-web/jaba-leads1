@@ -654,7 +654,8 @@
       {
         label: null,
         items: [
-          { name: 'Inbox', id: 'inbox', section: 'inboxSection', type: 'builtin', badge: true },
+          // Old Inbox hidden — Unibox is now the primary inbox. Restore by uncommenting.
+          // { name: 'Inbox', id: 'inbox', section: 'inboxSection', type: 'builtin', badge: true },
           { name: 'Unibox', id: 'unibox', section: 'uniboxSection', type: 'builtin', badge: true },
           { name: 'Meetings', id: 'meetings', section: 'meetingsSection', type: 'builtin', badge: true },
           { name: 'Tasks', id: 'tasks', section: 'tasksSection', type: 'builtin', badge: true },
