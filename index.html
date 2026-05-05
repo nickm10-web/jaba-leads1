@@ -3465,6 +3465,7 @@
     <!-- Top-Level Tabs -->
     <div class="top-tabs">
       <button class="top-tab active" data-section="dashboard" onclick="switchSection('dashboard')">Dashboard</button>
+      <button class="top-tab" data-section="commandCenter" onclick="switchSection('commandCenter')">Command Center</button>
       <button class="top-tab" data-section="leads" onclick="switchSection('leads')">Leads <span class="tab-badge" id="leadsBadge" style="background:var(--accent);color:#000;">0</span></button>
       <button class="top-tab" data-section="schools" onclick="switchSection('schools')">Schools</button>
       <button class="top-tab" data-section="inbox" onclick="switchSection('inbox')">Inbox <span class="tab-badge" id="inboxBadge">0</span></button>
@@ -3578,6 +3579,106 @@
         </div>
         <div class="briefing-list" id="brTasksList"></div>
         <div class="briefing-footer" id="brTasksFooter"></div>
+      </div>
+    </div>
+
+    <!-- COMMAND CENTER SECTION (Daily sales operating page) -->
+    <div id="commandCenterSection" style="display:none;">
+      <div class="briefing-header">
+        <h1 class="briefing-greeting">Command Center</h1>
+        <div class="briefing-date" id="ccDate"></div>
+        <div class="briefing-summary">
+          <span class="br-stat-emails"><strong id="ccSumNeedsReply">0</strong>needs reply</span>
+          <span class="br-stat-overdue"><strong id="ccSumOverdue">0</strong>overdue tasks</span>
+          <span class="br-stat-tasks"><strong id="ccSumDueToday">0</strong>due today</span>
+          <span class="br-stat-tasks"><strong id="ccSumNewLeads">0</strong>new leads</span>
+          <span class="br-stat-overdue"><strong id="ccSumStale">0</strong>stale opportunities</span>
+          <span class="br-stat-tasks"><strong id="ccSumPitchToday">0</strong>pitches today</span>
+          <span class="br-stat-tasks"><strong id="ccSumPitchUpcoming">0</strong>upcoming pitches</span>
+        </div>
+      </div>
+
+      <!-- Quick links -->
+      <div class="cmd-quickadd" style="margin-top:12px;">
+        <button class="btn btn-secondary btn-sm" onclick="switchSection('unibox')">Open Unibox</button>
+        <button class="btn btn-secondary btn-sm" onclick="switchSection('tasks')">Open Tasks</button>
+        <button class="btn btn-secondary btn-sm" onclick="switchSection('leads')">Open Leads</button>
+        <button class="btn btn-secondary btn-sm" onclick="switchSection('meetings')">Open Meetings</button>
+        <button class="btn btn-secondary btn-sm" onclick="renderCommandCenter()">Refresh</button>
+      </div>
+
+      <div class="cmd-grid">
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Needs Reply</h3>
+            <span class="briefing-count" id="ccNeedsReplyCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccNeedsReplyList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('unibox')">Open Unibox &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Overdue Tasks</h3>
+            <span class="briefing-count urgent" id="ccOverdueCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccOverdueList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('tasks')">Open Tasks &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Due Today</h3>
+            <span class="briefing-count" id="ccDueTodayCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccDueTodayList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('tasks')">Open Tasks &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>New / Unworked Leads</h3>
+            <span class="briefing-count" id="ccNewLeadsCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccNewLeadsList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('leads')">Open Leads &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Stale Opportunities (Re-engage)</h3>
+            <span class="briefing-count" id="ccStaleCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccStaleList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('leads')">Open Leads &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Pitch Meetings — Today</h3>
+            <span class="briefing-count" id="ccPitchTodayCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccPitchTodayList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('meetings')">Open Meetings &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Pitch Meetings — Next 7 Days</h3>
+            <span class="briefing-count" id="ccPitchUpcomingCount">0</span>
+          </div>
+          <div class="briefing-list" id="ccPitchUpcomingList"></div>
+          <div class="briefing-footer"><a onclick="switchSection('meetings')">Open Meetings &rarr;</a></div>
+        </div>
+
+        <div class="briefing-card">
+          <div class="briefing-card-header">
+            <h3>Daily Checklist</h3>
+            <span class="briefing-count" id="ccChecklistCount">0/5</span>
+          </div>
+          <div class="briefing-list" id="ccChecklistList"></div>
+          <div class="briefing-footer"><a onclick="resetCommandCenterChecklist()">Reset for tomorrow</a></div>
+        </div>
       </div>
     </div>
 
@@ -5975,6 +6076,377 @@
 
     window.renderTasks = renderTasks;
 
+    // ================== COMMAND CENTER ==================
+    // Daily sales operating page. Pulls from existing in-app data:
+    //   - Unibox needs-reply: window.jabaMvp.data.activities + mvpTasks
+    //   - Tasks (overdue / due today): the local `tasks` array
+    //   - Leads (new / unworked, stale): the local `leads` array
+    // No Firebase writes. No external services. Safe empty states.
+    const CC_CHECKLIST_KEY = 'cc_checklist_v1';
+    const CC_CHECKLIST_ITEMS = [
+      { id: 'needsReply', label: 'Clear Needs Reply in Unibox' },
+      { id: 'logSlack',   label: 'Log any Slack/text leads received today' },
+      { id: 'followUps',  label: 'Complete today\'s follow-ups' },
+      { id: 'stale',      label: 'Review stale opportunities for re-engagement' },
+      { id: 'tomorrow',   label: 'Set tomorrow\'s tasks before signing off' }
+    ];
+
+    function ccEscape(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function ccGetChecklistState() {
+      try {
+        var today = getTodayDate();
+        var raw = (typeof __memStore !== 'undefined' && __memStore.getItem)
+          ? __memStore.getItem(CC_CHECKLIST_KEY) : null;
+        var parsed = raw ? JSON.parse(raw) : null;
+        if (!parsed || parsed.date !== today) {
+          parsed = { date: today, done: {} };
+        }
+        return parsed;
+      } catch (_) { return { date: getTodayDate(), done: {} }; }
+    }
+
+    function ccSaveChecklistState(state) {
+      try {
+        if (typeof __memStore !== 'undefined' && __memStore.setItem) {
+          __memStore.setItem(CC_CHECKLIST_KEY, JSON.stringify(state));
+        }
+      } catch (_) {}
+    }
+
+    window.toggleCommandCenterChecklist = function (id) {
+      var state = ccGetChecklistState();
+      state.done[id] = !state.done[id];
+      ccSaveChecklistState(state);
+      renderCommandCenter();
+    };
+
+    window.resetCommandCenterChecklist = function () {
+      ccSaveChecklistState({ date: getTodayDate(), done: {} });
+      renderCommandCenter();
+    };
+
+    function ccGetNeedsReplyRows() {
+      var mvp = window.jabaMvp;
+      if (!mvp || !mvp.data) return [];
+      var acts  = Array.isArray(mvp.data.activities) ? mvp.data.activities : [];
+      var mTasks = Array.isArray(mvp.data.mvpTasks)  ? mvp.data.mvpTasks  : [];
+      var doneByKey = {};
+      mTasks.forEach(function (t) {
+        if (!t || t.type !== 'Reply Required') return;
+        if (t.status === 'done') {
+          var k = t.threadId || t.sourceId || '';
+          if (k) doneByKey[k] = true;
+        }
+      });
+      var seen = {}, rows = [];
+      acts.forEach(function (a) {
+        if (!a || !a.followUpRequired) return;
+        var k = a.threadId || a.sourceId || ('a:' + a.id);
+        if (doneByKey[a.threadId] || doneByKey[a.sourceId]) return;
+        if (seen[k]) return;
+        seen[k] = true;
+        rows.push({
+          person:  a.person || a.personEmail || '(unknown)',
+          subject: a.subject || (a.summary || '').slice(0, 80),
+          when:    a.timestamp || a.createdDate || ''
+        });
+      });
+      mTasks.forEach(function (t) {
+        if (!t || t.type !== 'Reply Required' || t.status === 'done') return;
+        var k = t.threadId || t.sourceId || ('t:' + t.id);
+        if (seen[k]) return;
+        seen[k] = true;
+        rows.push({
+          person:  t.person || t.personEmail || '(unknown)',
+          subject: (t.subject || t.title || '').replace(/^Reply:\s*/, ''),
+          when:    t.createdDate || ''
+        });
+      });
+      rows.sort(function (a, b) {
+        return String(b.when || '').localeCompare(String(a.when || ''));
+      });
+      return rows;
+    }
+
+    function ccFmtDate(s) {
+      if (!s) return '';
+      try {
+        var d = new Date(s);
+        if (isNaN(d.getTime())) return String(s);
+        var now = new Date();
+        var same = d.toDateString() === now.toDateString();
+        if (same) return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      } catch (_) { return String(s); }
+    }
+
+    function ccEmpty(msg) {
+      return '<div class="briefing-empty" style="padding:12px;color:var(--text-secondary);font-size:13px;">' +
+        ccEscape(msg) + '</div>';
+    }
+
+    // ---- Calendar / Pitch Meetings ----
+    // Calendar events arrive from inbox-sync.gs's syncCalendar() under
+    // mvp/mvp_calendar_events_v1. We cache them on window.jabaCalendar
+    // via subscribeCalendarEvents() (see bottom of this file). Empty state
+    // is the default until the Apps Script trigger has run at least once.
+    window.jabaCalendar = window.jabaCalendar || { events: [], lastSync: null };
+
+    function ccGetCalendarEvents() {
+      var src = window.jabaCalendar && Array.isArray(window.jabaCalendar.events)
+        ? window.jabaCalendar.events : [];
+      return src.filter(function (ev) { return ev && ev.start; });
+    }
+
+    function ccFmtMeetingTime(ev) {
+      try {
+        var s = new Date(ev.start);
+        if (isNaN(s.getTime())) return String(ev.start || '');
+        var now = new Date();
+        var same = s.toDateString() === now.toDateString();
+        var time = s.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        if (ev.isAllDay) return same ? 'All day today' : s.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ' (all day)';
+        if (same) return 'Today ' + time;
+        return s.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }) + ' ' + time;
+      } catch (_) { return String(ev.start || ''); }
+    }
+
+    function ccAttendeeSummary(ev) {
+      var atts = Array.isArray(ev.attendees) ? ev.attendees : [];
+      if (!atts.length) return '';
+      var INTERNAL = { 'jaba.ai': 1, 'jastercreative.com': 1 };
+      var external = atts.filter(function (a) {
+        if (!a || !a.email) return false;
+        var dom = String(a.email).split('@')[1] || '';
+        return !INTERNAL[dom.toLowerCase()];
+      });
+      var pool = external.length ? external : atts;
+      var names = pool.slice(0, 3).map(function (a) { return a.name || a.email; });
+      var more = pool.length - names.length;
+      var label = names.join(', ');
+      if (more > 0) label += ' +' + more;
+      return label;
+    }
+
+    function ccPitchRowHtml(ev) {
+      var when = ccFmtMeetingTime(ev);
+      var attendees = ccAttendeeSummary(ev);
+      var account = ev.accountName || ev.inferredAccount || '';
+      var person = ev.person || '';
+      var src = ev.sourceCalendar || ev.sourceInbox || '';
+      var subBits = [when];
+      if (account) subBits.push(account);
+      else if (person) subBits.push(person);
+      if (attendees) subBits.push(attendees);
+      if (src) subBits.push(src);
+      var meetIcon = ev.meetLink
+        ? ' &middot; <a href="' + ccEscape(ev.meetLink) + '" target="_blank" rel="noopener" onclick="event.stopPropagation();">join</a>'
+        : '';
+      return '<div class="briefing-item" onclick="switchSection(\'meetings\')">' +
+        '<div class="briefing-item-title">' + ccEscape(ev.title || '(untitled meeting)') + '</div>' +
+        '<div class="briefing-item-sub">' + ccEscape(subBits.join(' · ')) + meetIcon + '</div>' +
+        '</div>';
+    }
+
+    function ccGetPitchMeetings() {
+      var events = ccGetCalendarEvents();
+      var hasAny = events.length > 0;
+      var now = new Date();
+      var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      var endOfToday = new Date(startOfToday.getTime() + 86400000);
+      var endOf7 = new Date(startOfToday.getTime() + 7 * 86400000);
+
+      // Composite-key dedupe so two Apps Script deployments invited to
+      // the same meeting only show one row. Prefer the row with more
+      // attendee detail or that is flagged isPitch.
+      var byEventId = {};
+      events.forEach(function (ev) {
+        var id = ev.eventId || ev.compositeKey || (ev.title + '@' + ev.start);
+        var prev = byEventId[id];
+        if (!prev) { byEventId[id] = ev; return; }
+        var prevAtts = Array.isArray(prev.attendees) ? prev.attendees.length : 0;
+        var curAtts  = Array.isArray(ev.attendees) ? ev.attendees.length : 0;
+        if (curAtts > prevAtts || (ev.isPitch && !prev.isPitch)) byEventId[id] = ev;
+      });
+      var deduped = Object.keys(byEventId).map(function (k) { return byEventId[k]; });
+
+      var pitchOnly = deduped.filter(function (ev) {
+        if (ev.isPitch) return true;
+        // Fallback heuristic in case stored events lack the flag.
+        if (ev.isInternal) return false;
+        return !!ev.hasExternal;
+      });
+
+      pitchOnly.sort(function (a, b) {
+        return String(a.start || '').localeCompare(String(b.start || ''));
+      });
+
+      var today = [], upcoming = [];
+      pitchOnly.forEach(function (ev) {
+        var s = new Date(ev.start);
+        if (isNaN(s.getTime())) return;
+        if (s >= startOfToday && s < endOfToday) today.push(ev);
+        else if (s >= endOfToday && s < endOf7) upcoming.push(ev);
+      });
+      return { today: today, upcoming: upcoming, hasAnyEvents: hasAny };
+    }
+
+    function renderCommandCenter() {
+      var ccDate = document.getElementById('ccDate');
+      if (ccDate) {
+        ccDate.textContent = new Date().toLocaleDateString([], {
+          weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+        });
+      }
+
+      var today = getTodayDate();
+      var allTasks = (typeof tasks !== 'undefined' && Array.isArray(tasks)) ? tasks : [];
+      var allLeads = (typeof leads !== 'undefined' && Array.isArray(leads)) ? leads : [];
+
+      // 1) Needs Reply (from Unibox / MVP store)
+      var needs = ccGetNeedsReplyRows();
+      var needsHtml = needs.length === 0
+        ? ccEmpty('No replies pending. Inbox zero — nice.')
+        : needs.slice(0, 12).map(function (r) {
+            return '<div class="briefing-item" onclick="switchSection(\'unibox\')">' +
+              '<div class="briefing-item-title">' + ccEscape(r.person) + '</div>' +
+              '<div class="briefing-item-sub">' + ccEscape(r.subject || '(no subject)') +
+              (r.when ? ' &middot; ' + ccEscape(ccFmtDate(r.when)) : '') +
+              '</div></div>';
+          }).join('');
+      document.getElementById('ccNeedsReplyList').innerHTML = needsHtml;
+      document.getElementById('ccNeedsReplyCount').textContent = needs.length;
+      document.getElementById('ccSumNeedsReply').textContent = needs.length;
+
+      // 2) Overdue Tasks
+      var overdue = allTasks.filter(function (t) {
+        return t && t.status !== 'done' && t.dueDate && t.dueDate < today;
+      }).sort(function (a, b) { return String(a.dueDate).localeCompare(String(b.dueDate)); });
+      var overdueHtml = overdue.length === 0
+        ? ccEmpty('No overdue tasks.')
+        : overdue.slice(0, 12).map(function (t) {
+            var lead = t.linkedLeadId ? allLeads.find(function (l) { return l.id === t.linkedLeadId; }) : null;
+            var d = daysAgo(t.dueDate);
+            return '<div class="briefing-item" onclick="switchSection(\'tasks\')">' +
+              '<div class="briefing-item-title">' + ccEscape(t.title || '(untitled)') + '</div>' +
+              '<div class="briefing-item-sub">' + d + ' day' + (d === 1 ? '' : 's') + ' overdue' +
+              (lead ? ' &middot; ' + ccEscape(lead.company) : '') +
+              '</div></div>';
+          }).join('');
+      document.getElementById('ccOverdueList').innerHTML = overdueHtml;
+      document.getElementById('ccOverdueCount').textContent = overdue.length;
+      document.getElementById('ccSumOverdue').textContent = overdue.length;
+
+      // 3) Due Today
+      var dueToday = allTasks.filter(function (t) {
+        return t && t.status !== 'done' && t.dueDate === today;
+      });
+      var dueHtml = dueToday.length === 0
+        ? ccEmpty('Nothing due today.')
+        : dueToday.slice(0, 12).map(function (t) {
+            var lead = t.linkedLeadId ? allLeads.find(function (l) { return l.id === t.linkedLeadId; }) : null;
+            return '<div class="briefing-item" onclick="switchSection(\'tasks\')">' +
+              '<div class="briefing-item-title">' + ccEscape(t.title || '(untitled)') + '</div>' +
+              '<div class="briefing-item-sub">Due today' +
+              (lead ? ' &middot; ' + ccEscape(lead.company) : '') +
+              '</div></div>';
+          }).join('');
+      document.getElementById('ccDueTodayList').innerHTML = dueHtml;
+      document.getElementById('ccDueTodayCount').textContent = dueToday.length;
+      document.getElementById('ccSumDueToday').textContent = dueToday.length;
+
+      // 4) New / Unworked Leads — stage 'lead' with no follow-up scheduled.
+      var newLeads = allLeads.filter(function (l) {
+        return l && l.stage === 'lead' && !l.followUp;
+      });
+      var newLeadsHtml = newLeads.length === 0
+        ? ccEmpty('No unworked leads. All have a next step.')
+        : newLeads.slice(0, 12).map(function (l) {
+            return '<div class="briefing-item" onclick="switchSection(\'leads\')">' +
+              '<div class="briefing-item-title">' + ccEscape(l.company || '(unnamed)') + '</div>' +
+              '<div class="briefing-item-sub">' + ccEscape(l.bucket || '') +
+              ' &middot; no follow-up set</div></div>';
+          }).join('');
+      document.getElementById('ccNewLeadsList').innerHTML = newLeadsHtml;
+      document.getElementById('ccNewLeadsCount').textContent = newLeads.length;
+      document.getElementById('ccSumNewLeads').textContent = newLeads.length;
+
+      // 5) Stale Opportunities — active stages with follow-up >14 days overdue,
+      //    or active stages whose follow-up is empty and stage isn't 'lead'/'client'.
+      var STALE_DAYS = 14;
+      var activeStages = ['contacted','meeting_scheduled','scrape','building','auditing','ready','meeting_complete','report_sent','contract_sent'];
+      var stale = allLeads.filter(function (l) {
+        if (!l || activeStages.indexOf(l.stage) === -1) return false;
+        if (l.followUp) {
+          return l.followUp < today && daysAgo(l.followUp) >= STALE_DAYS;
+        }
+        return true;
+      });
+      stale.sort(function (a, b) {
+        var da = a.followUp ? daysAgo(a.followUp) : 9999;
+        var db = b.followUp ? daysAgo(b.followUp) : 9999;
+        return db - da;
+      });
+      var staleHtml = stale.length === 0
+        ? ccEmpty('No stale opportunities. Pipeline is fresh.')
+        : stale.slice(0, 12).map(function (l) {
+            var info = l.followUp
+              ? daysAgo(l.followUp) + ' days since follow-up'
+              : 'no follow-up on file';
+            return '<div class="briefing-item" onclick="switchSection(\'leads\')">' +
+              '<div class="briefing-item-title">' + ccEscape(l.company || '(unnamed)') + '</div>' +
+              '<div class="briefing-item-sub">' + ccEscape(l.stage || '') +
+              ' &middot; ' + ccEscape(info) + '</div></div>';
+          }).join('');
+      document.getElementById('ccStaleList').innerHTML = staleHtml;
+      document.getElementById('ccStaleCount').textContent = stale.length;
+      document.getElementById('ccSumStale').textContent = stale.length;
+
+      // 6) Pitch Meetings (today + next 7 days)
+      var pitchSplit = ccGetPitchMeetings();
+      var pitchTodayHtml = pitchSplit.today.length === 0
+        ? ccEmpty('No pitch meetings on the calendar today.')
+        : pitchSplit.today.slice(0, 12).map(ccPitchRowHtml).join('');
+      document.getElementById('ccPitchTodayList').innerHTML = pitchTodayHtml;
+      document.getElementById('ccPitchTodayCount').textContent = pitchSplit.today.length;
+      document.getElementById('ccSumPitchToday').textContent = pitchSplit.today.length;
+
+      var pitchUpcomingHtml = pitchSplit.upcoming.length === 0
+        ? ccEmpty(pitchSplit.hasAnyEvents
+            ? 'No pitch meetings in the next 7 days.'
+            : 'No calendar data synced yet. Deploy inbox-sync.gs in Apps Script and run scheduledCalendarSync.')
+        : pitchSplit.upcoming.slice(0, 12).map(ccPitchRowHtml).join('');
+      document.getElementById('ccPitchUpcomingList').innerHTML = pitchUpcomingHtml;
+      document.getElementById('ccPitchUpcomingCount').textContent = pitchSplit.upcoming.length;
+      document.getElementById('ccSumPitchUpcoming').textContent = pitchSplit.upcoming.length;
+
+      // 7) Daily Checklist
+      var state = ccGetChecklistState();
+      var checkedCount = 0;
+      var checklistHtml = CC_CHECKLIST_ITEMS.map(function (item) {
+        var done = !!state.done[item.id];
+        if (done) checkedCount++;
+        return '<div class="briefing-item" style="cursor:pointer;display:flex;align-items:center;gap:8px;" ' +
+          'onclick="toggleCommandCenterChecklist(\'' + item.id + '\')">' +
+          '<span style="display:inline-block;width:16px;height:16px;border:1px solid var(--border-color,#444);' +
+          'border-radius:3px;background:' + (done ? 'var(--accent,#7cf)' : 'transparent') + ';' +
+          'color:#000;font-size:12px;line-height:14px;text-align:center;">' +
+          (done ? '&#10003;' : '') + '</span>' +
+          '<span style="flex:1;' + (done ? 'text-decoration:line-through;opacity:0.6;' : '') + '">' +
+          ccEscape(item.label) + '</span></div>';
+      }).join('');
+      document.getElementById('ccChecklistList').innerHTML = checklistHtml;
+      document.getElementById('ccChecklistCount').textContent = checkedCount + '/' + CC_CHECKLIST_ITEMS.length;
+    }
+
+    window.renderCommandCenter = renderCommandCenter;
+    // ================ /COMMAND CENTER ================
+
     // Meetings Functions
     function getMonday(date) {
       const d = new Date(date);
@@ -6686,6 +7158,8 @@
 
       // Show/hide sections
       document.getElementById('dashboardSection').style.display = section === 'dashboard' ? 'block' : 'none';
+      var ccEl = document.getElementById('commandCenterSection');
+      if (ccEl) ccEl.style.display = section === 'commandCenter' ? 'block' : 'none';
       document.getElementById('leadsSection').style.display = section === 'leads' ? 'block' : 'none';
       document.getElementById('inboxSection').style.display = section === 'inbox' ? 'block' : 'none';
       var uniboxEl = document.getElementById('uniboxSection');
@@ -6704,6 +7178,8 @@
       if (section === 'dashboard') {
         renderDashboard();
         if (window.jabaMvp && window.jabaMvp.renderDashboardSections) window.jabaMvp.renderDashboardSections();
+      } else if (section === 'commandCenter') {
+        if (typeof renderCommandCenter === 'function') renderCommandCenter();
       } else if (section === 'inbox') {
         renderInbox();
         if (currentInboxView === 'gmail') renderGmailInbox();
@@ -9609,6 +10085,40 @@
       } catch (_) { /* non-fatal */ }
     }
     setTimeout(subscribeMvp, 2000);
+
+    // Subscribe to calendar events written by inbox-sync.gs's syncCalendar.
+    // Cached on window.jabaCalendar so the Command Center pitch cards
+    // can render without their own data fetch. Empty array = empty state.
+    function subscribeCalendar() {
+      try {
+        if (!window.db || typeof window.db.ref !== 'function') {
+          setTimeout(subscribeCalendar, 1500);
+          return;
+        }
+        window.jabaCalendar = window.jabaCalendar || { events: [], lastSync: null };
+        window.db.ref('mvp/mvp_calendar_events_v1').on('value', function (snap) {
+          var v = snap && snap.val ? snap.val() : null;
+          var arr = [];
+          if (Array.isArray(v)) arr = v;
+          else if (v && typeof v === 'object') {
+            // Tolerate object-shaped writes (Firebase sometimes coerces
+            // sparse arrays to objects).
+            arr = Object.keys(v).map(function (k) { return v[k]; }).filter(Boolean);
+          }
+          window.jabaCalendar.events = arr;
+          if (typeof currentSection === 'function' &&
+              currentSection() === 'commandCenter' &&
+              typeof window.renderCommandCenter === 'function') {
+            try { window.renderCommandCenter(); } catch (_) {}
+          }
+        });
+        window.db.ref('mvp/mvp_calendar_sync_v1').on('value', function (snap) {
+          var v = snap && snap.val ? snap.val() : null;
+          if (v && v.lastSync) window.jabaCalendar.lastSync = v.lastSync;
+        });
+      } catch (_) { /* non-fatal */ }
+    }
+    setTimeout(subscribeCalendar, 2000);
   })();
 </script>
 </body>
