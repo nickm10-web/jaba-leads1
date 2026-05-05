@@ -3538,6 +3538,14 @@
           <div class="briefing-card-header"><h3>No-Next-Step Exceptions</h3><span class="briefing-count" id="cmdNoNextStepCount">0</span></div>
           <div class="briefing-list" id="cmdNoNextStep"></div>
         </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Pitch Meetings — Today</h3><span class="briefing-count" id="dashPitchTodayCount">0</span></div>
+          <div class="briefing-list" id="dashPitchTodayList"></div>
+        </div>
+        <div class="briefing-card">
+          <div class="briefing-card-header"><h3>Pitch Meetings — Next 7 Days</h3><span class="briefing-count" id="dashPitchUpcomingCount">0</span></div>
+          <div class="briefing-list" id="dashPitchUpcomingList"></div>
+        </div>
       </div>
       <!-- ============== /DAILY COMMAND CENTER ============== -->
 
@@ -6445,6 +6453,42 @@
     }
 
     window.renderCommandCenter = renderCommandCenter;
+
+    // Renders pitch meeting cards into the visible Daily Command Center
+    // grid on the Dashboard. Reuses the same calendar data path
+    // (window.jabaCalendar / mvp/mvp_calendar_events_v1) and helpers
+    // (ccGetPitchMeetings, ccPitchRowHtml, ccEmpty) as the dedicated
+    // Command Center section so both views stay in sync.
+    function renderDashboardPitchCards() {
+      var todayList = document.getElementById('dashPitchTodayList');
+      var upcomingList = document.getElementById('dashPitchUpcomingList');
+      if (!todayList && !upcomingList) return;
+
+      var pitchSplit = ccGetPitchMeetings();
+      var emptyTodayMsg = pitchSplit.hasAnyEvents
+        ? 'No pitch meetings on the calendar today.'
+        : 'No pitch meetings synced yet. Update Apps Script and run scheduledSync once.';
+      var emptyUpcomingMsg = pitchSplit.hasAnyEvents
+        ? 'No pitch meetings in the next 7 days.'
+        : 'No pitch meetings synced yet. Update Apps Script and run scheduledSync once.';
+
+      if (todayList) {
+        todayList.innerHTML = pitchSplit.today.length === 0
+          ? ccEmpty(emptyTodayMsg)
+          : pitchSplit.today.slice(0, 12).map(ccPitchRowHtml).join('');
+      }
+      var todayCount = document.getElementById('dashPitchTodayCount');
+      if (todayCount) todayCount.textContent = pitchSplit.today.length;
+
+      if (upcomingList) {
+        upcomingList.innerHTML = pitchSplit.upcoming.length === 0
+          ? ccEmpty(emptyUpcomingMsg)
+          : pitchSplit.upcoming.slice(0, 12).map(ccPitchRowHtml).join('');
+      }
+      var upcomingCount = document.getElementById('dashPitchUpcomingCount');
+      if (upcomingCount) upcomingCount.textContent = pitchSplit.upcoming.length;
+    }
+    window.renderDashboardPitchCards = renderDashboardPitchCards;
     // ================ /COMMAND CENTER ================
 
     // Meetings Functions
@@ -8583,6 +8627,10 @@
         window.jabaMvp.renderDashboardSections();
       }
 
+      if (typeof renderDashboardPitchCards === 'function') {
+        try { renderDashboardPitchCards(); } catch (_) {}
+      }
+
       // Hero strip mirrors the MVP Daily Command Center counts so the summary
       // stays consistent with the cards below. Empty MVP store → 0/0/0.
       const sumOver = document.getElementById('brSummaryOverdue');
@@ -10106,11 +10154,22 @@
             arr = Object.keys(v).map(function (k) { return v[k]; }).filter(Boolean);
           }
           window.jabaCalendar.events = arr;
-          if (typeof currentSection === 'function' &&
-              currentSection() === 'commandCenter' &&
-              typeof window.renderCommandCenter === 'function') {
-            try { window.renderCommandCenter(); } catch (_) {}
-          }
+          // Re-render whichever pitch surface is currently visible. The
+          // Dashboard's Daily Command Center has its own pitch cards, and
+          // the dedicated Command Center section has another set; both
+          // pull from window.jabaCalendar so we just refresh the active
+          // one. We swallow render errors so a single bad event row can
+          // never break the calendar subscription.
+          try {
+            if (typeof window.renderDashboardPitchCards === 'function') {
+              window.renderDashboardPitchCards();
+            }
+          } catch (_) {}
+          try {
+            if (typeof window.renderCommandCenter === 'function') {
+              window.renderCommandCenter();
+            }
+          } catch (_) {}
         });
         window.db.ref('mvp/mvp_calendar_sync_v1').on('value', function (snap) {
           var v = snap && snap.val ? snap.val() : null;
