@@ -1060,7 +1060,9 @@
 
   // ===== CARD GRID RENDERING: AGENCIES =====
   var agencySearchQuery = '';
-  var agencyFilter = 'All';
+  // Categories were removed for Agencies — current data isn't accurate enough
+  // to group, so we render Agencies as one flat grid. Search + review filter
+  // chips are still available.
 
   function renderAgencyBoard() {
     var section = document.getElementById('agenciesSection');
@@ -1081,6 +1083,9 @@
 
     agencyLeads = applyReviewFilter(agencyLeads, 'agencies');
 
+    // Categorize is still used internally for the per-card "Review" flag
+    // (mismatch between bucket and computed category). Just don't surface
+    // categories on the board.
     agencyLeads.forEach(function(l) {
       l._category = categorize(l.company, AGENCY_CATEGORIES);
     });
@@ -1089,22 +1094,6 @@
     var active = agencyLeads.filter(function(l) { return l.stage !== 'lead'; }).length;
     var clients = agencyLeads.filter(function(l) { return l.stage === 'client'; }).length;
     var meetings = agencyLeads.filter(function(l) { return l.stage === 'meeting_scheduled' || l.stage === 'meeting_complete'; }).length;
-
-    var categories = {};
-    agencyLeads.forEach(function(l) {
-      if (!categories[l._category]) categories[l._category] = [];
-      categories[l._category].push(l);
-    });
-
-    var categoryNames = ['All'];
-    var orderedCats = ['AOR / Sports Property', 'Athlete Agency', 'NIL / College Sports', 'Marketing / Creative', 'Other'];
-    orderedCats.forEach(function(cat) {
-      if (categories[cat]) categoryNames.push(cat);
-    });
-
-    var chipsHtml = categoryNames.map(function(cat) {
-      return '<button class="opp-filter-chip ' + (agencyFilter === cat ? 'active' : '') + '" onclick="jabaCustom.setAgencyFilter(\'' + escapeHtml(cat) + '\')">' + escapeHtml(cat) + '</button>';
-    }).join('');
 
     var statsHtml = [
       ['Total Agencies', total],
@@ -1116,30 +1105,11 @@
     }).join('');
 
     var boardHtml = '';
-    orderedCats.forEach(function(cat) {
-      var catLeads = categories[cat];
-      if (!catLeads || catLeads.length === 0) return;
-      if (agencyFilter !== 'All' && agencyFilter !== cat) return;
-
-      var catActive = catLeads.filter(function(l) { return l.stage !== 'lead'; }).length;
-      var catClients = catLeads.filter(function(l) { return l.stage === 'client'; }).length;
-
-      boardHtml += '<div class="opp-category-section">';
-      boardHtml += '<div class="opp-category-header">';
-      boardHtml += '<div class="opp-category-title-block">';
-      boardHtml += '<div class="opp-category-name">' + escapeHtml(cat) + '</div>';
-      boardHtml += '<span class="opp-category-badge">' + catLeads.length + ' agencies</span>';
-      boardHtml += '</div>';
-      boardHtml += '<div class="opp-category-metrics">';
-      boardHtml += '<span class="opp-category-metric">' + catActive + ' active</span>';
-      boardHtml += '<span class="opp-category-metric">' + catClients + ' clients</span>';
-      boardHtml += '</div></div>';
-      boardHtml += '<div class="opp-card-grid">';
-      boardHtml += catLeads.map(function(lead) { return renderOppCard(lead, cat); }).join('');
-      boardHtml += '</div></div>';
-    });
-
-    if (!boardHtml) {
+    if (agencyLeads.length) {
+      boardHtml = '<div class="opp-card-grid">' +
+        agencyLeads.map(function(lead) { return renderOppCard(lead, ''); }).join('') +
+        '</div>';
+    } else {
       boardHtml = '<div class="opp-empty">No agencies match the current filters.</div>';
     }
 
@@ -1152,17 +1122,11 @@
       '</div>' +
       '<div class="opp-board-stats">' + statsHtml + '</div>' +
       '<div class="opp-control-bar">' +
-        '<div class="opp-filter-chips">' + chipsHtml + '</div>' +
         '<input type="text" class="opp-search" placeholder="Search agencies..." value="' + escapeHtml(agencySearchQuery) + '" oninput="jabaCustom.handleAgencySearch(this.value)">' +
       '</div>' +
       renderReviewChips('agencies') +
       boardHtml;
   }
-
-  jabaCustom.setAgencyFilter = function(filter) {
-    agencyFilter = filter;
-    renderAgencyBoard();
-  };
 
   jabaCustom.handleAgencySearch = function(value) {
     agencySearchQuery = value.trim();
@@ -1382,10 +1346,14 @@
     var flags = computeReviewFlags(lead, lastContactRaw, categoryLabel);
     var flagPillsHtml = renderFlagPills(flags);
 
+    var typePillHtml = shortCategory
+      ? '<span class="opp-card-type-pill">' + escapeHtml(shortCategory) + '</span>'
+      : '';
+
     return '<div class="opp-card ' + cardClass + '" onclick="openDetailPanel(' + lead.id + ')">' +
       '<div class="opp-card-header">' +
         '<div class="opp-card-logo">' + logoHtml + '</div>' +
-        '<span class="opp-card-type-pill">' + escapeHtml(shortCategory) + '</span>' +
+        typePillHtml +
       '</div>' +
       '<div class="opp-card-name">' + escapeHtml(lead.company) + '</div>' +
       '<div class="opp-card-pills">' +
@@ -2374,13 +2342,13 @@
       }
 
       modal.classList.remove('active');
-      // Re-render whichever boards are visible.
+      // Re-render whichever opp boards are visible. Skip renderSchools — we
+      // didn't touch schools data, and calling it can interact badly with
+      // the renderAll/switchSection feedback loop and yank the user away
+      // from the active board.
       if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
       if (typeof renderBrandBoard === 'function') renderBrandBoard();
       if (typeof renderTeamBoard === 'function') renderTeamBoard();
-      if (typeof window.renderSchools === 'function') {
-        try { window.renderSchools(); } catch (e) {}
-      }
       // Update sidebar badges.
       try { updateCardGridBadges(); } catch (e) {}
     };
@@ -2577,12 +2545,10 @@
 
       modal.classList.remove('active');
 
+      // Skip renderSchools — adds touch agency/brand/team buckets only.
       if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
       if (typeof renderBrandBoard === 'function') renderBrandBoard();
       if (typeof renderTeamBoard === 'function') renderTeamBoard();
-      if (typeof window.renderSchools === 'function') {
-        try { window.renderSchools(); } catch (e) {}
-      }
       try { updateCardGridBadges(); } catch (e) {}
     };
 
@@ -2644,12 +2610,13 @@
       }
     }
 
+    // Re-render only Opportunities boards. Avoid renderSchools — the
+    // deletion is for a bucket=agencies/athlete/brands/teams record, so
+    // schools data is unaffected, and calling renderSchools previously
+    // contributed to the user being yanked over to the Schools tab.
     if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
     if (typeof renderBrandBoard === 'function') renderBrandBoard();
     if (typeof renderTeamBoard === 'function') renderTeamBoard();
-    if (typeof window.renderSchools === 'function') {
-      try { window.renderSchools(); } catch (e) {}
-    }
     try { updateCardGridBadges(); } catch (e) {}
   };
 
@@ -2901,7 +2868,22 @@
 
     if (typeof window.switchSection === 'function') {
       var originalSwitchSection = window.switchSection;
-      window.switchSection = function(sectionName) {
+      window.switchSection = function(sectionName, opts) {
+        // Firebase real-time sync calls renderAll() -> switchSection(currentSection).
+        // currentSection in index.html can be stale (e.g. 'schools') when the
+        // user has navigated to a custom Opportunities board, because custom
+        // sidebar clicks don't update currentSection. Without this guard,
+        // editing/removing an agency/brand/team would yank the user to Schools.
+        // We only allow programmatic switches when explicitly flagged
+        // (jabaCustom.userInitiated), which builtin top-tabs / sidebar items
+        // set before calling. Real user clicks via top tabs go through the
+        // window.__userSwitchSection wrapper below.
+        if (activeCustomSection && !(opts && opts.userInitiated) && !window.__jabaUserSwitch) {
+          // Skip — keep the user on the active custom section. Boards
+          // re-render themselves via renderAgency/Brand/TeamBoard().
+          return;
+        }
+
         var item = document.querySelector('[data-item-id="' + sectionName + '"]');
         if (item) {
           document.querySelectorAll('.jaba-sidebar-item').forEach(function(el) {
@@ -2918,6 +2900,28 @@
         return originalSwitchSection(sectionName);
       };
     }
+
+    // Top-tabs (original header) use inline onclick="switchSection('x')".
+    // Sidebar items go through handleSidebarClick which also calls
+    // window.switchSection for builtin items. Both are user-driven, so
+    // capture-phase click handler flags the next switchSection call as
+    // user-initiated. Firebase real-time sync calls renderAll() ->
+    // switchSection() with no click event, so the flag stays false and
+    // the guard above keeps the user on their active custom section.
+    document.addEventListener('click', function(e) {
+      var node = e.target;
+      while (node && node !== document.body) {
+        if (node.classList && (
+          node.classList.contains('top-tab') ||
+          node.classList.contains('jaba-sidebar-item')
+        )) {
+          window.__jabaUserSwitch = true;
+          setTimeout(function() { window.__jabaUserSwitch = false; }, 0);
+          return;
+        }
+        node = node.parentNode;
+      }
+    }, true);
 
     console.log('JABA Custom v4 initialized — liquid glass sidebar + compact pills');
   };
