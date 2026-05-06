@@ -69,7 +69,7 @@
   };
 
   // ===== HELPERS =====
-  function getLeadsArray() {
+  function getRawLeadsArray() {
     if (typeof leads !== 'undefined' && Array.isArray(leads) && leads.length > 0) {
       return leads;
     }
@@ -83,9 +83,121 @@
     return [];
   }
 
+  // Normalize a company/account name for duplicate detection.
+  // Drops trailing parenthesized qualifiers ("GLD (Great Lakes District)" ->
+  // "gld"), strips common corporate suffixes, and removes non-alphanumerics
+  // so "Big 3" and "Big3" collapse, "Wasserman" and "Wasserman" collapse,
+  // and "GLD" matches "GLD (Great Lakes District)".
+  function normalizeCompanyName(name) {
+    var s = String(name || '').toLowerCase();
+    s = s.replace(/\s*\([^)]*\)\s*/g, ' ');
+    s = s.replace(/\b(inc|llc|ltd|corp|co|group|holdings)\b\.?/g, ' ');
+    s = s.replace(/[^a-z0-9]+/g, '');
+    return s;
+  }
+
+  // Bucket specificity: specific buckets beat generic 'leads'.
+  // Higher number = more specific / preferred.
+  var BUCKET_PRIORITY = {
+    agencies: 4,
+    brands: 4,
+    teams: 4,
+    schools: 4,
+    athlete: 3,
+    leads: 1
+  };
+  function bucketRank(b) {
+    if (b && BUCKET_PRIORITY.hasOwnProperty(b)) return BUCKET_PRIORITY[b];
+    return b ? 2 : 0;
+  }
+
+  // Stage strength: higher = stronger / further along.
+  var STAGE_RANK = {
+    client: 100,
+    contract_sent: 90,
+    report_sent: 85,
+    announcement_approved: 84,
+    announcement_sent: 83,
+    announcement_working: 82,
+    meeting_complete: 80,
+    meeting_scheduled: 75,
+    ready: 70,
+    auditing: 65,
+    building: 60,
+    scrape: 55,
+    contacted: 50,
+    lead: 20,
+    onhold: 10
+  };
+  function stageRank(s) {
+    if (s && STAGE_RANK.hasOwnProperty(s)) return STAGE_RANK[s];
+    return s ? 30 : 0;
+  }
+
+  // Choose the better of two records that represent the same company.
+  // Preference order:
+  //   1) more specific bucket
+  //   2) stronger stage
+  //   3) richer contacts (more entries)
+  //   4) longer context
+  //   5) earlier (lower) id, for stable ordering
+  function pickBetterLead(a, b) {
+    if (!a) return b;
+    if (!b) return a;
+    var diff = bucketRank(a.bucket) - bucketRank(b.bucket);
+    if (diff !== 0) return diff > 0 ? a : b;
+    diff = stageRank(a.stage) - stageRank(b.stage);
+    if (diff !== 0) return diff > 0 ? a : b;
+    var ac = (a.contacts || []).length;
+    var bc = (b.contacts || []).length;
+    if (ac !== bc) return ac > bc ? a : b;
+    var actx = (a.context || '').length;
+    var bctx = (b.context || '').length;
+    if (actx !== bctx) return actx > bctx ? a : b;
+    var aid = typeof a.id === 'number' ? a.id : Number.MAX_SAFE_INTEGER;
+    var bid = typeof b.id === 'number' ? b.id : Number.MAX_SAFE_INTEGER;
+    return aid <= bid ? a : b;
+  }
+
+  // Deduplicate leads by normalized company name. Preserves array order
+  // based on the first occurrence of each unique normalized name; any
+  // later record that wins via pickBetterLead replaces the kept entry
+  // in place so its data (stage, contacts, etc.) is what renders.
+  function dedupeLeadsByCompany(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) return arr || [];
+    var seen = {};
+    var out = [];
+    for (var i = 0; i < arr.length; i++) {
+      var lead = arr[i];
+      if (!lead) continue;
+      var key = normalizeCompanyName(lead.company);
+      if (!key) {
+        out.push(lead);
+        continue;
+      }
+      if (!seen.hasOwnProperty(key)) {
+        seen[key] = out.length;
+        out.push(lead);
+      } else {
+        var idx = seen[key];
+        out[idx] = pickBetterLead(out[idx], lead);
+      }
+    }
+    return out;
+  }
+
+  // Public-facing helpers used by the Opportunities tabs (Agencies, Brands,
+  // Teams & Leagues). These return a deduped view so the visible UI never
+  // shows the same account twice, even if multiple records exist in the
+  // underlying leads array (static seeds, Firebase variants with different
+  // ids, generic 'leads' bucket vs specific tab bucket, etc.). The raw
+  // underlying data is left untouched.
+  function getLeadsArray() {
+    return dedupeLeadsByCompany(getRawLeadsArray());
+  }
+
   function getLeadsByBucket(bucket) {
-    var allLeads = getLeadsArray();
-    return allLeads.filter(function(l) { return l.bucket === bucket; });
+    return getLeadsArray().filter(function(l) { return l.bucket === bucket; });
   }
 
   // Use global versions from index.html (deduplicated)
