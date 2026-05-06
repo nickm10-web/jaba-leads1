@@ -668,6 +668,42 @@
         text-align: center; font-size: 13px;
       }
 
+      /* Bulk select bar + per-card checkbox for Agencies */
+      .opp-bulk-bar {
+        display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
+        padding: 8px 12px; margin: 8px 0;
+        border-radius: 10px; border: 1px solid rgba(226, 245, 0, 0.18);
+        background: rgba(226, 245, 0, 0.05);
+        font-size: 12px; color: var(--text-primary, #e6edf3);
+      }
+      .opp-bulk-bar .opp-bulk-count {
+        font-weight: 600; color: var(--accent, #E2F500);
+      }
+      .opp-bulk-bar button {
+        background: rgba(226, 245, 0, 0.1); color: var(--accent, #E2F500);
+        border: 1px solid rgba(226, 245, 0, 0.3);
+        padding: 4px 10px; border-radius: 999px;
+        font-size: 11px; font-weight: 600; cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .opp-bulk-bar button:hover:not(:disabled) { background: rgba(226, 245, 0, 0.22); transform: translateY(-1px); }
+      .opp-bulk-bar button:disabled { opacity: 0.45; cursor: not-allowed; }
+      .opp-bulk-bar button.opp-bulk-delete {
+        background: rgba(255, 107, 107, 0.12); color: #ff9d9d;
+        border-color: rgba(255, 107, 107, 0.4);
+      }
+      .opp-bulk-bar button.opp-bulk-delete:hover:not(:disabled) { background: rgba(255, 107, 107, 0.25); }
+      .opp-card.selectable { position: relative; }
+      .opp-card.selected {
+        border-color: rgba(226, 245, 0, 0.6);
+        box-shadow: 0 0 0 1px rgba(226, 245, 0, 0.4), 0 6px 14px rgba(0,0,0,0.4);
+      }
+      .opp-card-select {
+        position: absolute; top: 8px; left: 8px; z-index: 2;
+        width: 18px; height: 18px; cursor: pointer;
+        accent-color: var(--accent, #E2F500);
+      }
+
       /* Table styles for Firebase sections */
       .jaba-table-wrap {
         width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -1064,6 +1100,76 @@
   // to group, so we render Agencies as one flat grid. Search + review filter
   // chips are still available.
 
+  // Preferred display order for Agencies — top of the grid when present.
+  // Match is fuzzy/case-insensitive and ignores punctuation/extra whitespace
+  // so common variants ("V/Sports", "Milk + Honey", "athletes-first") line up.
+  var AGENCY_PREFERRED_ORDER = [
+    'Playfly',
+    'Wasserman',
+    'Octagon',
+    'Brunswick',
+    'Genesco',
+    'GSE',
+    'CAA',
+    'WME',
+    'Excel',
+    'Priority',
+    'Athletes First',
+    'Klutch',
+    'EAG',
+    'Milk and Honey',
+    'VaynerSports'
+  ];
+
+  function normalizeAgencyName(s) {
+    return String(s || '')
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/\+/g, ' and ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  var AGENCY_PREFERRED_NORMALIZED = AGENCY_PREFERRED_ORDER.map(normalizeAgencyName);
+
+  function preferredAgencyRank(company) {
+    var n = normalizeAgencyName(company);
+    if (!n) return -1;
+    for (var i = 0; i < AGENCY_PREFERRED_NORMALIZED.length; i++) {
+      var p = AGENCY_PREFERRED_NORMALIZED[i];
+      if (!p) continue;
+      if (n === p) return i;
+      // substring match in either direction handles "VaynerSports Group",
+      // "WME Sports", "CAA Sports & Entertainment", etc.
+      if (n.indexOf(p) !== -1 || p.indexOf(n) !== -1) return i;
+    }
+    return -1;
+  }
+
+  function sortAgencyLeadsByPreference(leads) {
+    return leads.slice().sort(function(a, b) {
+      var ra = preferredAgencyRank(a.company);
+      var rb = preferredAgencyRank(b.company);
+      if (ra !== -1 && rb !== -1) return ra - rb;
+      if (ra !== -1) return -1;
+      if (rb !== -1) return 1;
+      // Stable-ish fallback for the rest: alphabetical by company.
+      var ca = (a.company || '').toLowerCase();
+      var cb = (b.company || '').toLowerCase();
+      if (ca < cb) return -1;
+      if (ca > cb) return 1;
+      return 0;
+    });
+  }
+
+  // Bulk-select state for Agencies.
+  var agencySelectedIds = Object.create(null);
+
+  function visibleAgencyIds(leads) {
+    return leads.map(function(l) { return String(l.id); });
+  }
+
   function renderAgencyBoard() {
     var section = document.getElementById('agenciesSection');
     if (!section) return;
@@ -1090,6 +1196,16 @@
       l._category = categorize(l.company, AGENCY_CATEGORIES);
     });
 
+    agencyLeads = sortAgencyLeadsByPreference(agencyLeads);
+
+    // Prune selection to currently-visible ids so the count stays accurate
+    // when search/filter changes hide previously-selected cards.
+    var visibleIdSet = {};
+    agencyLeads.forEach(function(l) { visibleIdSet[String(l.id)] = true; });
+    Object.keys(agencySelectedIds).forEach(function(id) {
+      if (!visibleIdSet[id]) delete agencySelectedIds[id];
+    });
+
     var total = agencyLeads.length;
     var active = agencyLeads.filter(function(l) { return l.stage !== 'lead'; }).length;
     var clients = agencyLeads.filter(function(l) { return l.stage === 'client'; }).length;
@@ -1104,10 +1220,27 @@
       return '<div class="opp-board-stat"><div class="opp-board-stat-value">' + pair[1] + '</div><div class="opp-board-stat-label">' + pair[0] + '</div></div>';
     }).join('');
 
+    var selectedCount = Object.keys(agencySelectedIds).length;
+    var visibleCount = agencyLeads.length;
+    var allVisibleSelected = visibleCount > 0 && agencyLeads.every(function(l) { return agencySelectedIds[String(l.id)]; });
+
+    var bulkBarHtml =
+      '<div class="opp-bulk-bar">' +
+        '<span class="opp-bulk-count">' + selectedCount + ' selected</span>' +
+        '<button type="button" onclick="jabaCustom.toggleSelectAllAgencies()">' +
+          (allVisibleSelected ? 'Unselect all visible' : 'Select all visible') +
+        '</button>' +
+        '<button type="button" onclick="jabaCustom.clearAgencySelection()"' + (selectedCount ? '' : ' disabled') + '>Clear selection</button>' +
+        '<button type="button" class="opp-bulk-delete" onclick="jabaCustom.bulkDeleteSelectedAgencies()"' + (selectedCount ? '' : ' disabled') + '>Delete selected</button>' +
+      '</div>';
+
     var boardHtml = '';
     if (agencyLeads.length) {
       boardHtml = '<div class="opp-card-grid">' +
-        agencyLeads.map(function(lead) { return renderOppCard(lead, ''); }).join('') +
+        agencyLeads.map(function(lead) {
+          var selected = !!agencySelectedIds[String(lead.id)];
+          return renderOppCard(lead, '', { selectable: true, selected: selected, selectHandler: 'jabaCustom.toggleAgencySelection' });
+        }).join('') +
         '</div>';
     } else {
       boardHtml = '<div class="opp-empty">No agencies match the current filters.</div>';
@@ -1125,12 +1258,109 @@
         '<input type="text" class="opp-search" placeholder="Search agencies..." value="' + escapeHtml(agencySearchQuery) + '" oninput="jabaCustom.handleAgencySearch(this.value)">' +
       '</div>' +
       renderReviewChips('agencies') +
+      bulkBarHtml +
       boardHtml;
   }
 
   jabaCustom.handleAgencySearch = function(value) {
     agencySearchQuery = value.trim();
     renderAgencyBoard();
+  };
+
+  // ----- Agencies bulk-select helpers -----
+  jabaCustom.toggleAgencySelection = function(leadId, event) {
+    if (event) {
+      event.stopPropagation && event.stopPropagation();
+    }
+    var idStr = String(leadId);
+    if (agencySelectedIds[idStr]) delete agencySelectedIds[idStr];
+    else agencySelectedIds[idStr] = true;
+    renderAgencyBoard();
+  };
+
+  jabaCustom.toggleSelectAllAgencies = function() {
+    var leads = getLeadsArray().filter(function(l) {
+      return l.bucket === 'agencies' || l.bucket === 'athlete';
+    });
+    if (agencySearchQuery) {
+      var q = agencySearchQuery.toLowerCase();
+      leads = leads.filter(function(l) {
+        return (l.company || '').toLowerCase().indexOf(q) !== -1 ||
+               (l.context || '').toLowerCase().indexOf(q) !== -1 ||
+               (l.contacts || []).some(function(c) { return (c.name || '').toLowerCase().indexOf(q) !== -1; });
+      });
+    }
+    leads = applyReviewFilter(leads, 'agencies');
+    var ids = leads.map(function(l) { return String(l.id); });
+    var allSelected = ids.length > 0 && ids.every(function(id) { return agencySelectedIds[id]; });
+    if (allSelected) {
+      ids.forEach(function(id) { delete agencySelectedIds[id]; });
+    } else {
+      ids.forEach(function(id) { agencySelectedIds[id] = true; });
+    }
+    renderAgencyBoard();
+  };
+
+  jabaCustom.clearAgencySelection = function() {
+    agencySelectedIds = Object.create(null);
+    renderAgencyBoard();
+  };
+
+  // Bulk-tombstone all currently-selected agencies. Mirrors deleteOpportunity
+  // so the same Firebase 'leads_deleted/<id>' override survives reload, and we
+  // keep the user on the Agencies board (no renderSchools call).
+  jabaCustom.bulkDeleteSelectedAgencies = function() {
+    var ids = Object.keys(agencySelectedIds);
+    if (!ids.length) return;
+    var ok = window.confirm('Remove ' + ids.length + ' selected ' +
+      (ids.length === 1 ? 'agency' : 'agencies') + ' from Opportunities?\n\n' +
+      'They will be hidden from all Opportunities boards. Records are kept ' +
+      'in Firebase with a deleted flag so they can be restored if needed.');
+    if (!ok) return;
+
+    var raw = getRawLeadsArray();
+    var nowIso = new Date().toISOString();
+    var actor = (window.currentUser && window.currentUser.email) || 'unknown';
+    var anyChanged = false;
+
+    ids.forEach(function(idStr) {
+      var lead = raw.find(function(l) { return String(l.id) === idStr; });
+      if (!lead) {
+        lead = getLeadsArray().find(function(l) { return String(l.id) === idStr; });
+      }
+      var meta = {
+        deleted: true,
+        deletedAt: nowIso,
+        deletedBy: actor,
+        company: (lead && lead.company) || ''
+      };
+      if (typeof firebase !== 'undefined' && firebase.database) {
+        try {
+          firebase.database().ref('leads_deleted/' + idStr).set(meta);
+        } catch (e) { console.warn('tombstone write failed', e); }
+      }
+      deletedLeadIds[idStr] = true;
+      deletedLeadMeta[idStr] = meta;
+      if (lead) {
+        lead.deleted = true;
+        lead.deletedAt = meta.deletedAt;
+        lead.deletedBy = meta.deletedBy;
+        anyChanged = true;
+      }
+    });
+
+    if (anyChanged && typeof window.saveleads === 'function') {
+      try { window.saveleads(); } catch (e) { console.warn('saveleads failed', e); }
+    }
+
+    agencySelectedIds = Object.create(null);
+
+    // Re-render Opportunities boards only — never renderSchools, so the user
+    // stays on Agencies.
+    if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+    if (typeof renderBrandBoard === 'function') renderBrandBoard();
+    if (typeof renderTeamBoard === 'function') renderTeamBoard();
+    try { updateCardGridBadges(); } catch (e) {}
   };
 
   // ===== CARD GRID RENDERING: BRANDS =====
@@ -1305,11 +1535,13 @@
   };
 
   // ===== SHARED CARD RENDERER =====
-  function renderOppCard(lead, categoryLabel) {
+  function renderOppCard(lead, categoryLabel, opts) {
+    opts = opts || {};
     var heat = getHeat(lead);
     var isUnworked = !lead.stage || lead.stage === 'lead';
     var isClient = lead.stage === 'client';
-    var cardClass = (isUnworked ? 'unworked' : '') + (isClient ? ' client' : '');
+    var cardClass = (isUnworked ? 'unworked' : '') + (isClient ? ' client' : '') +
+      (opts.selectable ? ' selectable' : '') + (opts.selected ? ' selected' : '');
     var stageLabel = getStageLabel(lead.stage);
     var stageStyleStr = getStageStyle(lead.stage, isUnworked);
 
@@ -1350,7 +1582,17 @@
       ? '<span class="opp-card-type-pill">' + escapeHtml(shortCategory) + '</span>'
       : '';
 
+    var selectCheckboxHtml = '';
+    if (opts.selectable) {
+      var handler = opts.selectHandler || 'jabaCustom.toggleAgencySelection';
+      selectCheckboxHtml = '<input type="checkbox" class="opp-card-select" ' +
+        (opts.selected ? 'checked ' : '') +
+        'title="Select for bulk actions" ' +
+        'onclick="' + handler + '(' + lead.id + ', event)">';
+    }
+
     return '<div class="opp-card ' + cardClass + '" onclick="openDetailPanel(' + lead.id + ')">' +
+      selectCheckboxHtml +
       '<div class="opp-card-header">' +
         '<div class="opp-card-logo">' + logoHtml + '</div>' +
         typePillHtml +
