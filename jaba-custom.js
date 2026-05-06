@@ -186,14 +186,57 @@
     return out;
   }
 
+  // ===== TOMBSTONE STORE FOR REMOVED OPPORTUNITIES =====
+  // We can't persist a `deleted` flag directly on default-seed leads because
+  // index.html's mergeLeads() only copies stage/followUp/context onto default
+  // records on reload — any other field gets dropped. So we keep deletions in
+  // a separate Firebase node keyed by lead id. Filtering happens in
+  // getLeadsArray() so every visible Opportunities board honors it.
+  var deletedLeadIds = {};
+  var deletedLeadMeta = {};
+  var deletedLeadsLoaded = false;
+
+  function loadDeletedLeadsFromFirebase() {
+    if (typeof firebase === 'undefined' || !firebase.database) return;
+    try {
+      firebase.database().ref('leads_deleted').on('value', function(snap) {
+        var val = snap && snap.val();
+        deletedLeadIds = {};
+        deletedLeadMeta = {};
+        if (val && typeof val === 'object') {
+          Object.keys(val).forEach(function(k) {
+            if (val[k] && val[k].deleted === false) return;
+            deletedLeadIds[k] = true;
+            deletedLeadMeta[k] = val[k];
+          });
+        }
+        deletedLeadsLoaded = true;
+        if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+        if (typeof renderBrandBoard === 'function') renderBrandBoard();
+        if (typeof renderTeamBoard === 'function') renderTeamBoard();
+        try { updateCardGridBadges(); } catch (e) {}
+      });
+    } catch (e) { console.warn('leads_deleted listener failed', e); }
+  }
+
+  function isLeadDeleted(lead) {
+    if (!lead) return true;
+    if (lead.deleted === true) return true;
+    var key = String(lead.id);
+    return !!deletedLeadIds[key];
+  }
+
   // Public-facing helpers used by the Opportunities tabs (Agencies, Brands,
   // Teams & Leagues). These return a deduped view so the visible UI never
   // shows the same account twice, even if multiple records exist in the
   // underlying leads array (static seeds, Firebase variants with different
   // ids, generic 'leads' bucket vs specific tab bucket, etc.). The raw
-  // underlying data is left untouched.
+  // underlying data is left untouched. Deleted ids (tombstoned in Firebase
+  // path 'leads_deleted') are filtered out so the boards don't surface
+  // removed accounts on reload.
   function getLeadsArray() {
-    return dedupeLeadsByCompany(getRawLeadsArray());
+    var arr = dedupeLeadsByCompany(getRawLeadsArray());
+    return arr.filter(function(l) { return !isLeadDeleted(l); });
   }
 
   function getLeadsByBucket(bucket) {
@@ -1036,6 +1079,8 @@
       });
     }
 
+    agencyLeads = applyReviewFilter(agencyLeads, 'agencies');
+
     agencyLeads.forEach(function(l) {
       l._category = categorize(l.company, AGENCY_CATEGORIES);
     });
@@ -1099,12 +1144,18 @@
     }
 
     section.innerHTML =
-      '<div class="schools-header"><div><h2>Agencies</h2><div class="schools-subtitle">Agency pipeline board for live reviews</div></div></div>' +
+      '<div class="schools-header">' +
+        '<div><h2>Agencies</h2><div class="schools-subtitle">Agency pipeline board for live reviews</div></div>' +
+        '<div class="schools-header-actions">' +
+          '<button class="opp-add-btn" onclick="jabaCustom.openAddOpportunityModal(\'agencies\')">+ Add Agency</button>' +
+        '</div>' +
+      '</div>' +
       '<div class="opp-board-stats">' + statsHtml + '</div>' +
       '<div class="opp-control-bar">' +
         '<div class="opp-filter-chips">' + chipsHtml + '</div>' +
         '<input type="text" class="opp-search" placeholder="Search agencies..." value="' + escapeHtml(agencySearchQuery) + '" oninput="jabaCustom.handleAgencySearch(this.value)">' +
       '</div>' +
+      renderReviewChips('agencies') +
       boardHtml;
   }
 
@@ -1135,6 +1186,8 @@
                (l.context || '').toLowerCase().indexOf(q) !== -1;
       });
     }
+
+    brandLeads = applyReviewFilter(brandLeads, 'brands');
 
     brandLeads.forEach(function(l) {
       l._category = categorize(l.company, BRAND_CATEGORIES);
@@ -1197,12 +1250,18 @@
     }
 
     section.innerHTML =
-      '<div class="schools-header"><div><h2>Brands</h2><div class="schools-subtitle">Brand pipeline board for live reviews</div></div></div>' +
+      '<div class="schools-header">' +
+        '<div><h2>Brands</h2><div class="schools-subtitle">Brand pipeline board for live reviews</div></div>' +
+        '<div class="schools-header-actions">' +
+          '<button class="opp-add-btn" onclick="jabaCustom.openAddOpportunityModal(\'brands\')">+ Add Brand</button>' +
+        '</div>' +
+      '</div>' +
       '<div class="opp-board-stats">' + statsHtml + '</div>' +
       '<div class="opp-control-bar">' +
         '<div class="opp-filter-chips">' + chipsHtml + '</div>' +
         '<input type="text" class="opp-search" placeholder="Search brands..." value="' + escapeHtml(brandSearchQuery) + '" oninput="jabaCustom.handleBrandSearch(this.value)">' +
       '</div>' +
+      renderReviewChips('brands') +
       boardHtml;
   }
 
@@ -1233,6 +1292,8 @@
       });
     }
 
+    teamLeads = applyReviewFilter(teamLeads, 'teams');
+
     var total = teamLeads.length;
     var active = teamLeads.filter(function(l) { return l.stage !== 'lead'; }).length;
     var clients = teamLeads.filter(function(l) { return l.stage === 'client'; }).length;
@@ -1260,11 +1321,17 @@
     }
 
     section.innerHTML =
-      '<div class="schools-header"><div><h2>Teams & Leagues</h2><div class="schools-subtitle">Teams and leagues pipeline board</div></div></div>' +
+      '<div class="schools-header">' +
+        '<div><h2>Teams & Leagues</h2><div class="schools-subtitle">Teams and leagues pipeline board</div></div>' +
+        '<div class="schools-header-actions">' +
+          '<button class="opp-add-btn" onclick="jabaCustom.openAddOpportunityModal(\'teams\')">+ Add Team / League</button>' +
+        '</div>' +
+      '</div>' +
       '<div class="opp-board-stats">' + statsHtml + '</div>' +
       '<div class="opp-control-bar">' +
         '<input type="text" class="opp-search" placeholder="Search teams & leagues..." value="' + escapeHtml(teamSearchQuery) + '" oninput="jabaCustom.handleTeamSearch(this.value)">' +
       '</div>' +
+      renderReviewChips('teams') +
       boardHtml;
   }
 
@@ -1312,6 +1379,9 @@
     var lastContactRaw = getLastContactDate(lead);
     var lastContactText = 'Last: ' + formatLastContact(lastContactRaw);
 
+    var flags = computeReviewFlags(lead, lastContactRaw, categoryLabel);
+    var flagPillsHtml = renderFlagPills(flags);
+
     return '<div class="opp-card ' + cardClass + '" onclick="openDetailPanel(' + lead.id + ')">' +
       '<div class="opp-card-header">' +
         '<div class="opp-card-logo">' + logoHtml + '</div>' +
@@ -1325,10 +1395,15 @@
         '</span>' +
         '<span class="opp-card-status" style="' + stageStyleStr + '">' + escapeHtml(stageLabel) + '</span>' +
       '</div>' +
+      (flagPillsHtml ? '<div class="opp-card-flags">' + flagPillsHtml + '</div>' : '') +
       '<div class="opp-card-context">' + escapeHtml(lead.context || '') + '</div>' +
       '<div class="opp-card-footer">' +
         '<span>' + followUpText + ' \u00b7 <span class="last-contact-tag">' + lastContactText + '</span></span>' +
-        '<button class="opp-card-note-btn" onclick="jabaCustom.addQuickNoteToLead(' + lead.id + ', event)" title="Add a quick note">+ Note</button>' +
+        '<span class="opp-card-actions" onclick="event.stopPropagation()">' +
+          '<button class="opp-card-note-btn" onclick="jabaCustom.openOppReviewModal(' + lead.id + ', event)" title="Edit opportunity">Edit</button>' +
+          '<button class="opp-card-note-btn" onclick="jabaCustom.addQuickNoteToLead(' + lead.id + ', event)" title="Add a quick note">+ Note</button>' +
+          '<button class="opp-card-note-btn opp-card-delete-btn" onclick="jabaCustom.deleteOpportunity(' + lead.id + ', event)" title="Remove this opportunity">Remove</button>' +
+        '</span>' +
       '</div>' +
     '</div>';
   }
@@ -2017,6 +2092,628 @@
   jabaCustom.getLastContactDate = getLastContactDate;
   jabaCustom.formatLastContact = formatLastContact;
 
+  // ===== OPPORTUNITY REVIEW: stages, buckets, flags, edit modal, filters =====
+  // Lets the user move agencies/brands/teams/schools/leads through a fixed
+  // status pipeline, fix mis-categorized records, log context, set follow-up
+  // and owner, and triage with review badges/filters. Edits persist via
+  // saveleads() (Firebase 'leads' path) so the rest of the app stays in sync.
+
+  // Status options requested for the review workflow. These coexist with the
+  // wider STAGE_RANK set used by heat — anything not in this list is preserved
+  // as a custom value when shown in the dropdown.
+  var REVIEW_STAGES = [
+    { value: '', label: 'Unworked' },
+    { value: 'lead', label: 'Lead' },
+    { value: 'contacted', label: 'Contacted' },
+    { value: 'report_sent', label: 'Report Sent' },
+    { value: 'meeting_scheduled', label: 'Meeting Scheduled' },
+    { value: 'meeting_complete', label: 'Meeting Complete' },
+    { value: 'contract_sent', label: 'Contract Sent' },
+    { value: 'client', label: 'Client' },
+    { value: 'onhold', label: 'On Hold' },
+    { value: 'not_a_fit', label: 'Not a Fit' }
+  ];
+
+  // Bucket options the user can move records between. These match the buckets
+  // used by the visible Opportunities tabs (renderAgencyBoard/Brand/Team plus
+  // schools and the generic 'leads' fallback).
+  var REVIEW_BUCKETS = [
+    { value: 'schools', label: 'Schools' },
+    { value: 'agencies', label: 'Agencies' },
+    { value: 'athlete', label: 'Athlete Agency' },
+    { value: 'brands', label: 'Brands' },
+    { value: 'teams', label: 'Teams & Leagues' },
+    { value: 'leads', label: 'Leads (uncategorized)' }
+  ];
+
+  // Strong stages exempt from the "No Contact Logged" flag — if the record
+  // is already deep in the pipeline, missing inbox/task evidence isn't
+  // something the user needs to triage tomorrow.
+  var STRONG_STAGES = [
+    'meeting_scheduled', 'meeting_complete', 'report_sent',
+    'contract_sent', 'client', 'announcement_working',
+    'announcement_sent', 'announcement_approved'
+  ];
+
+  // Companies to flag for removal. User said 100X Sports and VMG Agency are
+  // not real opportunities. Match is case/space-insensitive on the company
+  // name only — we never write changes for these, just badge + filter.
+  function isRemoveCandidate(name) {
+    var n = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!n) return false;
+    return n.indexOf('100xsports') !== -1 || n === '100x' ||
+           n.indexOf('vmgagency') !== -1 || n === 'vmg';
+  }
+
+  // True when this opp's bucket disagrees with the page it's rendered on,
+  // or when its category came back as 'Other' / unknown on a tab that has
+  // a defined category map. Helps the user spot brands sitting in agencies,
+  // agencies sitting in teams, etc.
+  function isCategoryReview(lead, categoryLabel) {
+    if (!lead) return false;
+    if (!lead.bucket || lead.bucket === 'leads') return true;
+    if (categoryLabel && categoryLabel === 'Other') return true;
+    return false;
+  }
+
+  // Compute review flags for a lead. lastContactRaw is the YYYY-MM-DD result
+  // of getLastContactDate (or null) so we don't recompute it per card.
+  function computeReviewFlags(lead, lastContactRaw, categoryLabel) {
+    var flags = {
+      needsContext: false,
+      noContactLogged: false,
+      reviewCategory: false,
+      removeCandidate: false
+    };
+    if (!lead) return flags;
+    var ctx = String(lead.context || '').trim();
+    if (!ctx || ctx.length < 12) flags.needsContext = true;
+    var stage = lead.stage || '';
+    var hasContacts = Array.isArray(lead.contacts) && lead.contacts.length > 0;
+    if (!lastContactRaw && !hasContacts && STRONG_STAGES.indexOf(stage) === -1) {
+      flags.noContactLogged = true;
+    }
+    if (isCategoryReview(lead, categoryLabel)) flags.reviewCategory = true;
+    if (isRemoveCandidate(lead.company)) flags.removeCandidate = true;
+    return flags;
+  }
+
+  function renderFlagPills(flags) {
+    var html = '';
+    if (flags.removeCandidate) html += '<span class="opp-flag-pill flag-remove" title="Matches 100X Sports / VMG — verify before keeping">Remove?</span>';
+    if (flags.reviewCategory) html += '<span class="opp-flag-pill flag-category" title="Bucket / category may be wrong for this page">Review Category</span>';
+    if (flags.needsContext) html += '<span class="opp-flag-pill flag-context" title="Notes / context missing or too short">Needs Context</span>';
+    if (flags.noContactLogged) html += '<span class="opp-flag-pill flag-contact" title="No linked email or contact evidence yet">No Contact Logged</span>';
+    return html;
+  }
+
+  // Per-page review filter state: 'all' | 'needsContext' | 'noContactLogged' |
+  // 'reviewCategory' | 'removeCandidate'. Applied after the existing search /
+  // category chip filtering so it composes cleanly.
+  var reviewFilterByBoard = { agencies: 'all', brands: 'all', teams: 'all' };
+
+  function applyReviewFilter(leads, board) {
+    var f = reviewFilterByBoard[board] || 'all';
+    if (f === 'all') return leads;
+    return leads.filter(function(l) {
+      var lc = getLastContactDate(l);
+      var fl = computeReviewFlags(l, lc, null);
+      return fl[f];
+    });
+  }
+
+  jabaCustom.setReviewFilter = function(board, value) {
+    reviewFilterByBoard[board] = value;
+    if (board === 'agencies' && typeof renderAgencyBoard === 'function') renderAgencyBoard();
+    else if (board === 'brands' && typeof renderBrandBoard === 'function') renderBrandBoard();
+    else if (board === 'teams' && typeof renderTeamBoard === 'function') renderTeamBoard();
+  };
+
+  function renderReviewChips(board) {
+    var current = reviewFilterByBoard[board] || 'all';
+    var chips = [
+      ['all', 'All'],
+      ['needsContext', 'Needs Context'],
+      ['noContactLogged', 'No Contact Logged'],
+      ['reviewCategory', 'Review Category'],
+      ['removeCandidate', 'Remove Candidate']
+    ];
+    var counts = computeReviewCountsForBoard(board);
+    return '<div class="opp-review-chips">' + chips.map(function(c) {
+      var active = c[0] === current ? ' active' : '';
+      var n = counts[c[0]];
+      var nLabel = (typeof n === 'number') ? ' <span class="opp-review-count">' + n + '</span>' : '';
+      return '<button class="opp-review-chip' + active + '" onclick="jabaCustom.setReviewFilter(\'' + board + '\',\'' + c[0] + '\')">' + c[1] + nLabel + '</button>';
+    }).join('') + '</div>';
+  }
+
+  function computeReviewCountsForBoard(board) {
+    var src = [];
+    if (board === 'agencies') {
+      src = getLeadsArray().filter(function(l) { return l.bucket === 'agencies' || l.bucket === 'athlete'; });
+    } else if (board === 'brands') {
+      src = getLeadsByBucket('brands');
+    } else if (board === 'teams') {
+      src = getLeadsByBucket('teams');
+    }
+    var counts = { all: src.length, needsContext: 0, noContactLogged: 0, reviewCategory: 0, removeCandidate: 0 };
+    src.forEach(function(l) {
+      var lc = getLastContactDate(l);
+      var f = computeReviewFlags(l, lc, null);
+      if (f.needsContext) counts.needsContext++;
+      if (f.noContactLogged) counts.noContactLogged++;
+      if (f.reviewCategory) counts.reviewCategory++;
+      if (f.removeCandidate) counts.removeCandidate++;
+    });
+    return counts;
+  }
+
+  // Public flag helpers (used by the briefing / dashboard if it wants them).
+  jabaCustom.computeReviewFlags = computeReviewFlags;
+  jabaCustom.renderReviewChips = renderReviewChips;
+  jabaCustom.applyReviewFilter = applyReviewFilter;
+
+  // ===== OPPORTUNITY EDIT MODAL =====
+  var ensureOppReviewModal = function() {
+    if (document.getElementById('oppReviewModal')) return;
+    var modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'oppReviewModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML =
+      '<div class="modal-content" style="max-width:520px;">' +
+        '<div class="modal-header">' +
+          '<h2 id="oppReviewTitle">Review Opportunity</h2>' +
+          '<button class="modal-close" type="button" data-opp-action="close" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<form id="oppReviewForm" onsubmit="return false;"></form>' +
+        '</div>' +
+        '<div class="modal-footer">' +
+          '<button type="button" class="btn btn-secondary" data-opp-action="close">Cancel</button>' +
+          '<button type="button" class="btn btn-primary" id="oppReviewSave">Save</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e) {
+      var t = e.target;
+      if (t === modal) { modal.classList.remove('active'); return; }
+      if (t.dataset && t.dataset.oppAction === 'close') { modal.classList.remove('active'); }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+      }
+    });
+  };
+
+  // Build the edit modal HTML for a given lead. Reuses status/bucket lists
+  // above so the dropdowns stay aligned with REVIEW_STAGES / REVIEW_BUCKETS.
+  function buildOppReviewForm(lead) {
+    var stage = lead.stage || '';
+    var bucket = lead.bucket || 'leads';
+    var stageHasMatch = REVIEW_STAGES.some(function(s) { return s.value === stage; });
+    var bucketHasMatch = REVIEW_BUCKETS.some(function(b) { return b.value === bucket; });
+
+    var stageOpts = REVIEW_STAGES.map(function(s) {
+      return '<option value="' + escapeAttr(s.value) + '"' + (s.value === stage ? ' selected' : '') + '>' + escapeAttr(s.label) + '</option>';
+    }).join('');
+    if (!stageHasMatch && stage) {
+      stageOpts += '<option value="' + escapeAttr(stage) + '" selected>' + escapeAttr(stage) + ' (custom)</option>';
+    }
+
+    var bucketOpts = REVIEW_BUCKETS.map(function(b) {
+      return '<option value="' + escapeAttr(b.value) + '"' + (b.value === bucket ? ' selected' : '') + '>' + escapeAttr(b.label) + '</option>';
+    }).join('');
+    if (!bucketHasMatch && bucket) {
+      bucketOpts += '<option value="' + escapeAttr(bucket) + '" selected>' + escapeAttr(bucket) + ' (custom)</option>';
+    }
+
+    var ownerVal = lead.owner != null ? lead.owner : '';
+    var followUpVal = lead.followUp || '';
+    var contextVal = lead.context || '';
+
+    return '' +
+      '<div class="form-group"><label>Company</label>' +
+        '<input type="text" id="opp-field-company" value="' + escapeAttr(lead.company || '') + '"></div>' +
+      '<div class="form-group"><label>Status</label>' +
+        '<select id="opp-field-stage">' + stageOpts + '</select></div>' +
+      '<div class="form-group"><label>Bucket / Page</label>' +
+        '<select id="opp-field-bucket">' + bucketOpts + '</select>' +
+        '<div style="font-size:11px;color:var(--text-secondary,#8b949e);margin-top:4px;">Move this record to a different Opportunities tab.</div>' +
+      '</div>' +
+      '<div class="form-group"><label>Next Follow-Up</label>' +
+        '<input type="date" id="opp-field-followup" value="' + escapeAttr(followUpVal) + '"></div>' +
+      '<div class="form-group"><label>Owner</label>' +
+        '<input type="text" id="opp-field-owner" value="' + escapeAttr(ownerVal) + '" placeholder="e.g. Jordon, Damar, Nick"></div>' +
+      '<div class="form-group"><label>Context / Notes</label>' +
+        '<textarea id="opp-field-context" rows="6" placeholder="Why this account matters, last touch summary, next move...">' + escapeAttr(contextVal) + '</textarea></div>';
+  }
+
+  // Open the review modal. We look the lead up in the raw leads array (not
+  // the deduped view) so saving writes to the actual object that saveleads()
+  // will persist.
+  jabaCustom.openOppReviewModal = function(leadId, event) {
+    if (event) {
+      event.stopPropagation && event.stopPropagation();
+      event.preventDefault && event.preventDefault();
+    }
+    var raw = getRawLeadsArray();
+    var lead = raw.find(function(l) { return l.id === leadId; });
+    if (!lead) {
+      // Fall back to the deduped view in case the id only exists there.
+      lead = getLeadsArray().find(function(l) { return l.id === leadId; });
+    }
+    if (!lead) return;
+
+    ensureOppReviewModal();
+    var modal = document.getElementById('oppReviewModal');
+    var form = document.getElementById('oppReviewForm');
+    document.getElementById('oppReviewTitle').textContent = 'Review: ' + (lead.company || 'opportunity');
+    form.innerHTML = buildOppReviewForm(lead);
+
+    document.getElementById('oppReviewSave').onclick = function() {
+      var nextCompany = (document.getElementById('opp-field-company').value || '').trim();
+      if (!nextCompany) { alert('Company is required.'); return; }
+
+      lead.company = nextCompany;
+      lead.stage = document.getElementById('opp-field-stage').value || '';
+      lead.bucket = document.getElementById('opp-field-bucket').value || lead.bucket || 'leads';
+      lead.followUp = document.getElementById('opp-field-followup').value || '';
+      var ownerVal = (document.getElementById('opp-field-owner').value || '').trim();
+      if (ownerVal) lead.owner = ownerVal;
+      else delete lead.owner;
+      lead.context = document.getElementById('opp-field-context').value || '';
+      lead.updated = new Date().toISOString();
+
+      // Persist to Firebase 'leads' path (and __memStore) via existing helper.
+      if (typeof window.saveleads === 'function') {
+        try { window.saveleads(); } catch (e) { console.warn('saveleads failed', e); }
+      }
+
+      modal.classList.remove('active');
+      // Re-render whichever boards are visible.
+      if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+      if (typeof renderBrandBoard === 'function') renderBrandBoard();
+      if (typeof renderTeamBoard === 'function') renderTeamBoard();
+      if (typeof window.renderSchools === 'function') {
+        try { window.renderSchools(); } catch (e) {}
+      }
+      // Update sidebar badges.
+      try { updateCardGridBadges(); } catch (e) {}
+    };
+
+    modal.classList.add('active');
+    setTimeout(function() {
+      var first = document.getElementById('opp-field-company');
+      if (first) first.focus();
+    }, 50);
+  };
+
+  // ===== ADD OPPORTUNITY MODAL =====
+  // Adds a new lead row to window.leads with a fresh id that won't collide
+  // with the static defaultLeads() seed (those use small integers — we mint
+  // an id from Date.now(), well above any seed). Persists via the existing
+  // saveleads() helper so the new card flows through Firebase 'leads' to
+  // every other client. Default-seed merge in index.html only touches
+  // matching ids, so newly minted ids round-trip with all fields preserved.
+  function generateLeadId() {
+    var raw = getRawLeadsArray();
+    var maxId = 0;
+    raw.forEach(function(l) {
+      var n = Number(l && l.id);
+      if (!isNaN(n) && n > maxId) maxId = n;
+    });
+    var candidate = Math.max(Date.now(), maxId + 1);
+    // Ensure uniqueness even if Date.now() collides with a manually-set id.
+    var existingIds = {};
+    raw.forEach(function(l) { if (l && l.id != null) existingIds[String(l.id)] = true; });
+    while (existingIds[String(candidate)]) { candidate++; }
+    return candidate;
+  }
+
+  var ensureAddOpportunityModal = function() {
+    if (document.getElementById('oppAddModal')) return;
+    var modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'oppAddModal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML =
+      '<div class="modal-content" style="max-width:540px;">' +
+        '<div class="modal-header">' +
+          '<h2 id="oppAddTitle">Add Opportunity</h2>' +
+          '<button class="modal-close" type="button" data-opp-add-action="close" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<form id="oppAddForm" onsubmit="return false;"></form>' +
+        '</div>' +
+        '<div class="modal-footer">' +
+          '<button type="button" class="btn btn-secondary" data-opp-add-action="close">Cancel</button>' +
+          '<button type="button" class="btn btn-primary" id="oppAddSave">Add</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(modal);
+
+    modal.addEventListener('click', function(e) {
+      var t = e.target;
+      if (t === modal) { modal.classList.remove('active'); return; }
+      if (t.dataset && t.dataset.oppAddAction === 'close') { modal.classList.remove('active'); }
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+      }
+    });
+  };
+
+  // Default bucket per board so the dropdown lands sensibly when the user
+  // clicks "+ Add" on a specific tab.
+  var BOARD_TO_DEFAULT_BUCKET = {
+    agencies: 'agencies',
+    brands: 'brands',
+    teams: 'teams',
+    schools: 'schools',
+    leads: 'leads'
+  };
+
+  function buildAddOpportunityForm(defaultBucket) {
+    var bucket = BOARD_TO_DEFAULT_BUCKET[defaultBucket] || defaultBucket || 'leads';
+    // Add modal supports the wider bucket set requested for opportunities,
+    // including investors / athlete_investors so the user can route from one
+    // place. The visible tab still depends on the chosen bucket.
+    var ADD_BUCKETS = [
+      { value: 'agencies', label: 'Agencies' },
+      { value: 'athlete', label: 'Athlete Agency' },
+      { value: 'brands', label: 'Brands' },
+      { value: 'teams', label: 'Teams & Leagues' },
+      { value: 'schools', label: 'Schools' },
+      { value: 'investors', label: 'Investors' },
+      { value: 'athlete_investors', label: 'Athlete Investors' },
+      { value: 'leads', label: 'Leads (uncategorized)' }
+    ];
+    var bucketOpts = ADD_BUCKETS.map(function(b) {
+      return '<option value="' + escapeAttr(b.value) + '"' + (b.value === bucket ? ' selected' : '') + '>' + escapeAttr(b.label) + '</option>';
+    }).join('');
+    var stageOpts = REVIEW_STAGES.map(function(s) {
+      var sel = (s.value === '' ? ' selected' : '');
+      return '<option value="' + escapeAttr(s.value) + '"' + sel + '>' + escapeAttr(s.label) + '</option>';
+    }).join('');
+
+    return '' +
+      '<div class="form-group"><label>Company / Account <span style="color:#ff8a8a;">*</span></label>' +
+        '<input type="text" id="opp-add-company" placeholder="e.g. Wasserman" required></div>' +
+      '<div class="form-group"><label>Bucket / Page</label>' +
+        '<select id="opp-add-bucket">' + bucketOpts + '</select>' +
+        '<div style="font-size:11px;color:var(--text-secondary,#8b949e);margin-top:4px;">Determines which Opportunities tab this card appears on.</div>' +
+      '</div>' +
+      '<div class="form-group"><label>Status / Stage</label>' +
+        '<select id="opp-add-stage">' + stageOpts + '</select>' +
+      '</div>' +
+      '<div class="form-group"><label>Context / Notes</label>' +
+        '<textarea id="opp-add-context" rows="4" placeholder="Why this account matters, intro source, next move..."></textarea></div>' +
+      '<div class="form-group" style="display:flex;gap:10px;">' +
+        '<div style="flex:1;"><label>Next Follow-Up</label>' +
+          '<input type="date" id="opp-add-followup"></div>' +
+        '<div style="flex:1;"><label>Owner</label>' +
+          '<input type="text" id="opp-add-owner" placeholder="e.g. Jordon"></div>' +
+      '</div>' +
+      '<div class="form-group" style="display:flex;gap:10px;">' +
+        '<div style="flex:1;"><label>Contact Name (optional)</label>' +
+          '<input type="text" id="opp-add-contact-name" placeholder="Primary contact"></div>' +
+        '<div style="flex:1;"><label>Contact Email (optional)</label>' +
+          '<input type="email" id="opp-add-contact-email" placeholder="name@example.com"></div>' +
+      '</div>';
+  }
+
+  jabaCustom.openAddOpportunityModal = function(boardKey) {
+    ensureAddOpportunityModal();
+    var modal = document.getElementById('oppAddModal');
+    var form = document.getElementById('oppAddForm');
+    var titleMap = {
+      agencies: 'Add Agency',
+      brands: 'Add Brand',
+      teams: 'Add Team / League',
+      schools: 'Add School',
+      leads: 'Add Opportunity'
+    };
+    document.getElementById('oppAddTitle').textContent = titleMap[boardKey] || 'Add Opportunity';
+    form.innerHTML = buildAddOpportunityForm(boardKey);
+
+    document.getElementById('oppAddSave').onclick = function() {
+      var company = (document.getElementById('opp-add-company').value || '').trim();
+      if (!company) { alert('Company / Account name is required.'); return; }
+      var bucket = document.getElementById('opp-add-bucket').value || 'leads';
+      var stage = document.getElementById('opp-add-stage').value || '';
+      var context = document.getElementById('opp-add-context').value || '';
+      var followUp = document.getElementById('opp-add-followup').value || '';
+      var owner = (document.getElementById('opp-add-owner').value || '').trim();
+      var contactName = (document.getElementById('opp-add-contact-name').value || '').trim();
+      var contactEmail = (document.getElementById('opp-add-contact-email').value || '').trim();
+
+      var newLead = {
+        id: generateLeadId(),
+        company: company,
+        bucket: bucket,
+        stage: stage,
+        context: context,
+        followUp: followUp,
+        contacts: [],
+        createdAt: new Date().toISOString(),
+        updated: new Date().toISOString()
+      };
+      if (owner) newLead.owner = owner;
+      if (contactName || contactEmail) {
+        newLead.contacts.push({
+          name: contactName || '(no name)',
+          email: contactEmail || ''
+        });
+      }
+
+      // Push directly into the live leads array so the rest of the app
+      // (saveleads, mergeLeads, sidebar badges) sees the new record.
+      var arr = (typeof leads !== 'undefined' && Array.isArray(leads)) ? leads
+              : (window.__leads && Array.isArray(window.__leads)) ? window.__leads
+              : null;
+      if (arr) {
+        arr.push(newLead);
+      } else if (typeof window !== 'undefined') {
+        window.__leads = window.__leads || [];
+        window.__leads.push(newLead);
+      }
+
+      // If this id was previously tombstoned (extremely unlikely but safe),
+      // clear the tombstone so the new card isn't filtered out.
+      if (typeof firebase !== 'undefined' && firebase.database) {
+        try { firebase.database().ref('leads_deleted/' + newLead.id).remove(); } catch (e) {}
+      }
+      delete deletedLeadIds[String(newLead.id)];
+
+      if (typeof window.saveleads === 'function') {
+        try { window.saveleads(); } catch (e) { console.warn('saveleads failed', e); }
+      }
+
+      modal.classList.remove('active');
+
+      if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+      if (typeof renderBrandBoard === 'function') renderBrandBoard();
+      if (typeof renderTeamBoard === 'function') renderTeamBoard();
+      if (typeof window.renderSchools === 'function') {
+        try { window.renderSchools(); } catch (e) {}
+      }
+      try { updateCardGridBadges(); } catch (e) {}
+    };
+
+    modal.classList.add('active');
+    setTimeout(function() {
+      var first = document.getElementById('opp-add-company');
+      if (first) first.focus();
+    }, 50);
+  };
+
+  // ===== DELETE / TOMBSTONE OPPORTUNITY =====
+  // Marks a lead deleted via Firebase 'leads_deleted/<id>' so the override
+  // survives reload — index.html's mergeLeads() rehydrates default-seed
+  // leads from defaultLeads() each load, so a deleted flag on the lead
+  // object itself wouldn't stick. We also try to set lead.deleted=true on
+  // the in-memory object and write through saveleads() for non-default ids
+  // (where mergeLeads keeps arbitrary fields).
+  jabaCustom.deleteOpportunity = function(leadId, event) {
+    if (event) {
+      event.stopPropagation && event.stopPropagation();
+      event.preventDefault && event.preventDefault();
+    }
+    var raw = getRawLeadsArray();
+    var lead = raw.find(function(l) { return l.id === leadId; });
+    if (!lead) {
+      lead = getLeadsArray().find(function(l) { return l.id === leadId; });
+    }
+    var label = (lead && lead.company) ? lead.company : 'this opportunity';
+    var ok = window.confirm('Remove "' + label + '" from Opportunities?\n\n' +
+      'It will be hidden from all Opportunities boards. The record is kept ' +
+      'in Firebase with a deleted flag so it can be restored if needed.');
+    if (!ok) return;
+
+    var idStr = String(leadId);
+    var meta = {
+      deleted: true,
+      deletedAt: new Date().toISOString(),
+      deletedBy: (window.currentUser && window.currentUser.email) || 'unknown',
+      company: (lead && lead.company) || ''
+    };
+
+    // Tombstone in dedicated path so default-seed reload keeps it hidden.
+    if (typeof firebase !== 'undefined' && firebase.database) {
+      try {
+        firebase.database().ref('leads_deleted/' + idStr).set(meta);
+      } catch (e) { console.warn('tombstone write failed', e); }
+    }
+    deletedLeadIds[idStr] = true;
+    deletedLeadMeta[idStr] = meta;
+
+    // Also flag on the lead object for non-default ids that round-trip
+    // through saveleads/mergeLeads (preserves data instead of splicing).
+    if (lead) {
+      lead.deleted = true;
+      lead.deletedAt = meta.deletedAt;
+      lead.deletedBy = meta.deletedBy;
+      if (typeof window.saveleads === 'function') {
+        try { window.saveleads(); } catch (e) { console.warn('saveleads failed', e); }
+      }
+    }
+
+    if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+    if (typeof renderBrandBoard === 'function') renderBrandBoard();
+    if (typeof renderTeamBoard === 'function') renderTeamBoard();
+    if (typeof window.renderSchools === 'function') {
+      try { window.renderSchools(); } catch (e) {}
+    }
+    try { updateCardGridBadges(); } catch (e) {}
+  };
+
+  // Restore a previously-deleted opportunity (clears the tombstone and any
+  // lead.deleted flag). Available on jabaCustom for power-user revival.
+  jabaCustom.restoreOpportunity = function(leadId) {
+    var idStr = String(leadId);
+    if (typeof firebase !== 'undefined' && firebase.database) {
+      try { firebase.database().ref('leads_deleted/' + idStr).remove(); } catch (e) {}
+    }
+    delete deletedLeadIds[idStr];
+    delete deletedLeadMeta[idStr];
+    var raw = getRawLeadsArray();
+    var lead = raw.find(function(l) { return String(l.id) === idStr; });
+    if (lead) {
+      delete lead.deleted;
+      delete lead.deletedAt;
+      delete lead.deletedBy;
+      if (typeof window.saveleads === 'function') {
+        try { window.saveleads(); } catch (e) {}
+      }
+    }
+    if (typeof renderAgencyBoard === 'function') renderAgencyBoard();
+    if (typeof renderBrandBoard === 'function') renderBrandBoard();
+    if (typeof renderTeamBoard === 'function') renderTeamBoard();
+    try { updateCardGridBadges(); } catch (e) {}
+  };
+
+  jabaCustom.listDeletedOpportunities = function() {
+    return Object.keys(deletedLeadMeta).map(function(k) {
+      var m = deletedLeadMeta[k] || {};
+      return { id: k, company: m.company || '', deletedAt: m.deletedAt || '', deletedBy: m.deletedBy || '' };
+    });
+  };
+
+  // ===== STYLES for flags, review chips, edit button =====
+  (function injectReviewStyles() {
+    if (document.getElementById('jaba-opp-review-styles')) return;
+    var css = '' +
+      '.opp-card-flags{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 4px;}' +
+      '.opp-flag-pill{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;letter-spacing:0.02em;line-height:1.4;border:1px solid transparent;}' +
+      '.opp-flag-pill.flag-remove{background:rgba(255,107,107,0.18);color:#ff8a8a;border-color:rgba(255,107,107,0.35);}' +
+      '.opp-flag-pill.flag-category{background:rgba(253,203,110,0.18);color:#fdcb6e;border-color:rgba(253,203,110,0.3);}' +
+      '.opp-flag-pill.flag-context{background:rgba(116,185,255,0.16);color:#74b9ff;border-color:rgba(116,185,255,0.3);}' +
+      '.opp-flag-pill.flag-contact{background:rgba(162,155,254,0.18);color:#a29bfe;border-color:rgba(162,155,254,0.3);}' +
+      '.opp-review-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;}' +
+      '.opp-review-chip{font-size:11px;font-weight:600;padding:5px 10px;border-radius:14px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:var(--text-secondary,#8b949e);cursor:pointer;transition:all 150ms ease;}' +
+      '.opp-review-chip:hover{background:rgba(255,255,255,0.08);color:var(--text-primary,#e6edf3);}' +
+      '.opp-review-chip.active{background:rgba(226,245,0,0.18);color:#e2f500;border-color:rgba(226,245,0,0.4);}' +
+      '.opp-review-count{display:inline-block;margin-left:4px;font-size:10px;opacity:0.85;}' +
+      '.opp-card-actions{display:inline-flex;gap:6px;flex-wrap:wrap;}' +
+      '.opp-card-delete-btn{background:rgba(255,107,107,0.14)!important;color:#ff8a8a!important;}' +
+      '.opp-card-delete-btn:hover{background:rgba(255,107,107,0.26)!important;color:#ffb3b3!important;}' +
+      '.schools-header-actions{display:flex;align-items:center;gap:8px;}' +
+      '.opp-add-btn{background:#E2F500;color:#0a0a0a;font-weight:700;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;letter-spacing:-0.01em;transition:all 150ms ease;box-shadow:0 0 12px rgba(226,245,0,0.18);}' +
+      '.opp-add-btn:hover{background:#f0ff4d;transform:translateY(-1px);box-shadow:0 0 18px rgba(226,245,0,0.32);}' +
+      '.opp-add-btn:active{transform:translateY(0);}' +
+      '';
+    var style = document.createElement('style');
+    style.id = 'jaba-opp-review-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  })();
+
   // ===== ONE-CLICK IMPORTER FOR JORDON CRM (Notion CSV export) =====
   // Reads /jordon-crm-import.json (saved alongside index.html) and pushes
   // each record to Firebase under jordonCRM. Skips duplicates by name +
@@ -2189,6 +2886,7 @@
 
     setTimeout(syncFirebaseData, 1000);
     setTimeout(syncBadgesFromTopTabs, 2000);
+    setTimeout(loadDeletedLeadsFromFirebase, 1000);
 
     hookLeadsArray();
 
